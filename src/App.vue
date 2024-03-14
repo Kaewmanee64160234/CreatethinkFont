@@ -7,6 +7,8 @@
     <GoogleLogin :callback="callback"/>
     <p v-if="loginError">{{ loginErrorMessage }}</p>
   </div>
+  <RouterView/>
+
 </template>
 
 <script lang="ts" setup>
