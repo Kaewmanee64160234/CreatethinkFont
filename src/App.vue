@@ -1,12 +1,5 @@
 <template>
-  <div v-if="currentUser">
-    <h1>Welcome, {{ currentUser.firstName + ' '+currentUser.lastName }}</h1>
-    <img :src="currentUser.picture" alt="User Picture" />
-  </div>
-  <div v-else>
-    <GoogleLogin :callback="callback"/>
-    <p v-if="loginError">{{ loginErrorMessage }}</p>
-  </div>
+
   <router-view></router-view>
 </template>
 
