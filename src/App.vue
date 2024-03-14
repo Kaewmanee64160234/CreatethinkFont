@@ -1,46 +1,49 @@
+<template>
+  <div v-if="currentUser">
+    <h1>Welcome, {{ currentUser.firstName + ' '+currentUser.lastName }}</h1>
+    <img :src="currentUser.picture" alt="User Picture" />
+  </div>
+  <div v-else>
+    <GoogleLogin :callback="callback"/>
+    <p v-if="loginError">{{ loginErrorMessage }}</p>
+  </div>
+</template>
+
 <script lang="ts" setup>
-import { googleSdkLoaded } from "vue3-google-login";
-const login = () => {
-  googleSdkLoaded((google) => {
-    google.accounts.oauth2
-      .initCodeClient({
-        client_id:
-          "340551090181-5kdbme7veu6bf5radv3efb9o3j6mdpqu.apps.googleusercontent.com",
-        scope: "email profile openid",
-        callback: (response) => {
-          console.log("Handle the response", response);
-          //consol profile fistname lastname
-          // console.log(response.getBasicProfile().getGivenName())
-          console.log(response.getBasicProfile().getFamilyName());
-        },
-      })
-      .requestCode();
-  });
+import { ref } from 'vue';
+import { googleSdkLoaded, decodeCredential, GoogleLogin } from 'vue3-google-login';
+import { User } from './stores/types/User';
+
+const currentUser = ref<User>();
+const loginError = ref(false);
+const loginErrorMessage = ref('');
+
+const callback = (response: any) => {
+  console.log(response);
+
+  if (response.credential) {
+    const user = decodeCredential(response.credential);
+    console.log('User:', user);
+console.log(user.hd);
+   if(user.hd !=='go.buu.ac.th'){
+    alert(response.hd + ' is not a go.buu.ac.th domain');
+   }else{
+    currentUser.value = {
+      email: user.email,
+      firstName: user.given_name,
+      lastName: user.family_name,
+      id: "",
+      picture:user.picture,
+    }
+   
+   }
+  } else {
+    loginErrorMessage.value = 'Unable to login. Please try again.';
+    loginError.value = true;
+  }
 };
 </script>
 
-<template>
-  <button @click="login">Login Using Google</button>
-</template>
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
+<style scoped>
+/* Add your styles here */
 </style>

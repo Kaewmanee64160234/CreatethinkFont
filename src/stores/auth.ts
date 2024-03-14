@@ -1,10 +1,11 @@
 // src/stores/auth.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { User } from './types/User';
 
 export const useAuthStore = defineStore('authStore', () =>{
-  const currentStore = ref<UserProfile>();
-  const setCurrentUser = (user: UserProfile) => {
+  const currentStore = ref<User>();
+  const setCurrentUser = (user: User) => {
     currentStore.value = user;
   };
   //fetchUserProfile
