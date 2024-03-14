@@ -1,5 +1,4 @@
 <template>
-
   <h1>This is an about page</h1>
   <!-- File input for selecting an image -->
   <!-- Button to trigger face detection -->
