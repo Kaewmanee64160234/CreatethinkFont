@@ -21,6 +21,13 @@ const routes: Array<RouteRecordRaw> = [
     name: 'mapping',
     component: () => import(/* webpackChunkName: "mapping" */ '../views/MappingView.vue')
   }
+  ,
+  {
+      //mappingView
+      path: '/mapping2',
+      name: 'mapping2',
+      component: () => import(/* webpackChunkName: "mapping" */ '../views/MappingViewVersion2.vue')
+  }
   
 ]
 
