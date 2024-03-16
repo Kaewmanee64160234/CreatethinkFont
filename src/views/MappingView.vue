@@ -98,12 +98,12 @@ async function processImage(imgElement: HTMLImageElement, descriptorsRef: { valu
 const onFirstImageChange = async (event: Event) => {
   comparisonResult.value = null; // Reset comparison result
   await handleImageUpload(event, firstImageDescriptors);
-  firstImageSrc.value = URL.createObjectURL(event.target.files[0]); // Update image src
+  firstImageSrc.value = URL.createObjectURL(event.target!.files[0]); // Update image src
 };
 
 const onSecondImageChange = async (event: Event) => {
   await handleImageUpload(event, secondImageDescriptors);
-  secondImageSrc.value = URL.createObjectURL(event.target.files[0]); // Update image src
+  secondImageSrc.value = URL.createObjectURL(event.target!.files[0]); // Update image src
 };
 
 watch([firstImageDescriptors, secondImageDescriptors], ([first, second], [oldFirst, oldSecond]) => {
