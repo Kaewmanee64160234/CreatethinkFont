@@ -5,6 +5,7 @@ import { User } from "./types/User";
 
 export const useFaceStore = defineStore("faceStore", () => {
   const faceDescriptions = ref<Float32Array[]>([]);
+  const currentUnkownImage = ref();
   //get
   const getFaceDescriptions = () => {
     return faceDescriptions.value;
@@ -14,5 +15,5 @@ export const useFaceStore = defineStore("faceStore", () => {
     faceDescriptions.value = descriptions;
   };
 
-  return { faceDescriptions, getFaceDescriptions, setFaceDescriptions };
+  return { faceDescriptions, getFaceDescriptions, setFaceDescriptions,currentUnkownImage };
 });

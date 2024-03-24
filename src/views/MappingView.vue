@@ -1,65 +1,9 @@
-<template>
-     <div>
-        <button>
-            <router-link to="/mapping2">Mapping</router-link>
-        </button>
-    </div>
-  <div style="margin-bottom: 20px">
-   
-    <input type="file" @change="onFirstImageChange" accept="image/*" />
-    <div style="position: relative; width: 250px; height: 250px">
-      <img
-        v-if="firstImageSrc"
-        :src="firstImageSrc"
-        alt="First Image"
-        width="250"
-        height="250"
-      />
-      <canvas
-        ref="firstCanvas"
-        width="250"
-        height="250"
-        style="position: absolute; top: 0; left: 0"
-      ></canvas>
-    </div>
-  </div>
-  <div style="margin-bottom: 20px">
-    <input type="file" @change="onSecondImageChange" accept="image/*" />
-    <div style="position: relative; width: 250px; height: 250px">
-      <img
-        v-if="secondImageSrc"
-        :src="secondImageSrc"
-        alt="Second Image"
-        width="250"
-        height="250"
-      />
-      <canvas
-        ref="secondCanvas"
-        width="250"
-        height="250"
-        style="position: absolute; top: 0; left: 0"
-      ></canvas>
-    </div>
-  </div>
-  <!-- show descption -->
-  <div v-if="firstImageDescriptors.length > 0">
-    <h3>First Image Descriptors:</h3>
-    <pre>{{ firstImageDescriptors }}</pre>
-  </div>
-  <div v-if="secondImageDescriptors.length > 0">
-    <h3>Second Image Descriptors:</h3>
-    <pre>{{ secondImageDescriptors }}</pre>
-  </div>
-  <div v-if="comparisonResult !== null" style="margin-bottom: 20px">
-    <h3>Comparison Result:</h3>
-    <p v-if="comparisonResult">Match Found</p>
-    <p v-else>No Match Found</p>
-  </div>
-</template>
 <script setup lang="ts">
 import { onMounted, ref, watch, nextTick } from "vue";
 import * as faceapi from "face-api.js";
 import { useFaceStore } from "@/stores/face.store";
+import { useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 // Define reactive properties
 const firstImageSrc = ref<string>("");
@@ -68,6 +12,11 @@ const comparisonResult = ref<boolean | null>(null);
 const firstImageDescriptors = ref<Float32Array[]>([]);
 const secondImageDescriptors = ref<Float32Array[]>([]);
 const faceStore = useFaceStore();
+const authStore = useAuthStore();
+const router = useRoute();
+const studentId = router.params.studentId;
+//get Persone fromstudentId
+const person = authStore.gallery.find((p) => p.idStudent === studentId);
 
 // Load models
 onMounted(async () => {
@@ -108,7 +57,7 @@ async function processImage(
     .withFaceDescriptors();
   descriptorsRef.value = detections.map((d) => d.descriptor);
   //set descriptorsRef to faceStore
-   
+
   // Consider logging here to ensure descriptors are set
 }
 
@@ -143,9 +92,45 @@ function performComparison() {
     (descriptor) => faceMatcher.findBestMatch(descriptor).label !== "unknown"
   );
   //set  faceStore.faceDescriptions = secondImageDescriptors.value;
-    faceStore.faceDescriptions = secondImageDescriptors.value;
+  faceStore.faceDescriptions = secondImageDescriptors.value;
   comparisonResult.value = match;
   // Log the comparison result to ensure it's being set
   console.log("Comparison result:", match);
 }
 </script>
+<template>
+  <div>
+    <button>
+      <router-link to="/mapping2">Mapping</router-link>
+    </button>
+  </div>
+  <div style="margin-bottom: 20px">
+    <img :src="faceStore.currentUnkownImage" alt="" srcset="">
+    <input type="file" @change="onFirstImageChange" accept="image/*" />
+    <div style="position: relative; width: 250px; height: 250px">
+      <img v-if="firstImageSrc" :src="firstImageSrc" alt="First Image" width="250" height="250" />
+      <canvas ref="firstCanvas" width="250" height="250" style="position: absolute; top: 0; left: 0"></canvas>
+    </div>
+  </div>
+  <div style="margin-bottom: 20px">
+    <input type="file" @change="onSecondImageChange" accept="image/*" />
+    <div style="position: relative; width: 250px; height: 250px">
+      <img v-if="secondImageSrc" :src="secondImageSrc" alt="Second Image" width="250" height="250" />
+      <canvas ref="secondCanvas" width="250" height="250" style="position: absolute; top: 0; left: 0"></canvas>
+    </div>
+  </div>
+  <!-- show descption -->
+  <div v-if="firstImageDescriptors.length > 0">
+    <h3>First Image Descriptors:</h3>
+    <pre>{{ firstImageDescriptors }}</pre>
+  </div>
+  <div v-if="secondImageDescriptors.length > 0">
+    <h3>Second Image Descriptors:</h3>
+    <pre>{{ secondImageDescriptors }}</pre>
+  </div>
+  <div v-if="comparisonResult !== null" style="margin-bottom: 20px">
+    <h3>Comparison Result:</h3>
+    <p v-if="comparisonResult">Match Found</p>
+    <p v-else>No Match Found</p>
+  </div>
+</template>

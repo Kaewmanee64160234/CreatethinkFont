@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     //mappingView
-    path: '/mapping',
+    path: '/mapping/:idStudent',
     name: 'mapping',
     component: () => import(/* webpackChunkName: "mapping" */ '../views/MappingView.vue')
   }
