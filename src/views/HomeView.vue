@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { User } from '@/stores/types/User';
 import { ref } from 'vue';
@@ -25,6 +26,8 @@ const callback = (response: any) => {
         id: "",
         picture: user.picture,
       }
+      authStore.login();
+      router.push('/mapping2');
 
     }
   } else {
@@ -34,7 +37,7 @@ const callback = (response: any) => {
 };
 </script>
 <template>
-  <div v-if="authStore.currentUser">
+  <div v-if="authStore.currentUser.email!=''">
     <h1>Welcome, {{ authStore.currentUser?.firstName + ' ' + authStore.currentUser?.lastName }}</h1>
     <img :src="authStore.currentUser?.picture" alt="User Picture" />
     <!-- button push to mapping2 -->

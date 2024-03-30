@@ -4,9 +4,12 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  password?: string;
   role?: string;
   picture?: string;
+  teacherId?: string;
+  studentId?: string;
+  imageProfile: string;
+  faceDescriptions?: Float32Array[];
   createdAt?: Date;
   updatedAt?: Date;
 }
