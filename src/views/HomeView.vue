@@ -37,21 +37,34 @@ const callback = (response: any) => {
 };
 </script>
 <template>
-  <div v-if="authStore.currentUser.email!=''">
-    <h1>Welcome, {{ authStore.currentUser?.firstName + ' ' + authStore.currentUser?.lastName }}</h1>
-    <img :src="authStore.currentUser?.picture" alt="User Picture" />
-    <!-- button push to mapping2 -->
-    <button>
-      <router-link to="/mapping2">Mapping</router-link>
-    </button>
-  </div>
-  <div v-else>
-    <GoogleLogin :callback="callback" />
-    <p v-if="loginError">{{ loginErrorMessage }}</p>
+  <div class="centered-container">
+    <v-card class="light-gray-card" style="text-align: center; padding-top: 40pt;" width="50vw" height="52vh" >
+      <v-img style="" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" height="100"></v-img>
+      <h1>Google Login</h1>
+      <div v-if="authStore.currentUser.email!=''" >
+        <h1>Welcome, {{ authStore.currentUser?.firstName + ' ' + authStore.currentUser?.lastName }}</h1>
+        <img :src="authStore.currentUser?.picture" alt="User Picture" />
+        <!-- button push to mapping2 -->
+        <button >
+          <router-link to="/mapping2">Mapping</router-link>
+        </button>
+      </div>
+      <div v-else style="text-align: center ; padding-top: 50pt;">  
+        <GoogleLogin :callback="callback" />
+        <p v-if="loginError">{{ loginErrorMessage }}</p>
+      </div>
+    </v-card>
   </div>
 </template>
 
-
-<style scoped>
-/* Add your styles here */
+<style>
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* This will make the container cover the entire viewport height */
+}
+.light-gray-card {
+  background-color: #f5f5f5; /* Set the background color to light gray */
+}
 </style>
