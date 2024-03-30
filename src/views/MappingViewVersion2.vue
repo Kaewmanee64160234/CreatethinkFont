@@ -15,6 +15,7 @@ const imageCanvas = ref<HTMLCanvasElement | null>(null);
 const faceStore = useFaceStore();
 const router = useRouter();
 
+const drawer = ref(false);
 async function loadModels() {
   await Promise.all([
     faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
@@ -102,7 +103,7 @@ const findIdStudent = (name: string) => {
 };
 
 //create function handle with unknown by parameter is unknown image
-const handleUnknown = (index:number) => {
+const handleUnknown = (index: number) => {
   faceStore.currentUnkownImage = croppedImagesDataUrls.value[index];
   router.push(`/mapping/${authStore.currentUser?.email.split('@')[0]}`);
 };
@@ -110,31 +111,116 @@ const handleUnknown = (index:number) => {
 
 
 <template>
-  <div>
-    <input type="file" @change="handleFileChange" accept="image/*" />
-    <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
-      <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;" />
-      <canvas ref="imageCanvas" style="position: absolute; top: 0; left: 0;"></canvas>
-    </div>
-    <div v-if="identifications.length">
-      <h3>Identifications:</h3>
-      <ul>
-        <li v-for="(id, index) in identifications" :key="index">
-          {{ findIdStudent(id) + ` (${id})` }}
-          <img :src="croppedImagesDataUrls[index]" alt="Cropped Face" style="width: 100px; height: auto;" />
-          <button v-if="authStore.currentUser?.email.split('@')[0] === findIdStudent(id)">Confirm Your Image</button>
-          <button v-if="id == 'unknown'" @click="handleUnknown(index)">
-         
-          Identify Is Me!!
-          </button>
+  <v-card>
+    <v-layout>
+      <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
 
-          <button v-if="authStore.currentUser?.email.split('@')[0] !== findIdStudent(id) && id !== 'unknown'">Identify
-            Wrong!! This is me!!</button>
+      <v-app-bar color="primary" prominent>
+        <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-          <!-- button for report detection worng -->
-        </li>
-        {{ authStore.currentUser?.email.split('@')[0] }}
-      </ul>
-    </div>
-  </div>
+        <v-toolbar-title>Student Attendance</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+        <v-btn icon="mdi-plus" variant="text"></v-btn>
+
+        <v-toolbar-title>name: {{ authStore.currentUser.firstName + ' ' + authStore.currentUser.lastName
+          }}</v-toolbar-title>
+
+      </v-app-bar>
+
+      <v-navigation-drawer v-model="drawer" location="left">
+        <v-list>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-account-group</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Students</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-camera</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Mapping</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-logout</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+
+      <v-main>
+        <v-card style="margin: 10px; background-color: blanchedalmond;">
+          <v-card-title>Creative Thinking </v-card-title>
+        </v-card>
+
+        <div style="margin: 10px;">
+          <table>
+            <td width="50%"> <v-file-input label="File input" style="width: 20vw;" prepend-icon="mdi-camera"
+                variant="filled" @change="handleFileChange" accept="image/*"></v-file-input>
+              <!-- <input type="file" @change="handleFileChange" accept="image/*"   /> -->
+              <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
+                <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;" />
+                <canvas ref="imageCanvas" style="position: absolute; top: 0; left: 0;"></canvas>
+              </div>
+            </td>
+            <td width="50%">
+              <div style="height: 50px;"></div>
+              <div style="padding: 10px;" v-if="identifications.length">
+                <h3>Identifications:</h3>
+                <ul>
+                  <li v-for="(id, index) in identifications" :key="index">
+
+                    <table>
+                      <tr>
+                        <td>
+                          <img :src="croppedImagesDataUrls[index]" alt="Cropped Face"
+                            style="width: 100px; height: auto;" />
+
+                        </td>
+                        <td style="text-align: start;align-items: start;">
+                          <v-btn v-if="authStore.currentUser?.email.split('@')[0] === findIdStudent(id)">Confirm Your
+                            Image</v-btn>
+                          <v-btn v-if="id == 'unknown'" @click="handleUnknown(index)">
+
+                            Identify Is Me!!
+                          </v-btn>
+
+                          <v-btn
+                            v-if="authStore.currentUser?.email.split('@')[0] !== findIdStudent(id) && id !== 'unknown'">Identify
+                            Wrong!! This is me!!</v-btn>
+                        </td>
+                      </tr>
+                      <tr>{{ findIdStudent(id) + ` (${id})` }}</tr>
+                    </table>
+
+
+                    <!-- button for report detection worng -->
+                  </li>
+                  {{ authStore.currentUser?.email.split('@')[0] }}
+                </ul>
+              </div>
+            </td>
+          </table>
+
+
+        </div>
+      </v-main>
+    </v-layout>
+  </v-card>
+
 </template>
