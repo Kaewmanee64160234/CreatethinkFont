@@ -2,14 +2,23 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
-
 import vue3GoogleLogin from "vue3-google-login";
+
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+const vuetify = createVuetify({
+  components,
+  directives,
+})
 
 createApp(App)
   .use(vue3GoogleLogin, {
     clientId: process.env.VUE_APP_GOOGLE_CLIENT_ID,
     
   })
-  .use(router)
-  .use(createPinia())
+  .use(router).use(vuetify)
+  .use(createPinia()).use(createVuetify())
   .mount("#app");
