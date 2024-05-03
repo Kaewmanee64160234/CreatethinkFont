@@ -69,10 +69,10 @@ function findGalleryItemByEmail() {
 <template>
   <div class="centered-container">
     <v-card class="light-gray-card" style="text-align: center; padding-top: 40pt;" width="50vw" height="52vh" >
-      <div v-if="authStore.currentUser.email=''">
+      <div v-if="authStore.currentUser.email==''">
       <v-img style="" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" height="100"></v-img>
       <h1>Google Login</h1>
-      <div  style="text-align: center ; padding-top: 50pt;">  
+      <div style="text-align: center ; padding-top: 50pt;">  
         <GoogleLogin :callback="callback" />
         <p v-if="loginError">{{ loginErrorMessage }}</p>
       </div>
