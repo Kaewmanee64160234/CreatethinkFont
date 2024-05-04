@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-;
-const routes: Array<RouteRecordRaw> = [
+;const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
@@ -27,6 +26,20 @@ const routes: Array<RouteRecordRaw> = [
       path: '/mapping2',
       name: 'mapping2',
       component: () => import(/* webpackChunkName: "mapping" */ '../views/MappingViewVersion2.vue')
+  }
+  ,
+  {
+      //manageCourseView
+      path: '/manageCourse',
+      name: 'manageCourse',
+      components: {
+        default: () => import('../views/ManageCourseView.vue'),
+        header: () => import('../components/headers/MainHeader.vue'),
+        menu: () => import('../components/headers/SubHeader.vue'),
+      },
+      meta: {
+        layout: "FullLayout",
+      }
   }
   
 ]
