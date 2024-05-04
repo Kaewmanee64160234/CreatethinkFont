@@ -1,9 +1,9 @@
 <template>
-    <v-card>
-        <v-navigation-drawer style="width: 3vw;height: 100vh;">
-            <v-layout>
+    <v-card style="height: 100vh;">
+        <v-navigation-drawer style="width: 4vw">
+            <v-layout style="margin-top: 20%;margin-left: 5%;">
                 <v-list>
-                    <v-list-item style="margin-top: 20%;margin-left: 2%;">
+                    <v-list-item>
                         <v-icon>
                             <v-img src="../../icons/./home.png"></v-img>
                         </v-icon>
