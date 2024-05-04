@@ -2,17 +2,19 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import Course from "./types/Course";
+import courseService from "@/services/course";
 
 export const useCourseStore = defineStore("courseStore", () => {
   const courses = ref<Course[]>([]);
   //get
-  const getCourses = () => {
-    return courses.value;
-  };
-  //set
-  const setCourses = (coursesList: Course[]) => {
-    courses.value = coursesList;
+  const getCourses = async () => {
+    try {
+      const res = await courseService.getCourse();
+      courses.value = res.data;
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  return { courses, getCourses, setCourses };
+  return { courses, getCourses};
 });
