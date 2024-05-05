@@ -111,7 +111,7 @@ function findGalleryItemByEmail() {
   justify-content: center;
   align-items: center;
   height: 100vh; /* This will make the container cover the entire viewport height */
-  background-image: url('D:\Model create thinking\CreatethinkFont\cttk background.jpg');
+  /* background-image: url('D:\Model create thinking\CreatethinkFont\cttk background.jpg'); */
   background-size: cover;
   background-position: center;
   width: 100%;
