@@ -19,15 +19,36 @@ const posts = ref<Assignment[]>([]);
 const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
+const nameAssignment = ref('');
 //mounted get assigment by course id
 onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
     posts.value = assigmentStore.assignments;
 })
 
-const createPost = () => {
-    showTextArea.value = !showTextArea.value; 
+const openPost = () => {
+    showTextArea.value = !showTextArea.value;
 };
+//create Post
+const createPost = async () => {
+    if (nameAssignment.value === '') {
+        return;
+    }
+    const newAssignment = {
+        assignmentTime: new Date(), nameAssignment: nameAssignment.value, course: { ...courseStore.currentCourse! },
+        assignmentId: 0,
+        attdances: [],
+        room: undefined,
+        createdDate: undefined,
+        updatedDate: undefined,
+        deletedDate: undefined
+    }
+
+    await assigmentStore.createAssignment(newAssignment);
+    nameAssignment.value = '';
+    showTextArea.value = false;
+    posts.value = assigmentStore.assignments;
+}
 
 
 </script>
@@ -42,27 +63,27 @@ const createPost = () => {
         <v-container>
             <v-card class="mx-auto" color="primary" max-width="1200" outlined style="padding: 20px;">
                 <v-card-title>
-                    <h1 class="text-h5">Course Detail</h1>
+                    <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
                 </v-card-title>
             </v-card>
 
             <!-- Tab content for posts -->
             <v-tab-item value="posts">
-                <v-btn color="primary" @click="createPost" style="margin: 10px 0;">Create Post</v-btn>
+                <v-btn color="primary" @click="openPost" style="margin: 10px 0;">Create Post</v-btn>
                 <!-- Conditional text area -->
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
-                    <v-textarea label="Enter your post" outlined></v-textarea>
+                        <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
 
                     </v-container>
                     <v-card-actions>
-                       <!-- create button create and cancle -->
-                       <v-spacer></v-spacer>
+                        <!-- create button create and cancle -->
+                        <v-spacer></v-spacer>
                         <v-btn color="error" @click="showTextArea = false">Cancel</v-btn>
 
-                        <v-btn color="primary">Post</v-btn>
+                        <v-btn color="primary" @click=createPost()>Post</v-btn>
 
-                        </v-card-actions>
+                    </v-card-actions>
                 </v-card>
                 <v-row>
                     <v-col cols="12" sm="12" md="12" v-for="post in posts" :key="post.assignmentId">

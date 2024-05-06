@@ -3,13 +3,13 @@ import Course from "./Course";
 import Room from "./Room";
 
 export default interface Assignment{
-    assignmentId:number;
+    assignmentId?:number;
     nameAssignment:string;
     assignmentTime:Date;
-    attdances:Attendance[];
-    room:Room;
+    attdances?:Attendance[];
+    room?:Room;
     course:Course;
-    createdDate:Date;
-    updatedDate:Date;
-    deletedDate:Date;
+    createdDate?:Date;
+    updatedDate?:Date;
+    deletedDate?:Date;
 }

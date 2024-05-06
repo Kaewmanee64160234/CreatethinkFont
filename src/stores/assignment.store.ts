@@ -6,6 +6,7 @@ import assignmentService from "@/services/assignment";
 export const useAssignmentStore = defineStore("assignmentStore", () => {
   const assignments = ref<Assignment[]>([]);
   const assignment = ref<Assignment>();
+  const assigmentStore = useAssignmentStore();
 
   //get
   const getAssignments = async () => {
@@ -20,11 +21,35 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
   const getAssignmentByCourseId = async (id: string) => {
     try {
       const res = await assignmentService.getAssignmentByCourseId(id);
-      assignments.value = res.data;
+      //map assignment
+        assignments.value = res.data;
+        console.log(id);
     } catch (e) {
       console.log(e);
     }
   };
+  //create Assignment
+  const createAssignment = async (data:Assignment) => {
+    try {
+      const res = await assignmentService.createAssignment(data);
+      if (res.data) {
+        await getAssignmentByCourseId(data.course.coursesId);
+      } else {
+        alert('Error creating assignment');
+      }
+    } catch (e) {
+      console.error('Error creating assignment:', e);
+    }
+  };
 
-  return { assignments,getAssignmentByCourseId, getAssignments, assignment };
+      // assignments.value.push(res.data);
+   
+
+  return {
+    assignments,
+    getAssignmentByCourseId,
+    getAssignments,
+    assignment,
+    createAssignment,
+  };
 });
