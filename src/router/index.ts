@@ -40,7 +40,20 @@ import HomeView from '../views/HomeView.vue'
       meta: {
         layout: "FullLayout",
       }
-  }
+  },
+  {
+    //CourseDetail
+    path: '/courseDetail/:idCourse',
+    name: 'courseDetail',
+    components: {
+      default: () => import('../views/CouseDetailView.vue'),
+      header: () => import('../components/headers/MainHeader.vue'),
+      menu: () => import('../components/headers/SubHeader.vue'),
+    },
+    meta: {
+      layout: "FullLayout",
+    }
+}
   
 ]
 
