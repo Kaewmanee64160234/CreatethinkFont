@@ -25,8 +25,15 @@ import HomeView from '../views/HomeView.vue'
       //mappingView
       path: '/mapping2',
       name: 'mapping2',
-      component: () => import(/* webpackChunkName: "mapping" */ '../views/MappingViewVersion2.vue')
-  }
+      components: {
+        default: () => import('../views/MappingViewVersion2.vue'),
+        header: () => import('../components/headers/MainHeader.vue'),
+        menu: () => import('../components/headers/SubHeader.vue'),
+      },
+      meta: {
+        layout: "FullLayout",
+      }
+    }
   ,
   {
       //manageCourseView

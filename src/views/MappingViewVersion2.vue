@@ -5,6 +5,8 @@ import Person from "@/stores/types/Person";
 import { useAuthStore } from "@/stores/auth";
 import { useFaceStore } from "@/stores/face.store";
 import { useRouter } from "vue-router";
+import { useCourseStore } from "@/stores/course.store";
+import { useAssignmentStore } from "@/stores/assignment.store";
 
 
 const croppedImagesDataUrls = ref([]);
@@ -23,6 +25,9 @@ async function loadModels() {
     faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
   ]);
 }
+
+const courseStore = useCourseStore();
+const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await loadModels();
@@ -107,73 +112,95 @@ const handleUnknown = (index: number) => {
   faceStore.currentUnkownImage = croppedImagesDataUrls.value[index];
   router.push(`/mapping/${authStore.currentUser?.email.split('@')[0]}`);
 };
+
+
 </script>
-
-
 <template>
+  <v-container style="margin-top: 5%;">
+    <!-- Course Card -->
+    <v-card class="mb-4" color="primary" outlined>
+      <v-card-title>
+        <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
+      </v-card-title>
+    </v-card>
+
+    <!-- Content Layout -->
+    <v-row>
+      <!-- Image Upload Column -->
+      <v-col cols="12" md="6">
+        <v-file-input
+          label="อัพโหลดรูปภาพ"
+          prepend-icon="mdi-camera"
+          filled
+          @change="handleFileChange"
+          accept="image/*"
+          outlined
+        ></v-file-input>
+       
+      </v-col>
+
+      <!-- Button Column -->
+      <v-col cols="12" md="6" class="d-flex align-center justify-end">
+        <v-btn color="blue">
+          ตรวจสอบการเข้าชั้น
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="6">
+        <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
+          <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;" />
+          <canvas ref="imageCanvas" style="position: absolute; top: 0; left: 0;"></canvas>
+        </div>
+      </v-col>
+      <v-col cols="12" md="6">
+        <div style="padding: 10px;" v-if="identifications.length">
+          <h3>Identifications:</h3>
+          <ul>
+            <li class="ma-5" v-for="(id, index) in identifications" :key="index">
+              <table>
+                <tr>{{ findIdStudent(id) + ` (${id})` }}</tr>
+                <tr>
+                  <td style="width: 150px;">
+                    <img :src="croppedImagesDataUrls[index]" alt="Cropped Face" style="width: 100px; height: auto;" />
+                  </td>
+                  <td class="d-flex justify-start">
+                    <v-btn v-if="authStore.currentUser?.email.split('@')[0] === findIdStudent(id)">Confirm Your Image</v-btn>
+                    <v-btn v-if="id == 'unknown'" @click="handleUnknown(index)">Identify Is Me!!</v-btn>
+                    <v-btn v-if="authStore.currentUser?.email.split('@')[0] !== findIdStudent(id) && id !== 'unknown'">
+                      Identify Wrong!! This is me!!
+                    </v-btn>
+                  </td>
+                </tr>
+              </table>
+            </li>
+          </ul>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<!-- <template>
   <v-card>
-    <v-layout>
+    <v-layout style="margin-top: 5%;margin-left: 5%;"> -->
       <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
 
-      <v-app-bar color="primary" prominent>
-        <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-
-        <v-toolbar-title>Student Attendance</v-toolbar-title>
-
-        <v-spacer></v-spacer>
-        <v-btn icon="mdi-plus" variant="text"></v-btn>
-
-        <v-toolbar-title>name: {{ authStore.currentUser.firstName + ' ' + authStore.currentUser.lastName
-          }}</v-toolbar-title>
-
-      </v-app-bar>
-
-      <v-navigation-drawer v-model="drawer" location="left">
-        <v-list>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Profile</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-account-group</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Students</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-camera</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Mapping</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-logout</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Logout</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-
+<!-- 
       <v-main>
-        <v-card style="margin: 10px; background-color: blanchedalmond;">
-          <v-card-title>Creative Thinking </v-card-title>
-        </v-card>
+        <v-card class="mx-auto" color="primary" max-width="1200" outlined style="padding: 20px;">
+                <v-card-title>
+                    <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
+                </v-card-title>
+            </v-card>
 
         <div style="margin: 10px;">
           <table>
             <td width="50%"> <v-file-input label="File input" style="width: 40vw;" prepend-icon="mdi-camera"
                 variant="filled" @change="handleFileChange" accept="image/*"></v-file-input>
+                 -->
               <!-- <input type="file" @change="handleFileChange" accept="image/*"   /> -->
-              <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
+              <!-- <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
                 <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;" />
                 <canvas ref="imageCanvas" style="position: absolute; top: 0; left: 0;"></canvas>
               </div>
@@ -205,13 +232,13 @@ const handleUnknown = (index: number) => {
                             v-if="authStore.currentUser?.email.split('@')[0] !== findIdStudent(id) && id !== 'unknown'">Identify
                             Wrong!! This is me!!</v-btn>
                         </td>
-                      </tr>
+                      </tr> -->
                       <!-- <tr>{{ findIdStudent(id) + ` (${id})` }}</tr> -->
-                    </table>
+                    <!-- </table> -->
 
 
                     <!-- button for report detection worng -->
-                  </li>
+                  <!-- </li>
                   {{ authStore.currentUser?.email.split('@')[0] }}
                 </ul>
               </div>
@@ -224,4 +251,4 @@ const handleUnknown = (index: number) => {
     </v-layout>
   </v-card>
 
-</template>
+</template> -->
