@@ -170,7 +170,7 @@ const handleUnknown = (index: number) => {
 
         <div style="margin: 10px;">
           <table>
-            <td width="50%"> <v-file-input label="File input" style="width: 20vw;" prepend-icon="mdi-camera"
+            <td width="50%"> <v-file-input label="File input" style="width: 40vw;" prepend-icon="mdi-camera"
                 variant="filled" @change="handleFileChange" accept="image/*"></v-file-input>
               <!-- <input type="file" @change="handleFileChange" accept="image/*"   /> -->
               <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
@@ -183,16 +183,17 @@ const handleUnknown = (index: number) => {
               <div style="padding: 10px;" v-if="identifications.length">
                 <h3>Identifications:</h3>
                 <ul>
-                  <li v-for="(id, index) in identifications" :key="index">
+                  <li class="ma-5" v-for="(id, index) in identifications" :key="index">
 
                     <table>
+                      <tr>{{ findIdStudent(id) + ` (${id})` }}</tr>
                       <tr>
-                        <td>
+                        <td style="width: 150px;">
                           <img :src="croppedImagesDataUrls[index]" alt="Cropped Face"
                             style="width: 100px; height: auto;" />
 
                         </td>
-                        <td style="text-align: start;align-items: start;">
+                        <td class="d-flex justify-start">
                           <v-btn v-if="authStore.currentUser?.email.split('@')[0] === findIdStudent(id)">Confirm Your
                             Image</v-btn>
                           <v-btn v-if="id == 'unknown'" @click="handleUnknown(index)">
@@ -205,7 +206,7 @@ const handleUnknown = (index: number) => {
                             Wrong!! This is me!!</v-btn>
                         </td>
                       </tr>
-                      <tr>{{ findIdStudent(id) + ` (${id})` }}</tr>
+                      <!-- <tr>{{ findIdStudent(id) + ` (${id})` }}</tr> -->
                     </table>
 
 
