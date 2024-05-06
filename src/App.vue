@@ -1,9 +1,13 @@
 <template>
-  <router-view></router-view>
+  <component
+    :is="$route.meta.layout === 'mainLayout' ? MainLayout : FullLayout"
+  ></component>
+  <MainLayout></MainLayout>
 </template>
 
-<script lang="ts" setup>
-
+<script setup lang="ts">
+import FullLayout from "./components/Layout/FullLayout.vue";
+import MainLayout from "./components/Layout/MainLayout.vue";
 </script>
 
 <style scoped>
