@@ -9,6 +9,7 @@ export const useCourseStore = defineStore("courseStore", () => {
   const showDialog = ref(false);
   const showDialog2 = ref(false);
   const showDialog3 = ref(false);
+  const currentCourse = ref<Course>();
   //get
   const getCourses = async () => {
     try {
@@ -24,5 +25,5 @@ export const useCourseStore = defineStore("courseStore", () => {
     showDialog2.value = false;
     showDialog3.value = false;
   };
-  return { courses, getCourses, showDialog, showDialog2, closeDialog, showDialog3};
+  return { currentCourse,courses, getCourses, showDialog, showDialog2, closeDialog, showDialog3};
 });

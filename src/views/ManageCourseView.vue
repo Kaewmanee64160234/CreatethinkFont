@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import CreateCourseDialog from '@/components/dialogs/CreateCourseDialog.vue';
 import { useCourseStore } from '@/stores/course.store';
+import Course from '@/stores/types/Course';
 import { onMounted, ref} from "vue";
 import { useRouter } from 'vue-router';
 const courseStore = useCourseStore();
@@ -11,8 +12,9 @@ onMounted(() => {
 })
 
 //create function click and push to /courseDetail/:idCourse
-const goToCourseDetail = (idCourse: string) => {
+const goToCourseDetail = (idCourse: string,course:Course) => {
     router.push(`/courseDetail/${idCourse}`);
+    courseStore.currentCourse = course;
 }
 
 </script>
@@ -20,7 +22,7 @@ const goToCourseDetail = (idCourse: string) => {
     <v-container>
         <v-row>
             <v-col cols="4" v-for="(item, index) of courseStore.courses" :key="index">
-                <v-card   style="margin-left: 10%;margin-top: 15%;" @click="goToCourseDetail(item.coursesId)">
+                <v-card   style="margin-left: 10%;margin-top: 15%;" @click="goToCourseDetail(item.coursesId,item)">
                     <v-img height="15vh"
                         src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
                         cover>
