@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
 import Assignment from '../../stores/types/Assignment';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const props = defineProps<{
     post: Assignment
 }>();
@@ -10,6 +12,11 @@ function formatThaiDate(date: Date) {
         day: 'numeric', // Numeric day of the month
         month: 'short'  // Abbreviated month name
     }).replace('.', ''); // Remove the dot after the month abbreviation
+}
+
+//create function goto mapping 2
+const goToMapping2 = () => {
+    router.push('/mapping2');
 }
 
 </script>
@@ -23,7 +30,7 @@ function formatThaiDate(date: Date) {
             <v-card-actions>
                 <v-card-text> {{ formatThaiDate(new Date(props.post.createdDate)) }}</v-card-text>
                 <v-spacer></v-spacer>
-                <v-btn><v-icon size="30">mdi-account-file-text-outline</v-icon></v-btn>
+                <v-btn @click="goToMapping2()" ><v-icon size="30">mdi-account-file-text-outline</v-icon></v-btn>
             </v-card-actions>
         </v-card>
     </div>
