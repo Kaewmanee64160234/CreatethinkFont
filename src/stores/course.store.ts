@@ -7,6 +7,8 @@ import courseService from "@/services/course";
 export const useCourseStore = defineStore("courseStore", () => {
   const courses = ref<Course[]>([]);
   const showDialog = ref(false);
+  const showDialog2 = ref(false);
+  const showDialog3 = ref(false);
   //get
   const getCourses = async () => {
     try {
@@ -17,5 +19,10 @@ export const useCourseStore = defineStore("courseStore", () => {
     }
   };
 
-  return { courses, getCourses, showDialog};
+  const closeDialog = () => {
+    showDialog.value = false;
+    showDialog2.value = false;
+    showDialog3.value = false;
+  };
+  return { courses, getCourses, showDialog, showDialog2, closeDialog, showDialog3};
 });

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import { ref } from "vue";
+import CreateCourseDialog2 from "./CreateCourseDialog2.vue";
+import course from "@/services/course";
 const courseStore = useCourseStore();
 
 </script>
@@ -48,8 +50,12 @@ const courseStore = useCourseStore();
                     </v-card-title>
                 </v-card>
                 <v-card-actions class="actions">
-                    <v-btn @click="courseStore.showDialog = false">ยกเลิก</v-btn>
-                    <v-btn class="colorText">ต่อไป</v-btn>
+                    <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
+                    <v-btn @click="courseStore.showDialog2 = true" class="colorText">ต่อไป
+                        <v-dialog v-model="courseStore.showDialog2" persistent>
+                            <CreateCourseDialog2></CreateCourseDialog2>
+                        </v-dialog>
+                    </v-btn>
                 </v-card-actions>
             </v-card>
         </v-row>
