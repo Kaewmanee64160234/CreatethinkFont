@@ -4,6 +4,8 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAssignmentStore } from '@/stores/assignment.store';
 import Assignment from '@/stores/types/Assignment';
+//import component CardAssigment
+import CardAssigment from '@/components/assigment/CardAssigment.vue';
 const route = useRoute();
 const id = ref(route.params.idCourse);
 const tabs = [
@@ -24,12 +26,7 @@ onMounted(async () => {
 const createPost = () => {
     console.log('create post');
 }
-function formatThaiDate(date: Date) {
-    return date.toLocaleDateString('th-TH', {
-        day: 'numeric', // Numeric day of the month
-        month: 'short'  // Abbreviated month name
-    }).replace('.', ''); // Remove the dot after the month abbreviation
-}
+
 
 
 </script>
@@ -47,17 +44,7 @@ function formatThaiDate(date: Date) {
             <v-btn color="primary" @click="createPost">Create Post</v-btn>
             <v-row>
                 <v-col cols="12" sm="12" md="12" v-for="post in posts" :key="post.assignmentId">
-                    <v-card>
-                        <v-card-text>
-                            <h4>{{ post.course.user.firstName + ' ' + post.course.user.lastName }} โพสเนื้อหาใหม่ : {{
-            post.nameAssignment }}</h4>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-card-text> {{ formatThaiDate(new Date(post.createdDate)) }}</v-card-text>
-                            <v-spacer></v-spacer>
-                            <v-btn><v-icon size="30">mdi-account-file-text-outline</v-icon></v-btn>
-                        </v-card-actions>
-                    </v-card>
+                   <CardAssigment :post="post"></CardAssigment>
                 </v-col>
             </v-row>
         </v-tab-item>
