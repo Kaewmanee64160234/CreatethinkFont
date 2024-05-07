@@ -118,16 +118,16 @@ const handleUnknown = (index: number) => {
 <template>
   <v-container style="margin-top: 5%;">
     <!-- Course Card -->
-    <v-card class="mb-4" color="primary" outlined>
+    <v-card class="mb-5" color="primary" outlined>
       <v-card-title>
         <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
       </v-card-title>
     </v-card>
 
-    <!-- Content Layout -->
-    <v-row>
-      <!-- Image Upload Column -->
+    <!-- Top Row for File Input and Check-in Button -->
+    <v-row class="mb-4">
       <v-col cols="12" md="6">
+        <!-- File Input -->
         <v-file-input
           label="อัพโหลดรูปภาพ"
           prepend-icon="mdi-camera"
@@ -136,50 +136,47 @@ const handleUnknown = (index: number) => {
           accept="image/*"
           outlined
         ></v-file-input>
-       
       </v-col>
-
-      <!-- Button Column -->
-      <v-col cols="12" md="6" class="d-flex align-center justify-end">
-        <v-btn color="blue">
-          ตรวจสอบการเข้าชั้น
+      
+      <v-col cols="12" md="6" class="d-flex justify-end align-center">
+        <!-- Button aligned to the right -->
+        <v-btn color="primary" class="mt-2">
+          <v-icon left>mdi-account-file-text-outline</v-icon>
+          ตรวจสอบการเช็คชื่อ
         </v-btn>
       </v-col>
     </v-row>
-    <v-row>
+
+
+    <!-- Identification Cards Layout -->
+    <v-row style="width: 100%;">
       <v-col cols="12" md="6">
-        <div v-if="imageUrl" style="position: relative; max-width: 70vw;">
+        <div v-if="imageUrl" style="position: relative; max-width: 100%;">
           <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;" />
           <canvas ref="imageCanvas" style="position: absolute; top: 0; left: 0;"></canvas>
         </div>
       </v-col>
-      <v-col cols="12" md="6">
-        <div style="padding: 10px;" v-if="identifications.length">
-          <h3>Identifications:</h3>
-          <ul>
-            <li class="ma-5" v-for="(id, index) in identifications" :key="index">
-              <table>
-                <tr>{{ findIdStudent(id) + ` (${id})` }}</tr>
-                <tr>
-                  <td style="width: 150px;">
-                    <img :src="croppedImagesDataUrls[index]" alt="Cropped Face" style="width: 100px; height: auto;" />
-                  </td>
-                  <td class="d-flex justify-start">
-                    <v-btn v-if="authStore.currentUser?.email.split('@')[0] === findIdStudent(id)">Confirm Your Image</v-btn>
-                    <v-btn v-if="id == 'unknown'" @click="handleUnknown(index)">Identify Is Me!!</v-btn>
-                    <v-btn v-if="authStore.currentUser?.email.split('@')[0] !== findIdStudent(id) && id !== 'unknown'">
-                      Identify Wrong!! This is me!!
-                    </v-btn>
-                  </td>
-                </tr>
-              </table>
-            </li>
-          </ul>
+       <!-- Identification Cards Column -->
+       <v-col cols="12" md="6">
+        <div v-if="identifications.length" class="py-2">
+          <h3 style="padding: 10px;">Identifications:</h3>
+          <v-row>
+            <v-col cols="12" sm="6" md="6" lg="4" v-for="(id, index) in identifications" :key="index">
+              <v-card class="mx-auto mb-4" style="max-width: 200px; background-color: rgb(217, 217, 217);" outlined>
+                <v-card-text class="text-center single-line">
+                  {{ findIdStudent(id) }} ({{ id }})
+                </v-card-text>
+                <v-img :src="croppedImagesDataUrls[index]" height="150px" aspect-ratio="1.5" style="border-radius: 10%;"></v-img>
+              </v-card>
+            </v-col>
+          </v-row>
         </div>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+
 
 <!-- <template>
   <v-card>
@@ -252,3 +249,10 @@ const handleUnknown = (index: number) => {
   </v-card>
 
 </template> -->
+<style scoped>
+.single-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
