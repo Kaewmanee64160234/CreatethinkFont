@@ -7,6 +7,7 @@ import Assignment from '@/stores/types/Assignment';
 //import component CardAssigment
 import CardAssigment from '@/components/assigment/CardAssigment.vue';
 import { useCourseStore } from '@/stores/course.store';
+import { useAuthStore } from '@/stores/auth';
 const route = useRoute();
 const id = ref(route.params.idCourse);
 const tabs = [
@@ -20,6 +21,7 @@ const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
 const nameAssignment = ref('');
+const authStore = useAuthStore();
 //mounted get assigment by course id
 onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
@@ -53,7 +55,7 @@ const createPost = async () => {
 
 </script>
 <template>
-    <div style="margin-top: 5%;margin-left: 5%;">
+    <div style="margin-top: 5%; margin-left: 5%;">
         <v-tabs v-model="tab">
             <v-tab v-for="item in tabs" :key="item.id" :value="item.title">
                 {{ item.title }}
@@ -61,35 +63,77 @@ const createPost = async () => {
         </v-tabs>
 
         <v-container>
-            <v-card class="mx-auto" color="primary" max-width="1200" outlined style="padding: 20px;">
-                <v-card-title>
-                    <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
-                </v-card-title>
-            </v-card>
-
             <!-- Tab content for posts -->
-            <v-tab-item value="posts">
+            <v-tab-item v-if="tab === 'Posts'" value="Posts">
+                <v-card class="mx-auto" color="primary" max-width="1200" outlined style="padding: 20px;">
+                    <v-card-title>
+                        <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
+                    </v-card-title>
+                </v-card>
+
                 <v-btn color="primary" @click="openPost" style="margin: 10px 0;">Create Post</v-btn>
                 <!-- Conditional text area -->
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
                         <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
-
                     </v-container>
                     <v-card-actions>
-                        <!-- create button create and cancle -->
+                        <!-- create button create and cancel -->
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="showTextArea = false">Cancel</v-btn>
-
-                        <v-btn color="primary" @click=createPost()>Post</v-btn>
-
+                        <v-btn color="primary" @click="createPost()">Post</v-btn>
                     </v-card-actions>
                 </v-card>
+
                 <v-row>
                     <v-col cols="12" sm="12" md="12" v-for="post in posts" :key="post.assignmentId">
                         <CardAssigment :post="post"></CardAssigment>
                     </v-col>
                 </v-row>
+            </v-tab-item>
+
+            <!-- Tab content for Members -->
+            <v-tab-item v-else-if="tab === 'Members'" value="Members">
+               <div style="width: 80%;">
+                <div>
+                    <h3>Teacher</h3>
+
+                    <v-table dense style="width: 80%; padding: 10px">
+                        <template v-slot:default>
+                            <tbody>
+                                <tr>
+                                    <td><v-avatar color="primary" size="56"></v-avatar></td>
+                                    <td> อาจารย์ วรวิทย์ วีระพัน</td>
+                                </tr>
+                            </tbody>
+                        </template>
+                    </v-table>
+                </div>
+                <div >
+                    <v-row  style="width: 80%;">
+                        <v-col cols="12" md="6">
+                            <h3>Students</h3>
+                        </v-col>
+                        <v-col cols="12" md="6" style="text-align: end;">
+                            <p> 72 Members</p>
+                           
+                        </v-col>
+                    </v-row>
+                    
+                    <v-table dense style="width: 80%; padding: 10px">
+                        <template v-slot:default>
+                            <tbody>
+                                <tr v-for="(member, index) in authStore.gallery" :key="index">
+                                    <td><v-avatar color="primary" size="56"></v-avatar></td>
+                                    <td style="text-align: start;">{{ member.name }}</td>
+                                </tr>
+                            </tbody>
+                        </template>
+                    </v-table>
+                </div>
+
+               </div>
+              
             </v-tab-item>
         </v-container>
     </div>

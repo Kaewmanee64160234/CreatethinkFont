@@ -2,11 +2,15 @@
 import { defineProps } from 'vue';
 import Assignment from '../../stores/types/Assignment';
 import { useRouter } from 'vue-router';
+import { useAssignmentStore } from '@/stores/assignment.store';
 
 const router = useRouter();
+
 const props = defineProps<{
     post: Assignment
 }>();
+
+const assignmentStore = useAssignmentStore();
 function formatThaiDate(date: Date) {
     return date.toLocaleDateString('th-TH', {
         day: 'numeric', // Numeric day of the month
@@ -16,6 +20,7 @@ function formatThaiDate(date: Date) {
 
 //create function goto mapping 2
 const goToMapping2 = () => {
+    assignmentStore.assignment = props.post;
     router.push('/mapping2');
 }
 

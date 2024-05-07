@@ -60,7 +60,21 @@ import HomeView from '../views/HomeView.vue'
     meta: {
       layout: "FullLayout",
     }
-}
+},
+
+{
+  //CheckAttendanceView
+  path: '/checkAttendance/:idCourse',
+  name: 'checkAttendance',
+  components: {
+    default: () => import('../views/CheckAttdentView.vue'),
+    header: () => import('../components/headers/MainHeader.vue'),
+    menu: () => import('../components/headers/SubHeader.vue'),
+  },
+  meta: {
+    layout: "FullLayout",
+  }
+},
   
 ]
 

@@ -6,7 +6,7 @@ import assignmentService from "@/services/assignment";
 export const useAssignmentStore = defineStore("assignmentStore", () => {
   const assignments = ref<Assignment[]>([]);
   const assignment = ref<Assignment>();
-  const assigmentStore = useAssignmentStore();
+
 
   //get
   const getAssignments = async () => {

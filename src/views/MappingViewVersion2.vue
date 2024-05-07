@@ -113,6 +113,10 @@ const handleUnknown = (index: number) => {
   router.push(`/mapping/${authStore.currentUser?.email.split('@')[0]}`);
 };
 
+//create function go to   path: '/checkAttendance/:idCourse',
+const goToCheckAttendance = () => {
+  router.push(`/checkAttendance/${courseStore.currentCourse?.idCourses}`);
+};
 
 </script>
 <template>
@@ -140,7 +144,7 @@ const handleUnknown = (index: number) => {
       
       <v-col cols="12" md="6" class="d-flex justify-end align-center">
         <!-- Button aligned to the right -->
-        <v-btn color="primary" class="mt-2">
+        <v-btn @click="goToCheckAttendance()" color="primary" class="mt-2">
           <v-icon left>mdi-account-file-text-outline</v-icon>
           ตรวจสอบการเช็คชื่อ
         </v-btn>
