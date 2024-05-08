@@ -75,6 +75,20 @@ import HomeView from '../views/HomeView.vue'
     layout: "FullLayout",
   }
 },
+
+{
+  //UserManagementView
+  path: '/userManagement',
+  name: 'userManagement',
+  components: {
+    default: () => import('../views/UserManagementView.vue'),
+    header: () => import('../components/headers/MainHeader.vue'),
+    menu: () => import('../components/headers/SubHeader.vue'),
+  },
+  meta: {
+    layout: "FullLayout",
+  }
+}
   
 ]
 

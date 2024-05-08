@@ -93,9 +93,9 @@ function convertFloat32ToUint8(gallery: any) {
         <img :src="authStore.currentUser?.picture" alt="User Picture" style="border-radius: 50%;"/> -->
         <!-- button push to mapping2 -->
         <!-- <div style="margin-top: 3%;"> -->
-        <!-- <v-btn>
+        <v-btn>
           <router-link to="/mapping2">Mapping</router-link>
-        </v-btn> -->
+        </v-btn>
         <!-- </div> -->
 
       </div>

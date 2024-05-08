@@ -1,7 +1,7 @@
 // src/stores/auth.ts
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { User } from "./types/User";
+// import { User } from "./types/User";
 
 export const useFaceStore = defineStore("faceStore", () => {
   const faceDescriptions = ref<Float32Array[]>([]);
