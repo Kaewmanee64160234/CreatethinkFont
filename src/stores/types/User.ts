@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   email: string;
   role?: string;
+  status?: string;
   picture?: string;
   teacherId?: string;
   studentId?: string;
