@@ -16,8 +16,7 @@ export const useUserStore = defineStore("userStore", () => {
         } catch (e) {
             console.log(e);
         }
-    };
-
+    };   
     const closeDialog = () => {
         showDialog.value = false;
         showDialog2.value = false;

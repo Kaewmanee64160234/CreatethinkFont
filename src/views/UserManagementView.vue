@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useUserStore } from '@/stores/user.store';
+import { onMounted, ref } from 'vue';
 
-interface Student {
-  id: string;
-  name: string;
-  position: string;
-  status: string;
-  photoUrl: string;
-}
-
+const userStore = useUserStore();
+onMounted(async () => {
+  await userStore.getUsers();
+})
 const tab = ref(0);
-const students = ref<Student[]>([
-  { id: '64160047', name: 'นาย สมชาย ใจดีมาก', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image1.jpg' },
-  { id: '64160048', name: 'นางสาว สมหญิง สุขใจ', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image2.jpg' },
-  // More students can be added here
-]);
+// const students = ref<Student[]>([
+//   { id: '64160047', name: 'นาย สมชาย ใจดีมาก', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image1.jpg' },
+//   { id: '64160048', name: 'นางสาว สมหญิง สุขใจ', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image2.jpg' },
+//   // More students can be added here
+// ]);
 </script>
 <template>
   <v-container style="padding-top: 120px;">
@@ -44,7 +41,7 @@ const students = ref<Student[]>([
       <v-tabs v-model="tab" background-color="white" dark>
         <v-tab>นิสิต</v-tab>
         <v-tab>อาจารย์</v-tab>
-        <v-tab>นักศึกษา</v-tab>
+        <v-tab>บุคลากร</v-tab>
       </v-tabs>
       <!-- Tab content for นืสิต -->
       <v-tab-item v-if="tab === 0">
@@ -62,13 +59,13 @@ const students = ref<Student[]>([
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in students" :key="item.id">
+              <tr v-for="(item, index) of userStore.users" :key="index">
                 <td>{{ index + 1 }}</td>
-                <td><v-avatar size="32px"><img :src="item.photoUrl" alt="Profile"></v-avatar></td>
-                <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.position }}</td>
-                <td style="color: seagreen;">{{ item.status }}</td>
+                <td>{{item.imageProfile}}</td>
+                <td>{{ item.studentId }}</td>
+                <td>{{ item.firstName + " " + item.lastName }}</td>
+                <td>{{ item.role }}</td>
+                <td style="color: seagreen;">กำลังศึกษา</td>
                 <td class="d-flex justify-center">
                   <v-btn small class="ma-1" color="yellow darken-2" text="Button Text">
                     <v-icon left>mdi-pencil</v-icon>
