@@ -1,9 +1,9 @@
 //create user 
 export interface User {
-  id: string;
+  userId?: number;
   firstName: string;
   lastName: string;
-  email: string;
+  email?: string;
   role?: string;
   status?: string;
   picture?: string;

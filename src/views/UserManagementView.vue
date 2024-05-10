@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import CreateUserDialog from '@/components/dialogs/CreateUserDialog.vue';
 import { useUserStore } from '@/stores/user.store';
 import { onMounted, ref } from 'vue';
 
 const userStore = useUserStore();
+
 onMounted(async () => {
   await userStore.getUsers();
 })
+
+// function delete user
+const deleteUser = async (id: number) => {
+  console.log(id);
+  await userStore.deleteUser(id);
+}
 const tab = ref(0);
+
 // const students = ref<Student[]>([
 //   { id: '64160047', name: 'นาย สมชาย ใจดีมาก', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image1.jpg' },
 //   { id: '64160048', name: 'นางสาว สมหญิง สุขใจ', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image2.jpg' },
@@ -16,27 +25,24 @@ const tab = ref(0);
 <template>
   <v-container style="padding-top: 120px;">
     <v-toolbar style="background-color: white;" flat>
-        <v-toolbar-title class="mr-10" style="font-weight: bold;">การจัดการผู้ใช้งาน</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-row align="center" justify="space-between">
-      <v-col cols="10" md="8">
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="ค้นหา"
-          dense
-          solo-inverted
-          hide-details
-        ></v-text-field>
-      </v-col>
-      <v-col cols="2" md="4">
-        <v-btn color="primary" @click="addUser" variant="elevated">
-          <v-icon left>mdi-plus</v-icon>
-          เพิ่มผู้ใช้
-        </v-btn>
-      </v-col>
-    </v-row>
-      </v-toolbar><br>
+      <v-toolbar-title class="mr-10" style="font-weight: bold;">การจัดการผู้ใช้งาน</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-row align="center" justify="space-between">
+        <v-col cols="10" md="8">
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="ค้นหา" dense solo-inverted
+            hide-details></v-text-field>
+        </v-col>
+        <v-col cols="2" md="4">
+          <v-btn color="primary" variant="elevated" @click="userStore.showDialog = true">
+            <v-icon left>mdi-plus</v-icon>
+            เพิ่มผู้ใช้
+            <v-dialog v-model="userStore.showDialog" persistent>
+              <CreateUserDialog></CreateUserDialog>
+            </v-dialog>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-toolbar><br>
     <v-card class="my-3 emboss-effect" style="width: 100%;" elevation="2">
       <v-tabs v-model="tab" background-color="white" dark>
         <v-tab>นิสิต</v-tab>
@@ -60,18 +66,18 @@ const tab = ref(0);
             </thead>
             <tbody>
               <tr v-for="(item, index) of userStore.users" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td>{{item.imageProfile}}</td>
+                <td>{{ index + 1}}</td>
+                <td>{{ item.imageProfile }}</td>
                 <td>{{ item.studentId }}</td>
                 <td>{{ item.firstName + " " + item.lastName }}</td>
                 <td>{{ item.role }}</td>
-                <td style="color: seagreen;">กำลังศึกษา</td>
+                <td style="color: seagreen;">{{ item.status }}</td>
                 <td class="d-flex justify-center">
                   <v-btn small class="ma-1" color="yellow darken-2" text="Button Text">
                     <v-icon left>mdi-pencil</v-icon>
                     แก้ไขข้อมูล
                   </v-btn>
-                  <v-btn small class="ma-1" color="red" text="Button Text">
+                  <v-btn small class="ma-1" color="red" text="Button Text"  @click="deleteUser(item.userId!)">
                     <v-icon left>mdi-delete</v-icon>
                     ลบข้อมูล
                   </v-btn>
@@ -88,7 +94,7 @@ const tab = ref(0);
 
       <!-- Tab content for บุคลากร -->
       <v-tab-item v-if="tab === 2">
-         <!-- Content for บุคลากร -->
+        <!-- Content for บุคลากร -->
       </v-tab-item>
     </v-card>
   </v-container>
@@ -97,9 +103,11 @@ const tab = ref(0);
 .v-data-table .v-icon {
   cursor: pointer;
 }
-.emboss-effect {
-  background: #fff; /* Ensure the card background is light to enhance the shadow effect */
-  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.2); /* Inset shadow for embossed effect */
-}
 
+.emboss-effect {
+  background: #fff;
+  /* Ensure the card background is light to enhance the shadow effect */
+  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.2);
+  /* Inset shadow for embossed effect */
+}
 </style>

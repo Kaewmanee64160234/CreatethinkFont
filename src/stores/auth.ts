@@ -8,7 +8,7 @@ import router from '@/router';
 
 export const useAuthStore = defineStore('authStore', () =>{
   const currentUser = ref<User>({
-    id: '',
+    userId: 0,
     firstName: '',
     lastName: '',
     email: '',
