@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import { ref } from "vue";
+import CreateCourseDialog2 from "./CreateCourseDialog2.vue";
+import course from "@/services/course";
 const courseStore = useCourseStore();
 
 </script>
@@ -10,7 +12,7 @@ const courseStore = useCourseStore();
         <v-row justify="center">
             <v-card style="width: 30vw;">
                 <v-card-title style="margin-left: 3%;margin-top: 1%;">
-                    <h2>เพิ่มรายชื่อนิสิต</h2>
+                    <h2>แก้ไขรายชื่อนิสิต</h2>
                 </v-card-title>
                 <v-card variant="outlined" class="textarea" style="width: 27vw;overflow-y: scroll;">
                     <v-card-title>
@@ -32,7 +34,7 @@ const courseStore = useCourseStore();
                     </v-row>
                 </v-card>
                 <v-card-actions class="actions">
-                    <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
+                    <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
                     <v-btn class="colorText">เสร็จสิ้น</v-btn>
                 </v-card-actions>
             </v-card>
@@ -62,9 +64,5 @@ const courseStore = useCourseStore();
 
 .font-bold {
     font-weight: bold;
-}
-
-.fields {
-    margin-left: 2%;
 }
 </style>
