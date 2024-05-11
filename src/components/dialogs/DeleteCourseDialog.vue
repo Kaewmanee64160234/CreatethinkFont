@@ -12,11 +12,11 @@ const deleteCourse = (idCourse : string) => {
 <template>
     <v-container>
         <v-row justify="center">
-            <v-card>
-                <v-card-title>ต้องการลบรายวิชา {{ courseStore.currentCourse?.nameCourses }} หรือไม่</v-card-title>
+            <v-card class="cardText">
+                <v-card-title class="text-h4 mt-6" style="text-align: center;">ต้องการลบรายวิชา {{ courseStore.currentCourse?.nameCourses }} หรือไม่</v-card-title>
                 <v-card-actions class="actions">
-                    <v-btn @click="courseStore.showDeleteDialog = false">ยกเลิก</v-btn>
-                    <v-btn @click="deleteCourse(courseStore.currentCourse!.coursesId)" class="colorText">ยืนยันการลบรายวิชา
+                    <v-btn class="text-h5" @click="courseStore.showDeleteDialog = false">ยกเลิก</v-btn>
+                    <v-btn class="colorText text-h5" @click="deleteCourse(courseStore.currentCourse!.coursesId)">ยืนยันการลบรายวิชา
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -28,5 +28,13 @@ const deleteCourse = (idCourse : string) => {
 <style>
 .actions {
     justify-content: flex-end;
+    margin-top: 3%;
+}
+.colorText {
+    color: #2A6EC5;
+}
+.cardText {
+    width: auto;
+    height: 18vh;
 }
 </style>

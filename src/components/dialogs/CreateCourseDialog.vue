@@ -18,7 +18,7 @@ const openDialog2 = () => {
                 <v-card-title style="margin-left: 3%;margin-top: 1%;">
                     <h2>เพิ่มห้องเรียน</h2>
                 </v-card-title>
-                <v-card variant="outlined" class="textarea" style="width: 27vw;">
+                <!-- <v-card variant="outlined" class="textarea" style="width: 27vw;">
                     <v-row>
                         <v-card-title style="margin-top: 1%;margin-left: 2%;">
                             <p>ขณะนี้คุณลงชื่อเข้าใช้เป็น</p>
@@ -35,7 +35,7 @@ const openDialog2 = () => {
                             <p>มิสแกรนด์</p>
                         </v-col>
                     </v-row>
-                </v-card>
+                </v-card> -->
                 <v-card variant="outlined" class="cards textarea">
                     <v-card-title>
                         <h3 style="margin-bottom: 2%;">สร้างชื่อรายวิชา</h3>
