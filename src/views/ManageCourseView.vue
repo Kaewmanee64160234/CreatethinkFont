@@ -25,8 +25,9 @@ const showEditDialog = (course: Course) => {
     console.log('id course',courseStore.editCourse);
 }
 
-const showDeleteDialog = (nameCourse: string) => {
+const showDeleteDialog = (course: Course) => {
     courseStore.showDeleteDialog = true;
+    courseStore.currentCourse = course;
 }
 
 </script>
@@ -53,7 +54,7 @@ const showDeleteDialog = (nameCourse: string) => {
                                     <v-list-item-title
                                     >Edit</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item @click="showDeleteDialog(item.nameCourses)">
+                                <v-list-item @click="showDeleteDialog(item)">
                                     <v-list-item-title>Delete</v-list-item-title>
                                 </v-list-item>
                             </v-list>

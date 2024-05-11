@@ -25,6 +25,15 @@ export const useCourseStore = defineStore("courseStore", () => {
     }
   };
 
+  const deleteCourse = async (id: string) => {
+    try {
+      const res = await courseService.deleteCourse(id);
+      currentCourse.value = res.data;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   const closeDialog = () => {
     showCreateDialog.value = false;
     showCreateDialog2.value = false;
@@ -36,5 +45,5 @@ export const useCourseStore = defineStore("courseStore", () => {
     showEditDialog2.value = false;
     showEditDialog3.value = false;
   };
-  return { currentCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse};
+  return { currentCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse};
 });

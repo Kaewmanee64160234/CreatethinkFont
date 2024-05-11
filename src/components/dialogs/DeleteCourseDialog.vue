@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
-import CreateCourseDialog2 from "./CreateCourseDialog2.vue";
 const courseStore = useCourseStore();
 
-
+const deleteCourse = (idCourse : string) => {
+    courseStore.deleteCourse(idCourse);
+    courseStore.showDeleteDialog = false;
+}
 
 </script>
 
@@ -11,10 +13,10 @@ const courseStore = useCourseStore();
     <v-container>
         <v-row justify="center">
             <v-card>
-                <v-card-title>ต้องการลบรายวิชา  หรือไม่</v-card-title>
+                <v-card-title>ต้องการลบรายวิชา {{ courseStore.currentCourse?.nameCourses }} หรือไม่</v-card-title>
                 <v-card-actions class="actions">
                     <v-btn @click="courseStore.showDeleteDialog = false">ยกเลิก</v-btn>
-                    <v-btn class="colorText">ยืนยันการลบรายวิชา
+                    <v-btn @click="deleteCourse(courseStore.currentCourse!.coursesId)" class="colorText">ยืนยันการลบรายวิชา
                     </v-btn>
                 </v-card-actions>
             </v-card>
