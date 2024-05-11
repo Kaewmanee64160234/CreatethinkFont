@@ -34,14 +34,13 @@ onMounted(() => {
                                 </v-btn>
                             </template>
                             <v-list>
-                                <v-list-item >
-                                    <v-list-item-title
-                                    >Unenroll</v-list-item-title>
+                                <v-list-item>
+                                    <v-list-item-title>Unenroll</v-list-item-title>
                                 </v-list-item>
                             </v-list>
                         </v-menu>
                         <v-dialog v-model="courseStore.showEditDialog" persistent>
-                            <EditCourseDialog/>
+                            <EditCourseDialog />
                         </v-dialog>
                     </v-img>
                     <v-avatar size="100" class="avatar">
@@ -56,19 +55,19 @@ onMounted(() => {
             </v-col>
         </v-row>
     </v-container>
-    <v-container class="container" fluid>
+    <!-- <v-container class="container" fluid>
         <v-row align="center" justify="end">
-            <v-col>
-                <v-btn size="60" style="border-radius: 50%;" variant="outlined"
-                    @click="courseStore.showCreateDialog = true">
-                    <v-icon icon="mdi-plus" size="40"></v-icon>
-                </v-btn>
-                <v-dialog v-model="courseStore.showCreateDialog" persistent>
-                    <CreateCourseDialog/>
-                </v-dialog>
-            </v-col>
+            <v-col> -->
+    <v-btn class="bottom-list-item" size="60" style="border-radius: 50%;" variant="outlined"
+        @click="courseStore.showCreateDialog = true">
+        <v-icon icon="mdi-plus" size="40"></v-icon>
+    </v-btn>
+    <v-dialog v-model="courseStore.showCreateDialog" persistent>
+        <CreateCourseDialog />
+    </v-dialog>
+    <!-- </v-col>
         </v-row>
-    </v-container>
+    </v-container> -->
 </template>
 
 <style scoped>
@@ -94,5 +93,14 @@ onMounted(() => {
     top: 50%;
     right: 0%;
     transform: translate(-50%, -50%);
+}
+
+.bottom-list-item {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin-right: 20px;
+    /* ปรับค่าตามที่คุณต้องการ */
+    margin-bottom: 20px;
 }
 </style>
