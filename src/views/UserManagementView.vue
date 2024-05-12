@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import CreateUserDialog from '@/components/dialogs/CreateUserDialog.vue';
+import EditUserDialog from '@/components/dialogs/EditUserDialog.vue';
+import { User } from '@/stores/types/User';
 import { useUserStore } from '@/stores/user.store';
 import { onMounted, ref } from 'vue';
 
@@ -9,10 +11,20 @@ onMounted(async () => {
   await userStore.getUsers();
 })
 
+const showEditDialog = (user: User) => {
+  userStore.showEditDialog = true;
+  userStore.editUser = { ...user, files: [] };
+  console.log('id user', userStore.editUser);
+}
+
 // function delete user
 const deleteUser = async (id: number) => {
   console.log(id);
   await userStore.deleteUser(id);
+}
+const showDeleteDialog = (user: User) => {
+  userStore.showDeleteDialog = true;
+  userStore.currentUser = user;
 }
 const tab = ref(0);
 
@@ -29,8 +41,9 @@ const tab = ref(0);
       <v-spacer></v-spacer>
       <v-row align="center" justify="space-between">
         <v-col cols="10" md="8">
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="ค้นหา" dense solo-inverted
-            hide-details></v-text-field>
+          <v-text-field label="ค้นหารหัส" height="20px" hide-details="auto" density="compact" variant="solo"
+            v-model="userStore.keyword" append-inner-icon="mdi-magnify"
+            @click:append-inner="userStore.getUserBystidId"></v-text-field>
         </v-col>
         <v-col cols="2" md="4">
           <v-btn color="primary" variant="elevated" @click="userStore.showDialog = true">
@@ -66,18 +79,18 @@ const tab = ref(0);
             </thead>
             <tbody>
               <tr v-for="(item, index) of userStore.users" :key="index">
-                <td>{{ index + 1}}</td>
+                <td>{{ index + 1 }}</td>
                 <td>{{ item.imageProfile }}</td>
                 <td>{{ item.studentId }}</td>
                 <td>{{ item.firstName + " " + item.lastName }}</td>
                 <td>{{ item.role }}</td>
                 <td style="color: seagreen;">{{ item.status }}</td>
                 <td class="d-flex justify-center">
-                  <v-btn small class="ma-1" color="yellow darken-2" text="Button Text">
+                  <v-btn small class="ma-1" color="yellow darken-2" text="Button Text" @click="showEditDialog(item)">
                     <v-icon left>mdi-pencil</v-icon>
                     แก้ไขข้อมูล
                   </v-btn>
-                  <v-btn small class="ma-1" color="red" text="Button Text"  @click="deleteUser(item.userId!)">
+                  <v-btn small class="ma-1" color="red" text="Button Text" @click="deleteUser(item.userId!)">
                     <v-icon left>mdi-delete</v-icon>
                     ลบข้อมูล
                   </v-btn>
@@ -98,6 +111,10 @@ const tab = ref(0);
       </v-tab-item>
     </v-card>
   </v-container>
+  <v-dialog v-model="userStore.showEditDialog" persistent>
+    <EditUserDialog></EditUserDialog>
+  </v-dialog>
+
 </template>
 <style scoped>
 .v-data-table .v-icon {

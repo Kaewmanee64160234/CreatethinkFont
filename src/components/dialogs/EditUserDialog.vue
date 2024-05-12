@@ -3,8 +3,8 @@ import { useUserStore } from '@/stores/user.store';
 const userStore = useUserStore();
 
 async function save() {
-    await userStore.saveUser();
-    userStore.resetUser();
+        await userStore.saveUser();
+        userStore.resetUser();
 }
 
 async function cancel() {
@@ -31,30 +31,27 @@ async function cancel() {
                             <v-col cols="12">
                                 <v-text-field label="รหัสนิสิต" dense solo required
                                     v-model="userStore.editUser.studentId"
-                                    :rules="[(v) => !!v || 'โปรดกรอกรหัสนิสิต', (v) => /^[0-9]*$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข']"></v-text-field>
+                                    :rules="[(v) => !!v || 'โปรดกรอกรหัสนิสิต', (v) => /^[0-9]*$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข' ]"></v-text-field>
                             </v-col>
                             <v-col cols="12">
-                                <v-text-field label="ชื่อ" dense solo required v-model="userStore.editUser.firstName"
+                                <v-text-field label="ชื่อ" dense solo required
+                                    v-model="userStore.editUser.firstName"
                                     :rules="[(v) => !!v || 'โปรดกรอกขื่อ']"></v-text-field>
                             </v-col>
                             <v-col cols="12">
-                                <v-text-field label="นามสกุล" dense solo required v-model="userStore.editUser.lastName"
+                                <v-text-field label="นามสกุล" dense solo required
+                                    v-model="userStore.editUser.lastName"
                                     :rules="[(v) => !!v || 'โปรดกรอกนามสกุล']"></v-text-field>
                             </v-col>
                             <v-col cols="12">
-                                <v-text-field label="อีเมล" dense solo required v-model="userStore.editUser.email"
-                                    :rules="[(v) => !!v || 'โปรดกรอกอีเมล']"></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-text-field label="ตำแหน่ง" dense solo required v-model="userStore.editUser.role"
+                                <v-text-field label="ตำแหน่ง" dense solo required
+                                    v-model="userStore.editUser.role"
                                     :rules="[(v) => !!v || 'โปรดกรอกตำแหน่ง']"></v-text-field>
                             </v-col>
                             <v-col cols="12">
                                 <v-combobox label="สถานะภาพ" :items="['กำลังศึกษา', 'พ้นสภาพนิสิต']" dense solo required
-                                    v-model="userStore.editUser.status" :rules="[
-                                        v => !!v || 'โปรดเลือกสถานะภาพ',
-                                        v => ['กำลังศึกษา', 'พ้นสภาพนิสิต'].includes(v) || 'โปรดเลือกสถานะภาพจากรายการที่ให้ไว้'
-                                    ]"></v-combobox>
+                                    v-model="userStore.editUser.status"
+                                    :rules="[(v) => !!v || 'โปรดเลือกสถานะภาพ']"></v-combobox> 
                             </v-col>
                             <v-col cols="12" md="6">
                                 <!-- File Input -->
@@ -66,7 +63,7 @@ async function cancel() {
                     </v-col>
                 </v-row>
                 <v-card-actions class="justify-end">
-                    <v-btn color="blue" text="บันทึก" @click="save"></v-btn>
+                    <v-btn color="blue" text="บันทึก" @click="save" ></v-btn>
                     <v-btn text="ยกเลิก" @click="cancel"></v-btn>
                 </v-card-actions>
             </v-card>

@@ -14,8 +14,13 @@ function updateUser(id: number) {
   }
 //delete user
 function deleteUser(id: number) {
-  console.log(`/users/${id}`);
     return http.delete(`/users/${id}`);
   }
-  
-export default { getUser, saveUser, deleteUser, updateUser };
+//find user by studentId
+function findUserBystdId(studentId: string) {
+    return http.get(`/users/search/${studentId}`);
+  }
+
+
+
+export default { getUser, saveUser, deleteUser, updateUser, findUserBystdId};
