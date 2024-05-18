@@ -12,5 +12,17 @@ function deleteCourse(id: string) {
 function updateCourse(id: string, course: Course) {
   return http.put(`/courses/${id}`, course);
 }
+
+function getCourseByTeachId(teachId: string) {
+  return http.get(`/courses/teach/${teachId}`);
+}
+
+function getCourseByStudentId(studentId: string) {
+  return http.get(`/courses/student/${studentId}`);
+}
+
+function createCourse(course: Course) {
+  return http.post("/courses", course);
+}
   
-export default { getCourse , deleteCourse, updateCourse};
+export default { getCourse , deleteCourse, updateCourse , getCourseByTeachId, getCourseByStudentId, createCourse};

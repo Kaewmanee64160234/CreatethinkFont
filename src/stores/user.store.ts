@@ -23,6 +23,8 @@ export const useUserStore = defineStore("userStore", () => {
         showDialog3.value = false;
       showDialog3.value = false;
     };
+
+
     return { currentUser, users, getUsers, showDialog, showDialog2, closeDialog, showDialog3};
   });
   

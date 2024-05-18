@@ -6,6 +6,7 @@ import courseService from "@/services/course";
 
 export const useCourseStore = defineStore("courseStore", () => {
   const courses = ref<Course[]>([]);
+  const course = ref<Course>();
   const showCreateDialog = ref(false);
   const showCreateDialog2 = ref(false);
   const showCreateDialog3 = ref(false);
@@ -45,5 +46,27 @@ export const useCourseStore = defineStore("courseStore", () => {
     showEditDialog2.value = false;
     showEditDialog3.value = false;
   };
-  return { currentCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse};
+
+  const getCourseByTeachId = async (userId: string) => {
+    try {
+      const res = await courseService.getCourseByTeachId(userId);
+      courses.value = res.data;
+      console.log(courses.value);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const createCourse = async (course:Course) => {
+    try {
+      const res = await courseService.createCourse(course);
+      // courses.value.push(res.data);
+      // console.log(courses.value);
+      console.log(res.data);
+    } catch (e) {
+      console.error('Error creating Course:', e);
+    }
+  };
+
+  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course};
 });
