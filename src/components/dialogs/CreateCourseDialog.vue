@@ -10,12 +10,8 @@ const nameCourse = ref("");
 const courseId = ref("");
 const typeCourse = ref("");
 
-const openDialog2 = () => {
-  courseStore.showCreateDialog2 = true;
-};
-
 const saveCourse = async () => {
-  if (nameCourse.value === "") {
+  if (nameCourse.value === "" && typeCourse.value === "" && courseId.value === "") {
     console.log("no data");
     return;
   }
@@ -31,14 +27,22 @@ const saveCourse = async () => {
     timeInLec: new Date(),
     timeOutLec: new Date(),
     fullScore: 0,
-    userId: 0,
-    user: { ...useStore.currentUser! },
+    userId: 2,
     createdDate: undefined,
     updatedDate: undefined,
-    deletedDate: undefined,
+    deletedDate: undefined, //mockup data ข้อมูลไม่ตรงกับหลังบ้าน
   };
-  await courseStore.createCourse(newCourse);
-  courseStore.showCreateDialog = false;
+  try {
+    // ส่งคำขอสร้าง course
+    await courseStore.createCourse(newCourse);
+    console.log("course", newCourse);
+    courseStore.showCreateDialog2 = true;
+    nameCourse.value = "";
+    courseId.value = "";
+    typeCourse.value = "";
+  } catch (error) {
+    console.error("Error creating course:", error);
+  }
 };
 </script>
 
@@ -75,7 +79,7 @@ const saveCourse = async () => {
               label="สร้างชื่อรายวิชา"
               variant="outlined"
               class="colorText"
-              v-mode="nameCourse"
+              v-model="nameCourse"
             ></v-text-field>
           </v-card-title>
         </v-card>
@@ -89,7 +93,7 @@ const saveCourse = async () => {
               label="รหัสห้องเรียน"
               variant="outlined"
               class="colorText"
-              v-mode="courseId"
+              v-model="courseId"
             ></v-text-field>
           </v-card-title>
         </v-card>
@@ -101,13 +105,13 @@ const saveCourse = async () => {
               :items="['เลคเชอร์', 'เลคเชอร์และแลป']"
               variant="solo-filled"
               style="margin-top: 2%"
-              v-mode="typeCourse"
+              v-model="typeCourse"
             ></v-select>
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
-          <v-btn @click="openDialog2, saveCourse" class="colorText">ต่อไป</v-btn>
+          <v-btn @click="saveCourse()" class="colorText">ต่อไป</v-btn>
         </v-card-actions>
         <v-dialog v-model="courseStore.showCreateDialog2" persistent>
           <CreateCourseDialog2 />

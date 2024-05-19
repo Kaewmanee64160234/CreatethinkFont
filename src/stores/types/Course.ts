@@ -13,7 +13,7 @@ export default interface Course {
     timeOutLec: Date;
     fullScore: number;
     userId: number;
-    user:User;
+    user?:User;
     createdDate?: Date;
     updatedDate?: Date;
     deletedDate?: Date;

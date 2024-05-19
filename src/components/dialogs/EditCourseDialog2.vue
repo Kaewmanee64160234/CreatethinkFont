@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import EditCourseDialog3 from "./EditCourseDialog3.vue";
 const courseStore = useCourseStore();
 const selectedDate = ref(new Date());
@@ -11,6 +11,14 @@ const selectedDate2 = ref(new Date());
 const showDatePicker2 = ref(false);
 const selectedTime2 = ref("00:00");
 const showTimePicker2 = ref(false);
+const selectedDate3 = ref(new Date());
+const showDatePicker3 = ref(false);
+const selectedTime3 = ref("00:00");
+const showTimePicker3 = ref(false);
+const selectedDate4 = ref(new Date());
+const showDatePicker4 = ref(false);
+const selectedTime4 = ref("00:00");
+const showTimePicker4 = ref(false);
 
 function formatThaiDate(date: Date) {
   return date
@@ -19,6 +27,71 @@ function formatThaiDate(date: Date) {
     })
     .replace(".", "");
 }
+
+if (courseStore.currentCourse?.timeInLec) {
+  const timeInLec = new Date(courseStore.currentCourse.timeInLec);
+  selectedDate.value = timeInLec;
+  selectedTime.value = `${timeInLec.getHours()}:${timeInLec.getMinutes()}`;
+}
+if (courseStore.currentCourse?.timeOutLec) {
+  const timeOutLec = new Date(courseStore.currentCourse.timeOutLec);
+  selectedDate2.value = timeOutLec;
+  selectedTime2.value = `${timeOutLec.getHours()}:${timeOutLec.getMinutes()}`;
+}
+if (courseStore.currentCourse?.timeInLab) {
+  const timeInLab = new Date(courseStore.currentCourse.timeInLab);
+  selectedDate3.value = timeInLab;
+  selectedTime3.value = `${timeInLab.getHours()}:${timeInLab.getMinutes()}`;
+}
+if (courseStore.currentCourse?.timeOutLab) {
+  const timeOutLab = new Date(courseStore.currentCourse.timeOutLab);
+  selectedDate4.value = timeOutLab;
+  selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
+}
+
+watch(
+  () => courseStore.currentCourse?.timeInLec,
+  (newVal) => {
+    if (newVal) {
+      const timeInLec = new Date(newVal);
+      selectedDate.value = timeInLec;
+      selectedTime.value = `${timeInLec.getHours()}:${timeInLec.getMinutes()}`;
+    }
+  }
+);
+
+watch(
+  () => courseStore.currentCourse?.timeOutLec,
+  (newVal) => {
+    if (newVal) {
+      const timeOutLec = new Date(newVal);
+      selectedDate2.value = timeOutLec;
+      selectedTime2.value = `${timeOutLec.getHours()}:${timeOutLec.getMinutes()}`;
+    }
+  }
+);
+
+watch(
+  () => courseStore.currentCourse?.timeInLab,
+  (newVal) => {
+    if (newVal) {
+      const timeInLab = new Date(newVal);
+      selectedDate3.value = timeInLab;
+      selectedTime3.value = `${timeInLab.getHours()}:${timeInLab.getMinutes()}`;
+    }
+  }
+);
+
+watch(
+  () => courseStore.currentCourse?.timeOutLab,
+  (newVal) => {
+    if (newVal) {
+      const timeOutLab = new Date(newVal);
+      selectedDate4.value = timeOutLab;
+      selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
+    }
+  }
+);
 </script>
 
 <template>
@@ -38,7 +111,7 @@ function formatThaiDate(date: Date) {
               <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
-                  v-model="courseStore.editCourse!.session"
+                  v-model="courseStore.currentCourse!.session"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -49,7 +122,7 @@ function formatThaiDate(date: Date) {
               <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
-                  v-model="courseStore.editCourse!.coursesId"
+                  v-model="courseStore.currentCourse!.coursesId"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -60,7 +133,7 @@ function formatThaiDate(date: Date) {
               <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
-                  v-model="courseStore.editCourse!.credit"
+                  v-model="courseStore.currentCourse!.credit"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -71,7 +144,7 @@ function formatThaiDate(date: Date) {
               <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
-                  v-model="courseStore.editCourse!.stdAmount"
+                  v-model="courseStore.currentCourse!.stdAmount"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -89,6 +162,7 @@ function formatThaiDate(date: Date) {
                 >
                   <template v-slot:activator="{ props }">
                     <v-text-field
+                      label="เวลาเริ่มเลคเชอร์"
                       v-model="selectedDate"
                       :value="formatThaiDate(selectedDate)"
                       variant="outlined"
@@ -119,7 +193,12 @@ function formatThaiDate(date: Date) {
                   position-x="right"
                 >
                   <template v-slot:activator="{ props }">
-                    <v-text-field v-model="selectedTime" variant="outlined" readonly>
+                    <v-text-field
+                      v-model="selectedTime"
+                      variant="outlined"
+                      readonly
+                      label="วันที่เริ่มเลคเชอร์"
+                    >
                       <template v-slot:append>
                         <v-icon v-bind="props">mdi-clock-outline</v-icon>
                       </template>
@@ -143,6 +222,7 @@ function formatThaiDate(date: Date) {
                 >
                   <template v-slot:activator="{ props }">
                     <v-text-field
+                      label="วันที่เลิกเลคเชอร์"
                       v-model="selectedDate2"
                       :value="formatThaiDate(selectedDate2)"
                       variant="outlined"
@@ -173,7 +253,12 @@ function formatThaiDate(date: Date) {
                   position-x="right"
                 >
                   <template v-slot:activator="{ props }">
-                    <v-text-field v-model="selectedTime2" variant="outlined" readonly>
+                    <v-text-field
+                      v-model="selectedTime2"
+                      variant="outlined"
+                      readonly
+                      label="เวลาเลิกเลคเชอร์"
+                    >
                       <template v-slot:append>
                         <v-icon v-bind="props">mdi-clock-outline</v-icon>
                       </template>
@@ -185,28 +270,128 @@ function formatThaiDate(date: Date) {
             </v-row>
             <v-row
               style="height: 8vh"
-              v-if="courseStore.editCourse!.typeCourses === 'เลคเชอร์และแลป'"
+              v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'"
             >
-              <v-col cols="5">
-                <p>เวลาเริ่มเรียนแลป</p>
+              <v-col cols="2">
+                <p>วันที่</p>
               </v-col>
-              <v-col align="left" class="fields">
-                <v-text-field variant="outlined">
-                  <v-icon>mdi-calendar-clock-outline</v-icon>
-                </v-text-field>
+              <v-col>
+                <v-menu
+                  v-model="showDatePicker3"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  position-x="right"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      label="วันที่เริ่มแลป"
+                      v-model="selectedDate3"
+                      :value="formatThaiDate(selectedDate3)"
+                      variant="outlined"
+                      readonly
+                      @click:append="showDatePicker3 = !showDatePicker3"
+                    >
+                      <template v-slot:append>
+                        <v-icon v-bind="props">mdi-calendar-clock-outline</v-icon>
+                      </template>
+                    </v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="selectedDate3"
+                    show-adjacent-month
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="auto">
+                <p>เวลา</p>
+              </v-col>
+              <v-col>
+                <v-menu
+                  v-model="showTimePicker3"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  position-x="right"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="selectedTime3"
+                      variant="outlined"
+                      readonly
+                      label="เวลาเริ่มแลป"
+                    >
+                      <template v-slot:append>
+                        <v-icon v-bind="props">mdi-clock-outline</v-icon>
+                      </template>
+                    </v-text-field>
+                  </template>
+                  <v-time-picker v-model="selectedTime3" format="24hr"></v-time-picker>
+                </v-menu>
               </v-col>
             </v-row>
             <v-row
               style="height: 8vh"
-              v-if="courseStore.editCourse!.typeCourses === 'เลคเชอร์และแลป'"
+              v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'"
             >
-              <v-col cols="5">
-                <p>เวลาเลิกเรียนแลป</p>
+              <v-col cols="2">
+                <p>วันที่</p>
               </v-col>
-              <v-col align="left" class="fields">
-                <v-text-field variant="outlined">
-                  <v-icon>mdi-calendar-clock-outline</v-icon>
-                </v-text-field>
+              <v-col>
+                <v-menu
+                  v-model="showDatePicker4"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  position-x="right"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      label="วันที่เลิกแลป"
+                      v-model="selectedDate4"
+                      :value="formatThaiDate(selectedDate4)"
+                      variant="outlined"
+                      readonly
+                      @click:append="showDatePicker4 = !showDatePicker4"
+                    >
+                      <template v-slot:append>
+                        <v-icon v-bind="props">mdi-calendar-clock-outline</v-icon>
+                      </template>
+                    </v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="selectedDate4"
+                    show-adjacent-month
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="auto">
+                <p>เวลา</p>
+              </v-col>
+              <v-col>
+                <v-menu
+                  v-model="showTimePicker4"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  position-x="right"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-text-field
+                      v-model="selectedTime4"
+                      variant="outlined"
+                      readonly
+                      label="เวลาเลิกแลป"
+                    >
+                      <template v-slot:append>
+                        <v-icon v-bind="props">mdi-clock-outline</v-icon>
+                      </template>
+                    </v-text-field>
+                  </template>
+                  <v-time-picker v-model="selectedTime4" format="24hr"></v-time-picker>
+                </v-menu>
               </v-col>
             </v-row>
             <v-row style="height: 8vh; margin-bottom: 2%">
@@ -216,7 +401,7 @@ function formatThaiDate(date: Date) {
               <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
-                  v-model="courseStore.editCourse!.fullScore"
+                  v-model="courseStore.currentCourse!.fullScore"
                 ></v-text-field>
               </v-col>
             </v-row>

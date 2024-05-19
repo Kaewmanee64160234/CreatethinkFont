@@ -10,7 +10,7 @@ function deleteCourse(id: string) {
   return http.delete(`/courses/${id}`);
 }
 function updateCourse(id: string, course: Course) {
-  return http.put(`/courses/${id}`, course);
+  return http.patch(`/courses/${id}`, course);
 }
 
 function getCourseByTeachId(teachId: string) {
@@ -22,7 +22,7 @@ function getCourseByStudentId(studentId: string) {
 }
 
 function createCourse(course: Course) {
-  return http.post("/courses", course);
+  return http.post("/courses/", course);
 }
   
 export default { getCourse , deleteCourse, updateCourse , getCourseByTeachId, getCourseByStudentId, createCourse};

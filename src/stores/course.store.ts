@@ -60,13 +60,21 @@ export const useCourseStore = defineStore("courseStore", () => {
   const createCourse = async (course:Course) => {
     try {
       const res = await courseService.createCourse(course);
-      // courses.value.push(res.data);
-      // console.log(courses.value);
-      console.log(res.data);
+      currentCourse.value = res.data;
+      console.log("store course",res.data);
     } catch (e) {
       console.error('Error creating Course:', e);
     }
   };
 
-  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course};
+  const updateCourse = async (id:string,course:Course) => {
+    try {
+      const res = await courseService.updateCourse(id,course);
+      currentCourse.value = res.data;
+    } catch (e) {
+      console.error('Error updating Course:', e);
+    }
+  }
+
+  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course, updateCourse};
 });

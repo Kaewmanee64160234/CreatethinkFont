@@ -19,7 +19,7 @@ const courseStore = useCourseStore();
               label="แก้ไขชื่อรายวิชา"
               variant="outlined"
               class="colorText"
-              v-model="courseStore.editCourse!.nameCourses"
+              v-model="courseStore.currentCourse!.nameCourses"
             ></v-text-field>
           </v-card-title>
         </v-card>
@@ -29,7 +29,7 @@ const courseStore = useCourseStore();
             <v-select
               label="ประเภทรายวิชา"
               :items="['เลคเชอร์', 'เลคเชอร์และแลป']"
-              v-model="courseStore.editCourse!.typeCourses"
+              v-model="courseStore.currentCourse!.typeCourses"
               variant="solo-filled"
               style="margin-top: 2%"
             ></v-select>

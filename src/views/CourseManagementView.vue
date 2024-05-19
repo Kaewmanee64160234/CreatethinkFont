@@ -24,7 +24,7 @@ const goToCourseDetail = (idCourse: string, course: Course) => {
 
 const showEditDialog = (course: Course) => {
   courseStore.showEditDialog = true;
-  courseStore.editCourse = course;
+  courseStore.currentCourse = course;
   console.log("id course", courseStore.editCourse);
 };
 
