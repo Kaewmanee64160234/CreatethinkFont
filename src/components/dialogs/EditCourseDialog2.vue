@@ -49,49 +49,80 @@ if (courseStore.currentCourse?.timeOutLab) {
   selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
 }
 
-watch(
-  () => courseStore.currentCourse?.timeInLec,
-  (newVal) => {
-    if (newVal) {
-      const timeInLec = new Date(newVal);
-      selectedDate.value = timeInLec;
-      selectedTime.value = `${timeInLec.getHours()}:${timeInLec.getMinutes()}`;
-    }
-  }
-);
+// watch(
+//   () => courseStore.currentCourse?.timeInLec,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeInLec = new Date(newVal);
+//       selectedDate.value = timeInLec;
+//       selectedTime.value = `${timeInLec.getHours()}:${timeInLec.getMinutes()}`;
+//     }
+//   }
+// );
 
-watch(
-  () => courseStore.currentCourse?.timeOutLec,
-  (newVal) => {
-    if (newVal) {
-      const timeOutLec = new Date(newVal);
-      selectedDate2.value = timeOutLec;
-      selectedTime2.value = `${timeOutLec.getHours()}:${timeOutLec.getMinutes()}`;
-    }
-  }
-);
+// watch(
+//   () => courseStore.currentCourse?.timeOutLec,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeOutLec = new Date(newVal);
+//       selectedDate2.value = timeOutLec;
+//       selectedTime2.value = `${timeOutLec.getHours()}:${timeOutLec.getMinutes()}`;
+//     }
+//   }
+// );
 
-watch(
-  () => courseStore.currentCourse?.timeInLab,
-  (newVal) => {
-    if (newVal) {
-      const timeInLab = new Date(newVal);
-      selectedDate3.value = timeInLab;
-      selectedTime3.value = `${timeInLab.getHours()}:${timeInLab.getMinutes()}`;
-    }
-  }
-);
+// watch(
+//   () => courseStore.currentCourse?.timeInLab,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeInLab = new Date(newVal);
+//       selectedDate3.value = timeInLab;
+//       selectedTime3.value = `${timeInLab.getHours()}:${timeInLab.getMinutes()}`;
+//     }
+//   }
+// );
 
-watch(
-  () => courseStore.currentCourse?.timeOutLab,
-  (newVal) => {
-    if (newVal) {
-      const timeOutLab = new Date(newVal);
-      selectedDate4.value = timeOutLab;
-      selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
+// watch(
+//   () => courseStore.currentCourse?.timeOutLab,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeOutLab = new Date(newVal);
+//       selectedDate4.value = timeOutLab;
+//       selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
+//     }
+//   }
+// );
+function formatISODateTime(date: Date, time: string): string {
+  const [hours, minutes] = time.split(":");
+  date.setHours(parseInt(hours), parseInt(minutes));
+  return date.toISOString();
+}
+
+const editCourse2 = () => {
+  if (courseStore.currentCourse) {
+    courseStore.currentCourse.timeInLec = new Date(
+      formatISODateTime(selectedDate.value, selectedTime.value)
+    );
+    courseStore.currentCourse.timeOutLec = new Date(
+      formatISODateTime(selectedDate2.value, selectedTime2.value)
+    );
+    if (courseStore.currentCourse.typeCourses === "เลคเชอร์และแลป") {
+      courseStore.currentCourse.timeInLab = new Date(
+        formatISODateTime(selectedDate3.value, selectedTime3.value)
+      );
+      courseStore.currentCourse.timeOutLab = new Date(
+        formatISODateTime(selectedDate4.value, selectedTime4.value)
+      );
     }
+    courseStore.updateCourse(
+      courseStore.currentCourse.coursesId,
+      courseStore.currentCourse
+    );
+    // console.log("currentCourseID", courseStore.currentCourse.coursesId);
+    console.log("currentCourse", courseStore.currentCourse);
   }
-);
+  courseStore.showEditDialog3 = true;
+};
 </script>
 
 <template>
@@ -409,9 +440,7 @@ watch(
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
-          <v-btn @click="courseStore.showEditDialog3 = true" class="colorText"
-            >ต่อไป
-          </v-btn>
+          <v-btn @click="editCourse2()" class="colorText">ต่อไป </v-btn>
         </v-card-actions>
         <v-dialog v-model="courseStore.showEditDialog3" max-width="2900px">
           <EditCourseDialog3 />

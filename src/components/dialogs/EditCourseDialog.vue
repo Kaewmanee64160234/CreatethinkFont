@@ -1,7 +1,18 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import EditCourseDialog2 from "./EditCourseDialog2.vue";
+import course from "@/services/course";
 const courseStore = useCourseStore();
+
+const editCourse = () => {
+  if (courseStore.currentCourse) {
+    courseStore.updateCourse(
+      courseStore.currentCourse.coursesId,
+      courseStore.currentCourse
+    );
+    courseStore.showEditDialog2 = true;
+  }
+};
 </script>
 
 <template>
@@ -37,7 +48,7 @@ const courseStore = useCourseStore();
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
-          <v-btn @click="courseStore.showEditDialog2 = true" class="colorText"
+          <v-btn @click="editCourse()" class="colorText"
             >ต่อไป
             <v-dialog v-model="courseStore.showEditDialog2" persistent>
               <EditCourseDialog2 />

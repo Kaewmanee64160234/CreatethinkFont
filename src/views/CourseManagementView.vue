@@ -25,12 +25,26 @@ const goToCourseDetail = (idCourse: string, course: Course) => {
 const showEditDialog = (course: Course) => {
   courseStore.showEditDialog = true;
   courseStore.currentCourse = course;
-  console.log("id course", courseStore.editCourse);
+  console.log("id course", courseStore.currentCourse?.coursesId);
 };
 
 const showDeleteDialog = (course: Course) => {
   courseStore.showDeleteDialog = true;
   courseStore.currentCourse = course;
+};
+
+const formatThaiDate = (isoDateTime: string | undefined): string => {
+  if (!isoDateTime) {
+    return "";
+  }
+  const date = new Date(isoDateTime);
+  const dateOptions: Intl.DateTimeFormatOptions = { weekday: "long" };
+  const timeOptions: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit" };
+
+  const dateString = date.toLocaleDateString("th-TH", dateOptions).replace(".", "");
+  const timeString = date.toLocaleTimeString("th-TH", timeOptions);
+
+  return `${dateString} ${timeString}`;
 };
 </script>
 <template>
@@ -88,7 +102,18 @@ const showDeleteDialog = (course: Course) => {
           <v-card-text>
             <div class="text-body">กลุ่มเรียนที่ {{ item.session }}</div>
             <div class="text-body">อาจารย์ {{ authStore.currentUser.firstName }}</div>
-            <div class="text-body">เวลาเรียน</div>
+            <div class="text-body">
+              เริมเรียนเลคเชอร์ {{ formatThaiDate(item.timeInLec) }}
+            </div>
+            <div class="text-body">
+              เลิกเรียนเลคเชอร์ {{ formatThaiDate(item.timeOutLec) }}
+            </div>
+            <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
+              เริมเรียนแลป {{ formatThaiDate(item.timeInLab) }}
+            </div>
+            <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
+              เลิกเรียนแลป {{ formatThaiDate(item.timeOutLab) }}
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
