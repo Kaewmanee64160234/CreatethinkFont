@@ -35,6 +35,8 @@ const goToMapping2 = () => {
             <v-card-actions>
                 <v-card-text> {{ formatThaiDate(new Date(props.post.createdDate)) }}</v-card-text>
                 <v-spacer></v-spacer>
+                <v-btn > <v-icon size="30">mdi-card-account-mail</v-icon>
+                </v-btn>
                 <v-btn @click="goToMapping2()" ><v-icon size="30">mdi-account-file-text-outline</v-icon></v-btn>
             </v-card-actions>
         </v-card>
