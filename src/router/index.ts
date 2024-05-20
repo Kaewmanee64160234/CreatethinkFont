@@ -36,11 +36,11 @@ import HomeView from '../views/HomeView.vue'
     }
   ,
   {
-      //manageCourseView
-      path: '/manageCourse',
-      name: 'manageCourse',
+      //courseManagementView
+      path: '/courseManagement',
+      name: 'courseManagement',
       components: {
-        default: () => import('../views/ManageCourseView.vue'),
+        default: () => import('../views/CourseManagementView.vue'),
         header: () => import('../components/headers/MainHeader.vue'),
         menu: () => import('../components/headers/SubHeader.vue'),
       },
@@ -88,7 +88,20 @@ import HomeView from '../views/HomeView.vue'
   meta: {
     layout: "FullLayout",
   }
-}
+},
+{
+  //enrolmentManagementView
+  path: '/enrolmentManagement',
+  name: 'enrolmentManagement',
+  components: {
+    default: () => import('../views/EnrolmentManagementView.vue'),
+    header: () => import('../components/headers/MainHeader.vue'),
+    menu: () => import('../components/headers/SubHeader.vue'),
+  },
+  meta: {
+    layout: "FullLayout",
+  }
+},
   
 ]
 

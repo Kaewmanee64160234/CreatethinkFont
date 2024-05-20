@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import { ref, watch } from "vue";
-import CreateCourseDialog3 from "./CreateCourseDialog3.vue";
-import course from "@/services/course";
+import EditCourseDialog3 from "./EditCourseDialog3.vue";
 const courseStore = useCourseStore();
 const selectedDate = ref(new Date());
 const showDatePicker = ref(false);
@@ -20,10 +19,6 @@ const selectedDate4 = ref(new Date());
 const showDatePicker4 = ref(false);
 const selectedTime4 = ref("00:00");
 const showTimePicker4 = ref(false);
-const session = ref("");
-const credit = ref(0);
-const stdAmount = ref(0);
-const fullScore = ref(0);
 
 function formatThaiDate(date: Date) {
   return date
@@ -33,28 +28,78 @@ function formatThaiDate(date: Date) {
     .replace(".", "");
 }
 
+if (courseStore.currentCourse?.timeInLec) {
+  const timeInLec = new Date(courseStore.currentCourse.timeInLec);
+  selectedDate.value = timeInLec;
+  selectedTime.value = `${timeInLec.getHours()}:${timeInLec.getMinutes()}`;
+}
+if (courseStore.currentCourse?.timeOutLec) {
+  const timeOutLec = new Date(courseStore.currentCourse.timeOutLec);
+  selectedDate2.value = timeOutLec;
+  selectedTime2.value = `${timeOutLec.getHours()}:${timeOutLec.getMinutes()}`;
+}
+if (courseStore.currentCourse?.timeInLab) {
+  const timeInLab = new Date(courseStore.currentCourse.timeInLab);
+  selectedDate3.value = timeInLab;
+  selectedTime3.value = `${timeInLab.getHours()}:${timeInLab.getMinutes()}`;
+}
+if (courseStore.currentCourse?.timeOutLab) {
+  const timeOutLab = new Date(courseStore.currentCourse.timeOutLab);
+  selectedDate4.value = timeOutLab;
+  selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
+}
+
+// watch(
+//   () => courseStore.currentCourse?.timeInLec,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeInLec = new Date(newVal);
+//       selectedDate.value = timeInLec;
+//       selectedTime.value = `${timeInLec.getHours()}:${timeInLec.getMinutes()}`;
+//     }
+//   }
+// );
+
+// watch(
+//   () => courseStore.currentCourse?.timeOutLec,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeOutLec = new Date(newVal);
+//       selectedDate2.value = timeOutLec;
+//       selectedTime2.value = `${timeOutLec.getHours()}:${timeOutLec.getMinutes()}`;
+//     }
+//   }
+// );
+
+// watch(
+//   () => courseStore.currentCourse?.timeInLab,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeInLab = new Date(newVal);
+//       selectedDate3.value = timeInLab;
+//       selectedTime3.value = `${timeInLab.getHours()}:${timeInLab.getMinutes()}`;
+//     }
+//   }
+// );
+
+// watch(
+//   () => courseStore.currentCourse?.timeOutLab,
+//   (newVal) => {
+//     if (newVal) {
+//       const timeOutLab = new Date(newVal);
+//       selectedDate4.value = timeOutLab;
+//       selectedTime4.value = `${timeOutLab.getHours()}:${timeOutLab.getMinutes()}`;
+//     }
+//   }
+// );
 function formatISODateTime(date: Date, time: string): string {
   const [hours, minutes] = time.split(":");
   date.setHours(parseInt(hours), parseInt(minutes));
   return date.toISOString();
 }
 
-// function formatThaiTime(time: string) {
-//   const [hours, minutes] = time.split(":");
-//   const date = new Date();
-//   date.setHours(parseInt(hours), parseInt(minutes));
-//   return date.toLocaleTimeString("th-TH", {
-//     hour: "2-digit",
-//     minute: "2-digit",
-//   });
-// }
-
-const updateCourse = () => {
+const editCourse2 = () => {
   if (courseStore.currentCourse) {
-    courseStore.currentCourse.credit = credit.value;
-    courseStore.currentCourse.session = session.value;
-    courseStore.currentCourse.stdAmount = stdAmount.value;
-    courseStore.currentCourse.fullScore = fullScore.value;
     courseStore.currentCourse.timeInLec = new Date(
       formatISODateTime(selectedDate.value, selectedTime.value)
     );
@@ -74,9 +119,9 @@ const updateCourse = () => {
       courseStore.currentCourse
     );
     // console.log("currentCourseID", courseStore.currentCourse.coursesId);
-    // console.log("currentCourse", courseStore.currentCourse);
+    console.log("currentCourse", courseStore.currentCourse);
   }
-  courseStore.showCreateDialog3 = true;
+  courseStore.showEditDialog3 = true;
 };
 </script>
 
@@ -85,7 +130,7 @@ const updateCourse = () => {
     <v-row justify="center">
       <v-card style="width: 30vw">
         <v-card-title style="margin-left: 3%; margin-top: 1%">
-          <h2>รายละเอียดห้องเรียน</h2>
+          <h2>แก้ไขห้องเรียน</h2>
         </v-card-title>
         <v-card variant="outlined" class="textarea" style="width: 27vw">
           <v-card-title>
@@ -95,7 +140,21 @@ const updateCourse = () => {
                 <p>กลุ่มเรียนที่</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="session"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="courseStore.currentCourse!.session"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row style="height: 8vh">
+              <v-col cols="3">
+                <p>รหัสวิชา</p>
+              </v-col>
+              <v-col align="left" class="fields">
+                <v-text-field
+                  variant="outlined"
+                  v-model="courseStore.currentCourse!.coursesId"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row style="height: 8vh">
@@ -103,7 +162,10 @@ const updateCourse = () => {
                 <p>จำนวนหน่วยกิต</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="credit"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="courseStore.currentCourse!.credit"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row style="height: 8vh">
@@ -111,7 +173,10 @@ const updateCourse = () => {
                 <p>จำนวนนักเรียน</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="stdAmount"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="courseStore.currentCourse!.stdAmount"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row style="height: 8vh">
@@ -236,7 +301,7 @@ const updateCourse = () => {
             </v-row>
             <v-row
               style="height: 8vh"
-              v-if="courseStore.currentCourse?.typeCourses === 'เลคเชอร์และแลป'"
+              v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'"
             >
               <v-col cols="2">
                 <p>วันที่</p>
@@ -299,7 +364,7 @@ const updateCourse = () => {
             </v-row>
             <v-row
               style="height: 8vh"
-              v-if="courseStore.currentCourse?.typeCourses === 'เลคเชอร์และแลป'"
+              v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'"
             >
               <v-col cols="2">
                 <p>วันที่</p>
@@ -365,17 +430,20 @@ const updateCourse = () => {
                 <p>คะแนนเต็ม</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="fullScore"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="courseStore.currentCourse!.fullScore"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
-          <v-btn @click="updateCourse()" class="colorText">ต่อไป </v-btn>
+          <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
+          <v-btn @click="editCourse2()" class="colorText">ต่อไป </v-btn>
         </v-card-actions>
-        <v-dialog v-model="courseStore.showCreateDialog3" persistent>
-          <CreateCourseDialog3 />
+        <v-dialog v-model="courseStore.showEditDialog3" max-width="2900px">
+          <EditCourseDialog3 />
         </v-dialog>
       </v-card>
     </v-row>
@@ -403,9 +471,5 @@ const updateCourse = () => {
 
 .font-bold {
   font-weight: bold;
-}
-
-.fields {
-  margin-left: 2%;
 }
 </style>

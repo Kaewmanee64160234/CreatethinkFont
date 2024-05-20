@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import { ref } from "vue";
+import CreateCourseDialog2 from "./CreateCourseDialog2.vue";
+import course from "@/services/course";
 const courseStore = useCourseStore();
 
 const rePage = () => {
-  courseStore.showCreateDialog3 = false;
-  courseStore.showCreateDialog2 = false;
-  courseStore.showCreateDialog = false;
+  courseStore.showEditDialog = false;
+  courseStore.showEditDialog2 = false;
+  courseStore.showEditDialog3 = false;
   courseStore.getCourseByTeachId("64160144");
 };
 </script>
@@ -16,7 +18,7 @@ const rePage = () => {
     <v-row justify="center">
       <v-card style="width: 30vw">
         <v-card-title style="margin-left: 3%; margin-top: 1%">
-          <h2>เพิ่มรายชื่อนิสิต</h2>
+          <h2>แก้ไขรายชื่อนิสิต</h2>
         </v-card-title>
         <v-card
           variant="outlined"
@@ -42,7 +44,7 @@ const rePage = () => {
           </v-row>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
+          <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
           <v-btn @click="rePage" class="colorText">เสร็จสิ้น</v-btn>
         </v-card-actions>
       </v-card>
@@ -71,9 +73,5 @@ const rePage = () => {
 
 .font-bold {
   font-weight: bold;
-}
-
-.fields {
-  margin-left: 2%;
 }
 </style>

@@ -28,7 +28,7 @@ const callback = (response: any) => {
         picture: user.picture,
       }
       authStore.login();
-      router.push('/manageCourse');
+      router.push('/courseManagement');
 
     }
   } else {
