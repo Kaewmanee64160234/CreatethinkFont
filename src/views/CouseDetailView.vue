@@ -1,7 +1,7 @@
 <script setup lang="ts">
 //get id from param
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAssignmentStore } from '@/stores/assignment.store';
 import Assignment from '@/stores/types/Assignment';
 //import component CardAssigment
@@ -27,18 +27,40 @@ const students = [
     { id: '64160048', name: 'กฤษณ์ กิจงานที่พึ่ง', points: 100 ,isCorrect:true},
     { id: '64160049', name: 'ปวงชน ปัญญามั่น', points: 100 ,isCorrect:false},]
 
+const router = useRouter();   
 const tab = ref('posts');
 const posts = ref<Assignment[]>([]);
+    const imageUrls = ref([]); 
 const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
 const nameAssignment = ref('');
 const authStore = useAuthStore();
+const imageUrl = ref(null); // Store the image URL
+const file = ref(null); // File reference for uploads
 //mounted get assigment by course id
 onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
     posts.value = assigmentStore.assignments;
 })
+const processFile = (url: string) => {
+  // Push each loaded image URL to the imageUrls array
+  imageUrls.value.push(url);
+};
+const handleFileChange = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Process each file, e.g., push to an array
+        imageUrl.value = e.target?.result as string;
+        processFile(imageUrl.value); // Assuming processFile is a method to handle the file
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+};
 
 const openPost = () => {
     showTextArea.value = !showTextArea.value;
@@ -59,9 +81,16 @@ const createPost = async () => {
     }
 
     await assigmentStore.createAssignment(newAssignment);
+    if (imageUrl.value) {
+    router.push({ path: '/mapping2', query: { imageUrl: imageUrl.value } });
     nameAssignment.value = '';
     showTextArea.value = false;
     posts.value = assigmentStore.assignments;
+  } else {
+    throw new Error('Image URL is missing');
+  }
+  
+    
 }
 
 
@@ -88,9 +117,19 @@ const createPost = async () => {
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
                         <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
+                        <v-file-input
+  label="Upload Images"
+  prepend-icon="mdi-camera"
+  filled
+  @change="handleFileChange"
+  accept="image/*"
+  outlined
+  multiple>
+</v-file-input>
                     </v-container>
                     <v-card-actions>
                         <!-- create button create and cancel -->
+
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="showTextArea = false">Cancel</v-btn>
                         <v-btn color="primary" @click="createPost()">Post</v-btn>

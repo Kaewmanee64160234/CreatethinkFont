@@ -13,7 +13,7 @@ const userStore = useUserStore();
 const authStore = useAuthStore();
 const router = useRouter();
 onMounted(async () => {
-  await courseStore.getCourseByTeachId("64160144");
+  await courseStore.getCourseByTeachId("64160049");
 });
 
 //create function click and push to /courseDetail/:idCourse
