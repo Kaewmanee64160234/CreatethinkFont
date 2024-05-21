@@ -2,23 +2,36 @@
 import { ref, reactive, onMounted, nextTick } from "vue";
 import * as faceapi from "face-api.js";
 import { useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import type { FaceDetection, WithFaceLandmarks, WithFaceDescriptor } from 'face-api.js'; // Import types
+import Person from "@/stores/types/Person";
 
-const imageUrls = ref([]);
-const identifications = ref([]);
-const croppedImagesDataUrls = ref([]);
-const canvasRefs = reactive({});
+interface CanvasRefs {
+  [key: number]: HTMLCanvasElement;
+}
 
-const processImage = async (image, index) => {
-  await nextTick(); // Ensure DOM updates have been processed
-  let canvas = canvasRefs[index];
-  if (!canvas) {
-    console.error("Canvas not available for processing.");
+const imageUrls = ref<string[]>([]);
+const identifications = ref<{name:string,studentId:string}[]>([]);
+const croppedImagesDataUrls = ref<string[]>([]);
+const canvasRefs = reactive<CanvasRefs>({});
+const authStore = useAuthStore();
+
+const processImage = async (image: HTMLImageElement, index: number) => {
+  await nextTick();
+  const canvas = canvasRefs[index];
+  if (!canvas || image.naturalWidth === 0 || image.naturalHeight === 0) {
+    console.error("Canvas not available for processing or image size is zero.");
     return;
   }
 
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    console.error("Unable to get canvas context.");
+    return;
+  }
+
   ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
 
   try {
@@ -26,20 +39,24 @@ const processImage = async (image, index) => {
     faceapi.matchDimensions(canvas, displaySize);
     const detections = await faceapi.detectAllFaces(image, new faceapi.SsdMobilenetv1Options())
       .withFaceLandmarks()
-      .withFaceDescriptors();
+      .withFaceDescriptors() as WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[];
     const resizedDetections = faceapi.resizeResults(detections, displaySize);
     faceapi.draw.drawDetections(canvas, resizedDetections);
     faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-    // Assuming updateIdentifications function is implemented to handle detections
+    updateIdentifications(resizedDetections, image, ctx);
   } catch (error) {
     console.error("Failed to detect faces:", error);
   }
 };
 
-const loadImageAndProcess = (dataUrl, index) => {
+const loadImageAndProcess = (dataUrl: string, index: number) => {
   const img = new Image();
-  img.onload = () => processImage(img, index);
-  img.onerror = () => console.error("Error loading image:", dataUrl);
+  img.onload = () => {
+    processImage(img, index);
+  };
+  img.onerror = () => {
+    console.error("Error loading image:", dataUrl);
+  };
   img.src = dataUrl;
 };
 
@@ -49,31 +66,82 @@ onMounted(async () => {
   await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
   await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
 
-  if (route.query.imageUrls) {
-    imageUrls.value = route.query.imageUrls;
+  const urls: string | string[] = route.query.imageUrls;
+  if (Array.isArray(urls)) {
+    imageUrls.value = urls;
     imageUrls.value.forEach((url, index) => {
       nextTick(() => loadImageAndProcess(url, index));
     });
   }
 });
 
-const setCanvasRef = (index) => (el) => {
+const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
   if (el) {
     canvasRefs[index] = el;
   }
 };
+
+const updateIdentifications = (detections: WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[], image: HTMLImageElement, ctx: CanvasRenderingContext2D) => {
+
+
+  const faceMatcher = new faceapi.FaceMatcher(authStore.gallery.map(person => new faceapi.LabeledFaceDescriptors(person.name, [person.descriptor])));
+
+  detections.forEach((detection, index) => {
+    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+    let person = authStore.gallery.find(p => p.name === bestMatch.label);
+    
+    let personName = person ? person.name : 'Unknown';
+    let personId = person ? person.idStudent : 'N/A';  
+
+
+    identifications.value.push({ name: personName, studentId: personId });
+
+    const box = detection.detection.box;
+    const cropCanvas = document.createElement('canvas');
+    cropCanvas.width = box.width;
+    cropCanvas.height = box.height;
+    const cropCtx = cropCanvas.getContext('2d');
+    if (cropCtx) {
+      cropCtx.drawImage(image, box.x, box.y, box.width, box.height, 0, 0, box.width, box.height);
+      croppedImagesDataUrls.value.push(cropCanvas.toDataURL());
+    }
+  });
+};
+
 </script>
 
-
 <template>
-  <v-container fluid>
+  <v-container style="margin-top: 5%;">
+    <!-- Display Controls and Image Upload -->
+  
+    <!-- Layout Row for Image Display and Identifications -->
     <v-row>
-      <v-col v-for="(imageUrl, index) in imageUrls" :key="`image-${index}`" cols="12" md="6">
-        <div style="position: relative; width: 100%; margin-top: 20px;">
+      <!-- Column for Original Images with Canvas Overlay -->
+      <v-col cols="12" md="6">
+        <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index" style="position: relative; width: 100%; margin-bottom: 20px;">
           <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;">
           <canvas :ref="setCanvasRef(index)" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
         </div>
       </v-col>
+
+      <!-- Column for Identification and Cropped Images Display, 3 per row -->
+      <v-col cols="12" md="6">
+        <v-row>
+          <v-col cols="12" sm="4" v-for="(name, index) in identifications" :key="'id-' + index">
+            <v-card outlined>
+              <v-card-title class="white--text">{{ name.studentId }} | {{ name.name }}</v-card-title>
+              <v-img :src="croppedImagesDataUrls[index]" aspect-ratio="1.5" class="rounded-lg"></v-img>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
     </v-row>
   </v-container>
 </template>
+
+
+
+
+<style scoped>
+/* Additional style to manage overlays and positioning */
+</style>
