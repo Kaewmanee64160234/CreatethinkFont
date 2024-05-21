@@ -1,21 +1,39 @@
 <script setup lang="ts">
 import CreateUserDialog from '@/components/dialogs/CreateUserDialog.vue';
 import EditUserDialog from '@/components/dialogs/EditUserDialog.vue';
+import EditUserDialog2 from '@/components/dialogs/EditUserDialog2.vue';
 import { User } from '@/stores/types/User';
 import { useUserStore } from '@/stores/user.store';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, defineComponent, PropType, computed } from 'vue';
 
 const userStore = useUserStore();
+const students = computed(() => userStore.users.filter(user => user.studentId));
+const teachers = computed(() => userStore.users.filter(user => user.teacherId));
 
 onMounted(async () => {
   await userStore.getUsers();
 })
 
-const showEditDialog = (user: User) => {
-  userStore.showEditDialog = true;
-  userStore.editUser = { ...user, files: [] };
-  console.log('id user', userStore.editUser);
+// const showEditDialog = (user: User) => {
+//   userStore.showEditDialog = true;
+//   userStore.showEditDialog2 = true;
+//   userStore.editUser = { ...user, files: [] };
+//   console.log('id user', userStore.editUser);
+// }
+
+//create showEditDialog if studentId go to showEditDialog but if teacherId go to showEditDialog2
+const showEditedDialog = (user: User) => {
+  if (user.studentId) {
+    userStore.showEditDialog = true;
+    userStore.editUser = { ...user, files: [] };
+    console.log('id user', userStore.editUser);
+  } else {
+    userStore.showEditDialog2 = true;
+    userStore.editUser = { ...user, files: [] };
+    console.log('id user', userStore.editUser);
+  }
 }
+
 
 // function delete user
 const deleteUser = async (id: number) => {
@@ -26,13 +44,24 @@ const showDeleteDialog = (user: User) => {
   userStore.showDeleteDialog = true;
   userStore.currentUser = user;
 }
-const tab = ref(0);
 
-// const students = ref<Student[]>([
-//   { id: '64160047', name: 'นาย สมชาย ใจดีมาก', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image1.jpg' },
-//   { id: '64160048', name: 'นางสาว สมหญิง สุขใจ', position: 'นิสิต', status: 'กำลังศึกษาอยู่', photoUrl: 'path/to/image2.jpg' },
-//   // More students can be added here
-// ]);
+const defaultImagePath = 'path_to_default_image'; // Path to your default/fallback image
+
+function onImageError(event: Event) {
+  console.error('Error loading image');
+  const target = event.target as HTMLImageElement;
+  target.src = 'path_to_default_fallback_image'; // Make sure this default path is correct and accessible
+}
+
+function formattedImageProfile(profileImage: string): string {
+  console.log("Profile Image Data: ", profileImage);
+  if (profileImage && !profileImage.startsWith('data:')) {
+    return `data:image/png;base64,${profileImage}`;
+  }
+  return profileImage;
+}
+
+const tab = ref(0);
 </script>
 <template>
   <v-container style="padding-top: 120px;">
@@ -78,15 +107,15 @@ const tab = ref(0);
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) of userStore.users" :key="index">
+              <tr v-for="(item, index) of students" :key="index">
                 <td>{{ index + 1 }}</td>
-                <td>{{ item.imageProfile }}</td>
+                <img style ="" :src= "item.profileImage" alt="User Profile">
                 <td>{{ item.studentId }}</td>
                 <td>{{ item.firstName + " " + item.lastName }}</td>
                 <td>{{ item.role }}</td>
                 <td style="color: seagreen;">{{ item.status }}</td>
                 <td class="d-flex justify-center">
-                  <v-btn small class="ma-1" color="yellow darken-2" text="Button Text" @click="showEditDialog(item)">
+                  <v-btn small class="ma-1" color="yellow darken-2" text="Button Text" @click="showEditedDialog(item)">
                     <v-icon left>mdi-pencil</v-icon>
                     แก้ไขข้อมูล
                   </v-btn>
@@ -102,10 +131,42 @@ const tab = ref(0);
       </v-tab-item>
       <!-- Tab content for อาจารย์ -->
       <v-tab-item v-if="tab === 1">
-        <!-- Content for อาจารย์ -->
+        <v-table dense>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left"></th>
+                <th class="text-left">ภาพ</th>
+                <th class="text-left">รหัสอาจารย์</th>
+                <th class="text-left">ชื่อ-นามสกุล</th>
+                <th class="text-left">ตำแหน่ง</th>
+                <th class="text-left">สถานะภาพ</th>
+                <th class="text-center">ตัวเลือกเพิ่มเติม</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) of teachers" :key="index">
+                <td>{{ index + 1 }}</td>
+                <img style ="" :src= "item.profileImage" alt="User Profile">
+                <td>{{ item.teacherId }}</td>
+                <td>{{ item.firstName + " " + item.lastName }}</td>
+                <td>{{ item.role }}</td>
+                <td style="color: seagreen;">{{ item.status }}</td>
+                <td class="d-flex justify-center">
+                  <v-btn small class="ma-1" color="yellow darken-2" text="Button Text" @click="showEditedDialog(item)">
+                    <v-icon left>mdi-pencil</v-icon>
+                    แก้ไขข้อมูล
+                  </v-btn>
+                  <v-btn small class="ma-1" color="red" text="Button Text" @click="deleteUser(item.userId!)">
+                    <v-icon left>mdi-delete</v-icon>
+                    ลบข้อมูล
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-table>
       </v-tab-item>
-
-      <!-- Tab content for บุคลากร -->
       <v-tab-item v-if="tab === 2">
         <!-- Content for บุคลากร -->
       </v-tab-item>
@@ -114,6 +175,10 @@ const tab = ref(0);
   <v-dialog v-model="userStore.showEditDialog" persistent>
     <EditUserDialog></EditUserDialog>
   </v-dialog>
+  <v-dialog v-model="userStore.showEditDialog2" persistent>
+    <EditUserDialog2></EditUserDialog2>
+  </v-dialog>
+
 
 </template>
 <style scoped>

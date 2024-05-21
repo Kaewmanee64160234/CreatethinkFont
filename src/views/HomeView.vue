@@ -84,7 +84,7 @@ function convertFloat32ToUint8(gallery: any) {
     </div>  
       <div v-else>
         <div  style="text-align: center ; padding-top: 40pt; ">  
-          <GoogleLogin :callback="callback" style="border-radius: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); width: 200px;" />
+          <GoogleLogin :callback="callback" style="border-radius: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); width: 180px;" />
 
         <p v-if="loginError">{{ loginErrorMessage }}</p>
       </div>
@@ -123,6 +123,11 @@ function convertFloat32ToUint8(gallery: any) {
   top: 0;
   left: 0;
   z-index: -1;
+  height: 100vh;
+  background-image: url('../assets/cttk background.jpg');
+  background-size: cover;
+  background-position: center;
+  width: 100%;
 }
 .embossed-card {
   background-color: #f5f5f5c8; /* Set the background color to light gray */

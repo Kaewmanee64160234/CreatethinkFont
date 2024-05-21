@@ -29,9 +29,9 @@ async function cancel() {
                     <v-col cols="12" md="8">
                         <v-row align="center">
                             <v-col cols="12">
-                                <v-text-field label="รหัสนิสิต" dense solo required
-                                    v-model="userStore.editUser.studentId"
-                                    :rules="[(v) => !!v || 'โปรดกรอกรหัสนิสิต', (v) => /^[0-9]*$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข' ]"></v-text-field>
+                                <v-text-field label="รหัสอาจารย์" dense solo required
+                                    v-model="userStore.editUser.teacherId"
+                                    :rules="[(v) => !!v || 'โปรดกรอกอาจารย์', (v) => /^[0-9]*$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข' ]"></v-text-field>
                             </v-col>
                             <v-col cols="12">
                                 <v-text-field label="ชื่อ" dense solo required

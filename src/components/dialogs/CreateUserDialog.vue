@@ -11,6 +11,10 @@ async function cancel() {
     userStore.resetUser();
     userStore.closeDialog();
 }
+const onImageError = (event: any) => {
+  event.target.src = 'path_to_default_image'; // Provide the path to a default image
+};
+
 </script>
 <template>
     <v-container>
@@ -21,10 +25,9 @@ async function cancel() {
                     <!-- Image Column -->
                     <v-col cols="12" md="4" class="d-flex justify-center align-center">
                         <v-avatar size="192">
-                            <img src="path_to_image" alt="User Profile">
+                            <img :src="userStore.currentUser?.imageProfile" @error="onImageError" alt="User Profile">
                         </v-avatar>
                     </v-col>
-
                     <!-- Text Fields Column -->
                     <v-col cols="12" md="8">
                         <v-row align="center">
@@ -58,8 +61,8 @@ async function cancel() {
                             </v-col>
                             <v-col cols="12" md="6">
                                 <!-- File Input -->
-                                <!-- <v-file-input label="อัพโหลดรูปภาพ" prepend-icon="mdi-camera" filled
-                                    @change="handleFileChange" accept="image/*" outlined></v-file-input> -->
+                                <v-file-input label="อัพโหลดรูปภาพ" prepend-icon="mdi-camera" filled
+                                    v-model="userStore.editUser.files" accept="image/*" outlined></v-file-input>
                             </v-col>
 
                         </v-row>

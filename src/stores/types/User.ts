@@ -9,7 +9,7 @@ export interface User {
   picture?: string;
   teacherId?: string;
   studentId?: string;
-  imageProfile: string;
+  profileImage?: string;
   faceDescriptions?: Float32Array[];
   createdAt?: Date;
   updatedAt?: Date;
