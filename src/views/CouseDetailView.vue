@@ -30,7 +30,7 @@ const students = [
 const router = useRouter();   
 const tab = ref('posts');
 const posts = ref<Assignment[]>([]);
-    const imageUrls = ref([]); 
+const imageUrls = ref([]); 
 const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
@@ -44,7 +44,7 @@ onMounted(async () => {
     posts.value = assigmentStore.assignments;
 })
 const processFile = (url: string) => {
-  // Push each loaded image URL to the imageUrls array
+
   imageUrls.value.push(url);
 };
 const handleFileChange = (event: Event) => {
@@ -82,7 +82,7 @@ const createPost = async () => {
 
     await assigmentStore.createAssignment(newAssignment);
     if (imageUrl.value) {
-    router.push({ path: '/mapping2', query: { imageUrl: imageUrl.value } });
+    router.push({ path: '/mapping2', query: { imageUrls: imageUrls.value } });
     nameAssignment.value = '';
     showTextArea.value = false;
     posts.value = assigmentStore.assignments;
