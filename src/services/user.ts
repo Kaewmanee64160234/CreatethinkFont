@@ -5,6 +5,7 @@ import axios from "axios";
 function getUser() {
     return http.get("/users");
   }
+<<<<<<< HEAD
 //create user
 function saveUser(user: User & { files: File[] }) {
   const formData = new FormData();
@@ -81,3 +82,8 @@ function getUserImage(id: number) {
 
 
 export default { getUser, getUserImage, saveUser, deleteUser, updateUser, getUserBystidId};
+=======
+
+  
+export default { getUser};
+>>>>>>> fa1fbfe1c6c832acd33ecbecee212aaf6408c28c

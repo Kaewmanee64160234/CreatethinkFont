@@ -22,5 +22,6 @@
     position: fixed;
     bottom: 0;
     width: 100%;
+    margin-bottom: 20px;
   }
 </style>
