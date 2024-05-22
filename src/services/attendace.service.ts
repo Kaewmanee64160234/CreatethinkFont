@@ -50,7 +50,7 @@ function getAttendanceByUserId(userId: string) {
 // updateAttendance
 
 function updateAttendance(attendance: Attendance) {
-  return http.put(`/attendances/${attendance}`);
+  return http.patch(`/attendances/${attendance.attendanceId}`,attendance);
 }
 
 export default {

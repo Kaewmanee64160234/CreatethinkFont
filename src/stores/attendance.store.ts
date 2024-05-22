@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import Attendance from "./types/Attendances";
 import { ref } from "vue";
 import attendaceService from "@/services/attendace.service";
+import router from "@/router";
 export const useAttendanceStore = defineStore("attendanceStore", () => {
   const attendances = ref<Attendance[]>();
   const currentAttendance = ref<Attendance &  { files: File[] }>({
@@ -65,12 +66,29 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     try {
       const res = await attendaceService.updateAttendance(attendance);
       if (res.status) {
-        //console
+        console.log(res.data);
       }
     } catch (error) {
       console.log(error);
     }
   };
+  const confirmAttendance = async (attendance: Attendance) => {
+    try {
+      const res = await attendaceService.updateAttendance(attendance);
+    //  if response is success show alert
+      if (res.status) {
+      window.alert('Attendance confirmed successfully');
+      router.push('/courseManagement');
+
+      }else{
+        console.log(res.data);
+        window.alert('Attendance confirmed failed');
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
  
   
 
@@ -81,6 +99,7 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     getAttendanceByAssignmentId,
     getAttendanceByUserId,
     updateAttendance,
+    confirmAttendance
     
   };
 });

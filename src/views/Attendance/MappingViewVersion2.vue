@@ -143,75 +143,48 @@ const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
     canvasRefs[index] = el;
   }
 };
-const updateIdentifications = (detections, image, ctx) => {
-  // Check if faceDescriptions are valid and each has the expected length of 128
-  if (
-    !userStore.users.every(
-      (user) =>
-        user.faceDescriptions &&
-        user.faceDescriptions.every((desc) => desc && desc.length === 128)
-    )
-  ) {
-    console.log(
-      "Users with invalid or incomplete face descriptions:",
-      userStore.users.map((user) => ({
-        firstName: user.firstName,
-        faceDescriptionsLengths: user.faceDescriptions
-          ? user.faceDescriptions.map((desc) =>
-              desc ? desc.length : "undefined"
-            )
-          : "undefined",
-      }))
-    );
-  }
-
-  const validUsers = userStore.users.filter(
-    (user) =>
-      user.faceDescriptions &&
-      user.faceDescriptions.every((desc) => desc && desc.length === 128)
+const updateIdentifications = (detections, image, index) => {
+  // Filter users to include only those with valid face descriptions
+  const validUsers = userStore.users.filter(user =>
+    user.faceDescriptions && 
+    Array.isArray(user.faceDescriptions) && 
+    user.faceDescriptions.every(desc => desc && desc.length === 128)
   );
 
   if (validUsers.length === 0) {
-    console.error("No valid face descriptors found.");
+    console.error("No valid face descriptors found. Please check the user data.");
     return;
   }
 
-  const labeledDescriptors = validUsers.map(
-    (user) =>
-      new faceapi.LabeledFaceDescriptors(
-        user.firstName,
-        user.faceDescriptions.map((desc) => new Float32Array(desc))
-      )
+  // Prepare face descriptors for the FaceMatcher
+  const labeledDescriptors = validUsers.map(user => 
+    new faceapi.LabeledFaceDescriptors(
+      user.firstName, 
+      user.faceDescriptions.map(desc => new Float32Array(desc))
+    )
   );
 
-  const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+  // Initialize the FaceMatcher with a lower threshold for more strict matching
+  const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.5);
 
-  detections.forEach((detection) => {
+  detections.forEach(detection => {
     const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-    let person = validUsers.find((p) => p.firstName === bestMatch.label);
+    const person = validUsers.find(user => user.firstName === bestMatch.label);
 
-    let personName = person ? person.firstName : "Unknown";
-    let personId = person ? person.studentId : "N/A";
+    // Push identification data, handle unknown differently
+    identifications.value.push({
+      name: person ? person.firstName : "Unknown",
+      studentId: person ? person.studentId : "N/A"
+    });
 
-    identifications.value.push({ name: personName, studentId: personId });
-
-    const box = detection.detection.box;
-    const cropCanvas = document.createElement("canvas");
-    cropCanvas.width = box.width;
-    cropCanvas.height = box.height;
-    const cropCtx = cropCanvas.getContext("2d");
-    if (cropCtx) {
-      cropCtx.drawImage(
-        image,
-        box.x,
-        box.y,
-        box.width,
-        box.height,
-        0,
-        0,
-        box.width,
-        box.height
-      );
+    // Optionally, draw and store the cropped image of the detected face
+    if (person) {
+      const box = detection.detection.box;
+      const cropCanvas = document.createElement("canvas");
+      cropCanvas.width = box.width;
+      cropCanvas.height = box.height;
+      const cropCtx = cropCanvas.getContext("2d");
+      cropCtx.drawImage(image, box.x, box.y, box.width, box.height, 0, 0, box.width, box.height);
       croppedImagesDataUrls.value.push(cropCanvas.toDataURL());
     }
   });

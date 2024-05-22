@@ -62,7 +62,9 @@ function mapToUser(data: any): User {
         try {
           const res = await userService.getUser(); // Fetch user data
           // Assuming res.data is an array of user objects
+          console.log('res', res.data)
           users.value = res.data.map((user:any )=> mapToUser(user)); // Transform each user data
+       console.log('users', users.value)
         } catch (e) {
           console.error("Failed to fetch users:", e);
         }
