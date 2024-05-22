@@ -82,6 +82,7 @@ const createPost = async () => {
 
     await assigmentStore.createAssignment(newAssignment);
     if (imageUrl.value) {
+        
         router.push({ path: '/mapping2', query: { imageUrls: imageUrls.value } });
         nameAssignment.value = '';
         showTextArea.value = false;

@@ -26,7 +26,7 @@ import HomeView from '../views/HomeView.vue'
       path: '/mapping2',
       name: 'mapping2',
       components: {
-        default: () => import('../views/MappingViewVersion2.vue'),
+        default: () => import('../views/Attendance/MappingViewVersion2.vue'),
         header: () => import('../components/headers/MainHeader.vue'),
         menu: () => import('../components/headers/SubHeader.vue'),
       },
@@ -102,6 +102,16 @@ import HomeView from '../views/HomeView.vue'
     layout: "FullLayout",
   }
 },
+{
+  // mappingForStudent
+  path: '/mappingForStudent/:assignmentId',
+  name: 'mappingForStudent',
+  components: {
+    default: () => import('../views/Attendance/MappingForStudent.vue'),
+    header: () => import('../components/headers/MainHeader.vue'),
+    menu: () => import('../components/headers/SubHeader.vue'),
+  },
+}
   
 ]
 

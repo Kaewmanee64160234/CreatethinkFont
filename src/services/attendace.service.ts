@@ -12,8 +12,23 @@ function getAttendanceById(id: string) {
 
 //create function create attendance
 
-function createAttendance(data: Attendance) {
-  return http.post("/attendances", data);
+function createAttendance(data: Attendance,file:File) {
+    const formData = new FormData();
+    formData.append('attendanceDate', data.attendanceDate.toString());
+    formData.append('attendanceStatus', data.attendanceStatus);
+    formData.append('imageFile', file);
+    formData.append('attendanceConfirmStatus', data.attendanceConfirmStatus);
+    if(data.user){
+        formData.append('userId', data.user?.userId!.toString());
+    }
+    formData.append('assignmentId', data.assignment!.assignmentId+'');
+    return http.post('/attendances', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+
 }
 
 //create function get attendance by course id
@@ -25,7 +40,7 @@ function getAttendanceByCourseId(id: string) {
 //create function get attendance by ass Assignment id
 
 function getAttendanceByAssignmentId(id: string) {
-  return http.get(`/attendances/assignment/${id}`);
+  return http.get(`/attendances/assignments/${id}`);
 }
 // getAttendanceByUserId
 function getAttendanceByUserId(userId: string) {
