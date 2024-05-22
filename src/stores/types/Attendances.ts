@@ -2,9 +2,11 @@ import Assignment from "./Assignment";
 import { User } from "./User";
 
 export default interface Attendance{
-    attdanceId:number;
-    attdanceDate:Date;
-    attdanceStatus:string;
+    attendanceId:number;
+    attendanceDate:Date;
+    attendanceStatus:string;
+    attendanceImage:string;
+    attendanceConfirmStatus:string;
     user:User;
     assignment:Assignment;
     createdDate:Date;

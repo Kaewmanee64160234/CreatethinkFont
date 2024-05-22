@@ -6,6 +6,7 @@ import assignmentService from "@/services/assignment";
 export const useAssignmentStore = defineStore("assignmentStore", () => {
   const assignments = ref<Assignment[]>([]);
   const assignment = ref<Assignment>();
+  const currentAssignment = ref<Assignment>();
 
 
   //get
@@ -51,5 +52,6 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
     getAssignments,
     assignment,
     createAssignment,
+    currentAssignment
   };
 });

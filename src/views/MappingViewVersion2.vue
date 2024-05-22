@@ -5,6 +5,7 @@ import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import type { FaceDetection, WithFaceLandmarks, WithFaceDescriptor } from 'face-api.js'; // Import types
 import Person from "@/stores/types/Person";
+import { useAssignmentStore } from "@/stores/assignment.store";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
@@ -15,6 +16,7 @@ const identifications = ref<{name:string,studentId:string}[]>([]);
 const croppedImagesDataUrls = ref<string[]>([]);
 const canvasRefs = reactive<CanvasRefs>({});
 const authStore = useAuthStore();
+const assigmentStore = useAssignmentStore();
 
 const processImage = async (image: HTMLImageElement, index: number) => {
   await nextTick();
@@ -108,12 +110,55 @@ const updateIdentifications = (detections: WithFaceLandmarks<{ detection: FaceDe
   });
 };
 
+// create function confirm attendance
+const confirmAttendance = async () => {
+ 
+  for (let i = 0; i < identifications.value.length; i++){
+    if(identifications.value[i].name === 'Unknown'){
+      const attdent = {
+      attendanceId: 0,
+    attendanceDate: new Date(),
+    attendanceStatus:"",
+    attendanceImage: croppedImagesDataUrls.value[i],
+    attendanceConfirmStatus:'not Confirm',
+    assignment:assigmentStore.assignment,
+    user:null
+    }
+    await assigmentStore.createAssignment(attdent);
+
+    }else{
+      const attdent = {
+      attendanceId: 0,
+    attendanceDate: new Date(),
+    attendanceStatus:"",
+    attendanceImage: croppedImagesDataUrls.value[i],
+    attendanceConfirmStatus:'not Confirm',
+    assignment:assigmentStore.assignment,
+    user:authStore.gallery.find(user => user.idStudent === identifications.value[i].studentId)
+    
+    }
+    await assigmentStore.createAttendance(attdent);
+    }
+  
+    
+  
+
+  }
+};
+
 </script>
 
 <template>
   <v-container style="margin-top: 5%;">
     <!-- Display Controls and Image Upload -->
-  
+  <v-row>
+    <v-col cols="12" md="6">
+    
+    </v-col>
+    <v-col cols="12" md="6">
+      <v-btn @click="confirmAttendance()">Check Attendance</v-btn>
+    </v-col>
+  </v-row>
     <!-- Layout Row for Image Display and Identifications -->
     <v-row>
       <!-- Column for Original Images with Canvas Overlay -->

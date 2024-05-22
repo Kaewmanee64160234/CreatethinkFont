@@ -23,14 +23,14 @@ const headers = [
     { text: 'เช็คความถูกต้อง', value: 'isCorrect', sortable: false },
 ]
 const students = [
-    { id: '64160047', name: 'ฟาฟิศ ศิริรักษ์โกเมน', points: 100 ,isCorrect:true},
-    { id: '64160048', name: 'กฤษณ์ กิจงานที่พึ่ง', points: 100 ,isCorrect:true},
-    { id: '64160049', name: 'ปวงชน ปัญญามั่น', points: 100 ,isCorrect:false},]
+    { id: '64160047', name: 'ฟาฟิศ ศิริรักษ์โกเมน', points: 100, isCorrect: true },
+    { id: '64160048', name: 'กฤษณ์ กิจงานที่พึ่ง', points: 100, isCorrect: true },
+    { id: '64160049', name: 'ปวงชน ปัญญามั่น', points: 100, isCorrect: false },]
 
-const router = useRouter();   
+const router = useRouter();
 const tab = ref('posts');
 const posts = ref<Assignment[]>([]);
-const imageUrls = ref([]); 
+const imageUrls = ref([]);
 const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
@@ -45,21 +45,21 @@ onMounted(async () => {
 })
 const processFile = (url: string) => {
 
-  imageUrls.value.push(url);
+    imageUrls.value.push(url);
 };
 const handleFileChange = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    Array.from(input.files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        // Process each file, e.g., push to an array
-        imageUrl.value = e.target?.result as string;
-        processFile(imageUrl.value); // Assuming processFile is a method to handle the file
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Process each file, e.g., push to an array
+                imageUrl.value = e.target?.result as string;
+                processFile(imageUrl.value); // Assuming processFile is a method to handle the file
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 };
 
 const openPost = () => {
@@ -82,15 +82,15 @@ const createPost = async () => {
 
     await assigmentStore.createAssignment(newAssignment);
     if (imageUrl.value) {
-    router.push({ path: '/mapping2', query: { imageUrls: imageUrls.value } });
-    nameAssignment.value = '';
-    showTextArea.value = false;
-    posts.value = assigmentStore.assignments;
-  } else {
-    throw new Error('Image URL is missing');
-  }
-  
-    
+        router.push({ path: '/mapping2', query: { imageUrls: imageUrls.value } });
+        nameAssignment.value = '';
+        showTextArea.value = false;
+        posts.value = assigmentStore.assignments;
+    } else {
+        throw new Error('Image URL is missing');
+    }
+
+
 }
 
 
@@ -117,15 +117,9 @@ const createPost = async () => {
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
                         <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
-                        <v-file-input
-  label="Upload Images"
-  prepend-icon="mdi-camera"
-  filled
-  @change="handleFileChange"
-  accept="image/*"
-  outlined
-  multiple>
-</v-file-input>
+                        <v-file-input label="Upload Images" prepend-icon="mdi-camera" filled @change="handleFileChange"
+                            accept="image/*" outlined multiple>
+                        </v-file-input>
                     </v-container>
                     <v-card-actions>
                         <!-- create button create and cancel -->
@@ -198,26 +192,28 @@ const createPost = async () => {
                     <v-card-title>
                         Student Performance
                     </v-card-title>
-                   <v-table>
-                          <template v-slot:default>
+                    <v-table>
+                        <template v-slot:default>
                             <thead>
-                                 <tr>
-                                      <th class="text-left">ID</th>
-                                      <th class="text-left">Name</th>
-                                      <th class="text-left">Present</th>
-                                      <th class="text-left">Absent</th>
-                                 </tr>
+                                <tr>
+                                    <th class="text-left">ID</th>
+                                    <th class="text-left">Name</th>
+                                    <th class="text-left">Present</th>
+                                    <th class="text-left">Absent</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                 <tr v-for="item in students" :key="item.id">
-                                      <td>{{ item.id }}</td>
-                                      <td>{{ item.name }}</td>
-                                      <td>{{ item.points }}%</td>
-                                      <td> <v-icon v-if="item.isCorrect == true" color="green">mdi-checkbox-marked-circle</v-icon> 
-                                        <v-icon v-if="item.isCorrect == false" color="red">mdi-close-circle</v-icon></td>
-                                 </tr>
+                                <tr v-for="item in students" :key="item.id">
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.points }}%</td>
+                                    <td> <v-icon v-if="item.isCorrect == true"
+                                            color="green">mdi-checkbox-marked-circle</v-icon>
+                                        <v-icon v-if="item.isCorrect == false" color="red">mdi-close-circle</v-icon>
+                                    </td>
+                                </tr>
                             </tbody>
-                            </template>
+                        </template>
                     </v-table>
                 </v-card>
             </v-tab-item>
