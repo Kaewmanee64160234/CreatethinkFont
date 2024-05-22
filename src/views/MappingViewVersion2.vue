@@ -6,17 +6,27 @@ import { useAuthStore } from "@/stores/auth";
 import type { FaceDetection, WithFaceLandmarks, WithFaceDescriptor } from 'face-api.js'; // Import types
 import Person from "@/stores/types/Person";
 import { useAssignmentStore } from "@/stores/assignment.store";
+import { useAttendanceStore } from "@/stores/attendance.store";
+import { useUserStore } from "@/stores/user.store";
+import user from "@/services/user";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
 }
+interface RouteQuery {
+  imageUrls?: string[];
+}
+
+const route = useRoute();
 
 const imageUrls = ref<string[]>([]);
-const identifications = ref<{name:string,studentId:string}[]>([]);
+const identifications = ref<{ name: string, studentId: string }[]>([]);
 const croppedImagesDataUrls = ref<string[]>([]);
 const canvasRefs = reactive<CanvasRefs>({});
 const authStore = useAuthStore();
 const assigmentStore = useAssignmentStore();
+const createAttendaceStore = useAttendanceStore();
+const userStore = useUserStore();
 
 const processImage = async (image: HTMLImageElement, index: number) => {
   await nextTick();
@@ -61,21 +71,26 @@ const loadImageAndProcess = (dataUrl: string, index: number) => {
   };
   img.src = dataUrl;
 };
-
 onMounted(async () => {
   const route = useRoute();
+  await userStore.getUsers();
+  
+  console.log("Route object:", route); // Debugging line to check the entire route object
+
   await faceapi.nets.ssdMobilenetv1.loadFromUri("/models");
   await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
   await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
 
-  const urls: string | string[] = route.query.imageUrls;
-  if (Array.isArray(urls)) {
+  const urls: string[] = route.query.imageUrls || [];
+  if (Array.isArray(urls) && urls.length > 0) {
     imageUrls.value = urls;
     imageUrls.value.forEach((url, index) => {
       nextTick(() => loadImageAndProcess(url, index));
     });
   }
 });
+
+
 
 const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
   if (el) {
@@ -84,17 +99,25 @@ const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
 };
 
 const updateIdentifications = (detections: WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[], image: HTMLImageElement, ctx: CanvasRenderingContext2D) => {
+  console.log('User Store:', userStore.users[0].faceDescriptions[0]);
 
+  const labeledDescriptors = userStore.users.map(person => new faceapi.LabeledFaceDescriptors(person.firstName, [new Float32Array(person.faceDescriptions![0])]));
+  console.log('Labeled Descriptors:', labeledDescriptors);
 
-  const faceMatcher = new faceapi.FaceMatcher(authStore.gallery.map(person => new faceapi.LabeledFaceDescriptors(person.name, [person.descriptor])));
+  const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+  console.log('Face Matcher:', faceMatcher);
 
   detections.forEach((detection, index) => {
-    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-    let person = authStore.gallery.find(p => p.name === bestMatch.label);
-    
-    let personName = person ? person.name : 'Unknown';
-    let personId = person ? person.idStudent : 'N/A';  
+    console.log('Detection:', detection);
 
+    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+    console.log('Best Match:', bestMatch);
+
+    let person = userStore.users.find(p => p.firstName === bestMatch.label);
+    console.log('Matched Person:', person);
+
+    let personName = person ? person.firstName : 'Unknown';
+    let personId = person ? person.studentId : 'N/A';
 
     identifications.value.push({ name: personName, studentId: personId });
 
@@ -112,36 +135,44 @@ const updateIdentifications = (detections: WithFaceLandmarks<{ detection: FaceDe
 
 // create function confirm attendance
 const confirmAttendance = async () => {
- 
-  for (let i = 0; i < identifications.value.length; i++){
-    if(identifications.value[i].name === 'Unknown'){
-      const attdent = {
-      attendanceId: 0,
-    attendanceDate: new Date(),
-    attendanceStatus:"",
-    attendanceImage: croppedImagesDataUrls.value[i],
-    attendanceConfirmStatus:'not Confirm',
-    assignment:assigmentStore.assignment,
-    user:null
-    }
-    await assigmentStore.createAssignment(attdent);
 
-    }else{
+  for (let i = 0; i < identifications.value.length; i++) {
+    if (identifications.value[i].name === 'Unknown') {
       const attdent = {
-      attendanceId: 0,
-    attendanceDate: new Date(),
-    attendanceStatus:"",
-    attendanceImage: croppedImagesDataUrls.value[i],
-    attendanceConfirmStatus:'not Confirm',
-    assignment:assigmentStore.assignment,
-    user:authStore.gallery.find(user => user.idStudent === identifications.value[i].studentId)
-    
+        attendanceId: 0,
+        attendanceDate: new Date(),
+        attendanceStatus: "",
+        attendanceImage: croppedImagesDataUrls.value[i],
+        attendanceConfirmStatus: 'not Confirm',
+        assignment: { ...assigmentStore.assignment },
+        user: null,
+
+      }
+      await createAttendaceStore.createAttendance({
+        attendanceId: 0,
+        attendanceDate: new Date(),
+        attendanceStatus: "",
+        attendanceImage: croppedImagesDataUrls.value[i],
+        attendanceConfirmStatus: 'not Confirm',
+        assignment: assigmentStore.assignment,
+      });
+
+    } else {
+      const student =  userStore.users.find(user => user.studentId === identifications.value[i].studentId)
+      await createAttendaceStore.createAttendance({
+        attendanceId: 0,
+        attendanceDate: new Date(),
+        attendanceStatus: "",
+        attendanceImage: croppedImagesDataUrls.value[i],
+        attendanceConfirmStatus: 'not Confirm',
+        assignment: assigmentStore.assignment,
+        user: student
+
+      });
     }
-    await assigmentStore.createAttendance(attdent);
-    }
-  
-    
-  
+
+
+
 
   }
 };
@@ -151,21 +182,23 @@ const confirmAttendance = async () => {
 <template>
   <v-container style="margin-top: 5%;">
     <!-- Display Controls and Image Upload -->
-  <v-row>
-    <v-col cols="12" md="6">
-    
-    </v-col>
-    <v-col cols="12" md="6">
-      <v-btn @click="confirmAttendance()">Check Attendance</v-btn>
-    </v-col>
-  </v-row>
+    <v-row>
+      <v-col cols="12" md="6">
+
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-btn @click="confirmAttendance()">Check Attendance</v-btn>
+      </v-col>
+    </v-row>
     <!-- Layout Row for Image Display and Identifications -->
     <v-row>
       <!-- Column for Original Images with Canvas Overlay -->
       <v-col cols="12" md="6">
-        <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index" style="position: relative; width: 100%; margin-bottom: 20px;">
+        <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index"
+          style="position: relative; width: 100%; margin-bottom: 20px;">
           <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto;">
-          <canvas :ref="setCanvasRef(index)" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
+          <canvas :ref="setCanvasRef(index)"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
         </div>
       </v-col>
 
