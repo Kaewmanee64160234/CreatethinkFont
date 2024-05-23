@@ -123,5 +123,6 @@ const reCheckAttendance = async (attendance: Attendance) => {
 .v-btn--active {
   background-color: #4CAF50 !important;
   /* Active state color for 'เข้าเรียน' button when active */
+
 }
 </style>
