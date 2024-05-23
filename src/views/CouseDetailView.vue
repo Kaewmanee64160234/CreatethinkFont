@@ -51,12 +51,19 @@ const processFile = (url: string) => {
 const handleFileChange = (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+        imageUrls.value = []; // Reset or initialize the array to store new uploads
         Array.from(input.files).forEach(file => {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                // Process each file, e.g., push to an array
-                imageUrl.value = e.target?.result as string;
-                processFile(imageUrl.value); // Assuming processFile is a method to handle the file
+            reader.onload = async (e) => {
+                const result = e.target?.result as string;
+                if (result) {
+                    try {
+                        const resizedImage = await resizeAndConvertImageToBase64(result, 800, 600);
+                        imageUrlsResize.value.push(resizedImage);
+                    } catch (error) {
+                        console.error('Error resizing image:', error);
+                    }
+                }
             };
             reader.readAsDataURL(file);
         });
@@ -66,25 +73,27 @@ const handleFileChange = (event: Event) => {
 const openPost = () => {
     showTextArea.value = !showTextArea.value;
 };
-const resizeAndConvertImageToBase64 = async (imageUrl, maxWidth, maxHeight) => {
+const resizeAndConvertImageToBase64 = (imageUrl, maxWidth, maxHeight) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    img.crossOrigin = 'Anonymous'; // If images are from an external source
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      let ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-      let width = img.width * ratio;
-      let height = img.height * ratio;
+      const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const width = img.width * ratio;
+      const height = img.height * ratio;
 
       canvas.width = width;
       canvas.height = height;
       ctx.drawImage(img, 0, 0, width, height);
       resolve(canvas.toDataURL("image/jpeg"));
     };
-    img.onerror = reject;
+    img.onerror = () => reject(new Error(`Failed to load image at ${imageUrl}`));
     img.src = imageUrl;
   });
 };
+
 //create Post
 const createPost = async () => {
   if (nameAssignment.value === '') {
@@ -103,20 +112,15 @@ const createPost = async () => {
   };
 
   await assigmentStore.createAssignment(newAssignment);
-  if (imageUrl.value) {
-    // Resize the image before redirecting
-    try {
-      const resizedImageUrl = await resizeAndConvertImageToBase64(imageUrl.value, 800, 600);
-      imageUrlsResize.value.push(resizedImageUrl);
-      router.push({ path: '/mapping2', query: { imageUrls: imageUrlsResize.value } });
-      nameAssignment.value = '';
-    } catch (error) {
-      console.error('Failed to resize image:', error);
-    }
+  if (imageUrlsResize.value.length > 0) {
+    router.push({ path: '/mapping2', query: { imageUrls: imageUrlsResize.value } });
+    nameAssignment.value = '';
+    imageUrlsResize.value = []; // Clear the images after posting
   } else {
-    throw new Error('Image URL is missing');
+    console.error('No images available for posting.');
   }
 }
+
 
 </script>
 <template>

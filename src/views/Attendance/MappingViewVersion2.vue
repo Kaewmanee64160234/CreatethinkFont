@@ -14,6 +14,8 @@ import { useAttendanceStore } from "@/stores/attendance.store";
 import { useUserStore } from "@/stores/user.store";
 import user from "@/services/user";
 import Attendance from "@/stores/types/Attendances";
+import router from "@/router";
+import assignment from "@/services/assignment";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
@@ -130,6 +132,8 @@ onMounted(async () => {
   await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
 
   const urls: string[] = route.query.imageUrls || [];
+  console.log(urls.length);
+
   if (Array.isArray(urls) && urls.length > 0) {
     imageUrls.value = urls;
     imageUrls.value.forEach((url, index) => {
@@ -257,6 +261,7 @@ const confirmAttendance = async () => {
       console.error("Detailed Error:", error instanceof Event ? "DOM Event error, check network or permissions." : error);
     }
   }
+  router.push('/mappingForStudent/'+assigmentStore.assignment?.assignmentId);
 };
 
 
