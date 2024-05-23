@@ -53,6 +53,11 @@ function updateAttendance(attendance: Attendance) {
 
   return http.patch(`/attendances/${attendance.attendanceId}`,attendance);
 }
+// getAttendanceByStatusInAssignment
+
+function getAttendanceByStatusInAssignment(assignmentId: string) {
+  return http.get(`/attendances/assignments/status/${assignmentId}`);
+}
 
 export default {
   getAttendance,
@@ -61,5 +66,6 @@ export default {
   getAttendanceByCourseId,
   getAttendanceByAssignmentId,
   getAttendanceByUserId,
-  updateAttendance
+  updateAttendance,
+  getAttendanceByStatusInAssignment
 };

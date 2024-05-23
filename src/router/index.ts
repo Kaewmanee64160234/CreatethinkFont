@@ -111,7 +111,18 @@ import HomeView from '../views/HomeView.vue'
     header: () => import('../components/headers/MainHeader.vue'),
     menu: () => import('../components/headers/SubHeader.vue'),
   },
-}
+},
+//resheckMappingTeacher
+{
+  // mappingForStudent
+  path: '/resheckMappingTeacher/:assignmentId',
+  name: 'resheckMappingTeacher',
+  components: {
+    default: () => import('../views/Attendance/ReCheckMappingTeacher.vue'),
+    header: () => import('../components/headers/MainHeader.vue'),
+    menu: () => import('../components/headers/SubHeader.vue'),
+  },
+},
   
 ]
 

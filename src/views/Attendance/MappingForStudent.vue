@@ -17,7 +17,7 @@ const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160144");
   console.log(JSON.stringify(userStore.currentUser));
 assignmentStore.assignment = assignmentStore.assignments.find(assignment => assignment.assignmentId ===  parseInt(route.params.assignmentId+'') );
   console.log('route: ' + route.params.assignmentId.toString());
@@ -44,7 +44,7 @@ const confirmAttendance = async (attendance: Attendance) => {
       alert('Attendance has been confirmed.');
 
       // Redirect after successful confirmation
-      router.push('/courseDetail/' + courseStore.currentCourse?.coursesId); // Replace '/next-page-route' with your specific route
+      router.push('/resheckMappingTeacher/' + assignmentStore.assignment?.assignmentId); // Replace '/next-page-route' with your specific route
     } catch (error) {
       console.error("Error recording attendance:", error);
       alert('Failed to confirm attendance.'); // Show error alert
@@ -61,6 +61,8 @@ const reCheckAttendance = async (attendance: Attendance) => {
     attendance.user = userStore.currentUser;
     console.log(JSON.stringify(attendance));
     await attendanceStore.confirmAttendance(attendance);
+    router.push('/resheckMappingTeacher/' + assignmentStore.assignment?.assignmentId); // Replace '/next-page-route' with your specific route
+
   } catch (error) {
     console.log(error);
   }
