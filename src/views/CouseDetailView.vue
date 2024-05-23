@@ -1,7 +1,7 @@
 <script setup lang="ts">
 //get id from param
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAssignmentStore } from '@/stores/assignment.store';
 import Assignment from '@/stores/types/Assignment';
 //import component CardAssigment
@@ -23,45 +23,102 @@ const headers = [
     { text: 'เช็คความถูกต้อง', value: 'isCorrect', sortable: false },
 ]
 const students = [
-    { id: '64160047', name: 'ฟาฟิศ ศิริรักษ์โกเมน', points: 100 ,isCorrect:true},
-    { id: '64160048', name: 'กฤษณ์ กิจงานที่พึ่ง', points: 100 ,isCorrect:true},
-    { id: '64160049', name: 'ปวงชน ปัญญามั่น', points: 100 ,isCorrect:false},]
+    { id: '64160047', name: 'ฟาฟิศ ศิริรักษ์โกเมน', points: 100, isCorrect: true },
+    { id: '64160048', name: 'กฤษณ์ กิจงานที่พึ่ง', points: 100, isCorrect: true },
+    { id: '64160049', name: 'ปวงชน ปัญญามั่น', points: 100, isCorrect: false },]
 
+const router = useRouter();
 const tab = ref('posts');
 const posts = ref<Assignment[]>([]);
+const imageUrls = ref([]);
+const imageUrlsResize = ref([]);
 const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
 const nameAssignment = ref('');
 const authStore = useAuthStore();
+const imageUrl = ref(null); // Store the image URL
+const file = ref(null); // File reference for uploads
 //mounted get assigment by course id
 onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
     posts.value = assigmentStore.assignments;
 })
+const processFile = (url: string) => {
+
+    imageUrls.value.push(url);
+};
+const handleFileChange = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+        imageUrls.value = []; // Reset or initialize the array to store new uploads
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const result = e.target?.result as string;
+                if (result) {
+                    try {
+                        const resizedImage = await resizeAndConvertImageToBase64(result, 800, 600);
+                        imageUrlsResize.value.push(resizedImage);
+                    } catch (error) {
+                        console.error('Error resizing image:', error);
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+};
 
 const openPost = () => {
     showTextArea.value = !showTextArea.value;
 };
+const resizeAndConvertImageToBase64 = (imageUrl, maxWidth, maxHeight) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous'; // If images are from an external source
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const width = img.width * ratio;
+      const height = img.height * ratio;
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg"));
+    };
+    img.onerror = () => reject(new Error(`Failed to load image at ${imageUrl}`));
+    img.src = imageUrl;
+  });
+};
+
 //create Post
 const createPost = async () => {
-    if (nameAssignment.value === '') {
-        return;
-    }
-    const newAssignment = {
-        assignmentTime: new Date(), nameAssignment: nameAssignment.value, course: { ...courseStore.currentCourse! },
-        assignmentId: 0,
-        attdances: [],
-        room: undefined,
-        createdDate: undefined,
-        updatedDate: undefined,
-        deletedDate: undefined
-    }
+  if (nameAssignment.value === '') {
+    return;
+  }
+  const newAssignment = {
+    assignmentTime: new Date(), 
+    nameAssignment: nameAssignment.value, 
+    course: { ...courseStore.currentCourse! },
+    assignmentId: 0,
+    attdances: [],
+    room: undefined,
+    createdDate: undefined,
+    updatedDate: undefined,
+    deletedDate: undefined
+  };
 
-    await assigmentStore.createAssignment(newAssignment);
+  await assigmentStore.createAssignment(newAssignment);
+  if (imageUrlsResize.value.length > 0) {
+    router.push({ path: '/mapping2', query: { imageUrls: imageUrlsResize.value } });
     nameAssignment.value = '';
-    showTextArea.value = false;
-    posts.value = assigmentStore.assignments;
+    imageUrlsResize.value = []; // Clear the images after posting
+  } else {
+    console.error('No images available for posting.');
+  }
 }
 
 
@@ -88,9 +145,13 @@ const createPost = async () => {
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
                         <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
+                        <v-file-input label="Upload Images" prepend-icon="mdi-camera" filled @change="handleFileChange"
+                            accept="image/*" outlined multiple>
+                        </v-file-input>
                     </v-container>
                     <v-card-actions>
                         <!-- create button create and cancel -->
+
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="showTextArea = false">Cancel</v-btn>
                         <v-btn color="primary" @click="createPost()">Post</v-btn>
@@ -159,26 +220,28 @@ const createPost = async () => {
                     <v-card-title>
                         Student Performance
                     </v-card-title>
-                   <v-table>
-                          <template v-slot:default>
+                    <v-table>
+                        <template v-slot:default>
                             <thead>
-                                 <tr>
-                                      <th class="text-left">ID</th>
-                                      <th class="text-left">Name</th>
-                                      <th class="text-left">Present</th>
-                                      <th class="text-left">Absent</th>
-                                 </tr>
+                                <tr>
+                                    <th class="text-left">ID</th>
+                                    <th class="text-left">Name</th>
+                                    <th class="text-left">Present</th>
+                                    <th class="text-left">Absent</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                 <tr v-for="item in students" :key="item.id">
-                                      <td>{{ item.id }}</td>
-                                      <td>{{ item.name }}</td>
-                                      <td>{{ item.points }}%</td>
-                                      <td> <v-icon v-if="item.isCorrect == true" color="green">mdi-checkbox-marked-circle</v-icon> 
-                                        <v-icon v-if="item.isCorrect == false" color="red">mdi-close-circle</v-icon></td>
-                                 </tr>
+                                <tr v-for="item in students" :key="item.id">
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.points }}%</td>
+                                    <td> <v-icon v-if="item.isCorrect == true"
+                                            color="green">mdi-checkbox-marked-circle</v-icon>
+                                        <v-icon v-if="item.isCorrect == false" color="red">mdi-close-circle</v-icon>
+                                    </td>
+                                </tr>
                             </tbody>
-                            </template>
+                        </template>
                     </v-table>
                 </v-card>
             </v-tab-item>
