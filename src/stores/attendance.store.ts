@@ -75,20 +75,16 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   const confirmAttendance = async (attendance: Attendance) => {
     try {
       const res = await attendaceService.updateAttendance(attendance);
-    //  if response is success show alert
-      if (res.status) {
-      window.alert('Attendance confirmed successfully');
-      router.push('/courseManagement');
-
-      }else{
-        console.log(res.data);
-        window.alert('Attendance confirmed failed');
-
-      }
+      
+   
     } catch (error) {
-      console.log(error);
+      // Log the error object which might contain additional info
+      console.error('Error confirming attendance:', error);
+
+      window.alert('An error occurred during confirmation');
     }
-  }
+}
+
  
   
 

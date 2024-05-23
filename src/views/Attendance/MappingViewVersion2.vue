@@ -16,6 +16,7 @@ import user from "@/services/user";
 import Attendance from "@/stores/types/Attendances";
 import router from "@/router";
 import assignment from "@/services/assignment";
+import Swal from 'sweetalert2';
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;

@@ -8,7 +8,6 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as vuetifyComponents from 'vuetify/components';
 import * as vuetifyDirectives from 'vuetify/directives';
-
 // Import the Material Design Icons CSS
 import '@mdi/font/css/materialdesignicons.css';
 import { VTimePicker } from "vuetify/lib/labs/components.mjs";

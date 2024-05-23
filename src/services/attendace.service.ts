@@ -50,6 +50,7 @@ function getAttendanceByUserId(userId: string) {
 // updateAttendance
 
 function updateAttendance(attendance: Attendance) {
+
   return http.patch(`/attendances/${attendance.attendanceId}`,attendance);
 }
 

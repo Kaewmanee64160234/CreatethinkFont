@@ -5,33 +5,74 @@ import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user.store';
 import router from '@/router';
+import { useCourseStore } from '@/stores/course.store';
+import assignment from '@/services/assignment';
+import { useAssignmentStore } from '@/stores/assignment.store';
 
 const route = useRoute();
 const attendanceStore = useAttendanceStore();
 const userStore = useUserStore();
+const courseStore = useCourseStore();
+const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160049");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
+  console.log(JSON.stringify(userStore.currentUser));
+assignmentStore.assignment = assignmentStore.assignments.find(assignment => assignment.assignmentId ===  parseInt(route.params.assignmentId+'') );
   console.log('route: ' + route.params.assignmentId.toString());
   await attendanceStore.getAttendanceByAssignmentId(route.params.assignmentId.toString());
 });
 
 //confirm attendance
 const confirmAttendance = async (attendance: Attendance) => {
-  attendance.attendanceStatus = 'persent';
-  attendance.attendanceConfirmStatus = 'confirm';
-  if (attendance.user === null) {
-    attendance.user = userStore.currentUser;
+  // Show a confirmation dialog
+  if (confirm("Do you want to confirm this attendance?")) {
+    try {
+      // Set attendance status
+      attendance.assignment = assignmentStore.assignment;
+      attendance.attendanceStatus = 'present';
+      attendance.attendanceConfirmStatus = 'confirmed';
+      if (attendance.user === null) {
+        attendance.user = userStore.currentUser;
+      }
+
+      // Call store method to confirm attendance
+      await attendanceStore.confirmAttendance(attendance);
+
+      // Notify user of success
+      alert('Attendance has been confirmed.');
+
+      // Redirect after successful confirmation
+      router.push('/courseDetail/' + courseStore.currentCourse?.coursesId); // Replace '/next-page-route' with your specific route
+    } catch (error) {
+      console.error("Error recording attendance:", error);
+      alert('Failed to confirm attendance.'); // Show error alert
+    }
   }
-  console.log(attendance);
-  await attendanceStore.confirmAttendance(attendance);
 };
+
+const reCheckAttendance = async (attendance: Attendance) => {
+  try {
+    attendance.assignment = assignmentStore.assignment;
+
+    attendance.attendanceStatus = 'recheck';
+    attendance.attendanceConfirmStatus = 'recheck';
+    attendance.user = userStore.currentUser;
+    console.log(JSON.stringify(attendance));
+    await attendanceStore.confirmAttendance(attendance);
+  } catch (error) {
+    console.log(error);
+  }
+
+
+}
+
 </script>
 <template>
   <v-container style="margin-top: 5%;">
     {{ userStore.currentUser?.studentId }}
-    
+
     <v-row>
       <v-col v-for="student in attendanceStore.attendances" :key="student.attendanceId" cols="12" sm="6" md="4">
         <v-card class="pa-3" outlined>
@@ -55,16 +96,17 @@ const confirmAttendance = async (attendance: Attendance) => {
           <!-- Buttons -->
           <v-row class="mt-3">
             <v-col cols="12">
-              <v-btn v-if="student.user?.studentId == userStore.currentUser!.studentId"
+              <v-btn v-if="student.user?.studentId == userStore.currentUser!.studentId && student.attendanceConfirmStatus != 'recheck' && student.attendanceConfirmStatus != 'confirmed'"
                 @click="confirmAttendance(student)" block color="green"
-                :class="{ 'v-btn--active': student.attendanceStatus === 'เข้าเรียน' }">
+               >
                 ยืนยันการเข้าเรียน
               </v-btn>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
-              <v-btn block color="orange" :class="{ 'v-btn--active': student.attendanceStatus === 'ตรวจสอบอีกครั้ง' }">
+              <v-btn block color="orange" @click="reCheckAttendance(student)"
+              :disabled="student.attendanceConfirmStatus=='recheck'">
                 ตรวจสอบอีกครั้ง
               </v-btn>
             </v-col>
