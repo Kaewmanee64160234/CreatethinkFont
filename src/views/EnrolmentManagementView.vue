@@ -1,106 +1,145 @@
 <script lang="ts" setup>
-import CreateCourseDialog from '@/components/dialogs/CreateCourseDialog.vue';
-import DeleteCourseDialog from '@/components/dialogs/DeleteCourseDialog.vue';
-import EditCourseDialog from '@/components/dialogs/EditCourseDialog.vue';
-import { useCourseStore } from '@/stores/course.store';
-import Course from '@/stores/types/Course';
+import CreateCourseDialog from "@/components/dialogs/CreateCourseDialog.vue";
+import CreateEnrolmentDialog from "@/components/dialogs/CreateEnrolmentDialog.vue";
+import EditCourseDialog from "@/components/dialogs/EditCourseDialog.vue";
+import { useCourseStore } from "@/stores/course.store";
 import { onMounted, ref } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 const courseStore = useCourseStore();
 const router = useRouter();
 
-onMounted(() => {
-    courseStore.getCourses();
-})
+onMounted(async () => {
+  await courseStore.getCourseByStudentId("64160049");
+});
 
+const formatThaiDate = (isoDateTime: string | undefined): string => {
+  if (!isoDateTime) {
+    return "";
+  }
+  const date = new Date(isoDateTime);
+  const dateOptions: Intl.DateTimeFormatOptions = { weekday: "long" };
+  const timeOptions: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit" };
 
+  const dateString = date.toLocaleDateString("th-TH", dateOptions).replace(".", "");
+  const timeString = date.toLocaleTimeString("th-TH", timeOptions);
+
+  return `${dateString} ${timeString}`;
+};
 </script>
 <template>
-    <v-container>
-        <v-row>
-            <v-col cols="12" sm="6" md="4" v-for="(item, index) of courseStore.courses" :key="index">
-                <v-card style="margin-left: 10%;margin-top: 15%;">
-                    <v-img height="15vh"
-                        src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
-                        cover>
-                        <v-card-title style="margin-top: 5%;">
-                            <h1 class="text-white">{{ item.nameCourses }}</h1>
-                        </v-card-title>
-                        <v-menu offset-y>
-                            <template #activator="{ props }">
-                                <v-btn icon v-bind="props" class="ma-2"
-                                    style="position: absolute; right: 0; top: 0; z-index: 2;">
-                                    <v-icon>mdi-dots-vertical</v-icon>
-                                </v-btn>
-                            </template>
-                            <v-list>
-                                <v-list-item>
-                                    <v-list-item-title>Unenroll</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                        <v-dialog v-model="courseStore.showEditDialog" persistent>
-                            <EditCourseDialog />
-                        </v-dialog>
-                    </v-img>
-                    <v-avatar size="100" class="avatar">
-                        <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
-                    </v-avatar>
-                    <v-card-text>
-                        <div class="text-body">กลุ่มเรียนที่ {{ item.session }}</div>
-                        <div class="text-body">อาจารย์</div>
-                        <div class="text-body">เวลาเรียน</div>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
-    <!-- <v-container class="container" fluid>
+  <v-container>
+    <v-row>
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
+        v-for="(item, index) of courseStore.courses"
+        :key="index"
+      >
+        <v-card style="margin-left: 10%; margin-top: 15%">
+          <v-img
+            height="15vh"
+            src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
+            cover
+          >
+            <v-card-title style="margin-top: 5%">
+              <h1 class="text-white">{{ item.nameCourses }}</h1>
+            </v-card-title>
+            <v-menu offset-y>
+              <template #activator="{ props }">
+                <v-btn
+                  icon
+                  v-bind="props"
+                  class="ma-2"
+                  style="position: absolute; right: 0; top: 0; z-index: 2"
+                >
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-list-item-title>Unenroll</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <v-dialog v-model="courseStore.showEditDialog" persistent>
+              <EditCourseDialog />
+            </v-dialog>
+          </v-img>
+          <v-avatar size="100" class="avatar">
+            <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
+          </v-avatar>
+          <v-card-text>
+            <div class="text-body">กลุ่มเรียนที่ {{ item.session }}</div>
+            <div class="text-body">อาจารย์</div>
+            <div class="text-body">
+              เริมเรียนเลคเชอร์ {{ formatThaiDate(item.timeInLec) }}
+            </div>
+            <div class="text-body">
+              เลิกเรียนเลคเชอร์ {{ formatThaiDate(item.timeOutLec) }}
+            </div>
+            <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
+              เริมเรียนแลป {{ formatThaiDate(item.timeInLab) }}
+            </div>
+            <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
+              เลิกเรียนแลป {{ formatThaiDate(item.timeOutLab) }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+  <!-- <v-container class="container" fluid>
         <v-row align="center" justify="end">
             <v-col> -->
-    <v-btn class="bottom-list-item" size="60" style="border-radius: 50%;" variant="outlined"
-        @click="courseStore.showCreateDialog = true">
-        <v-icon icon="mdi-plus" size="40"></v-icon>
-    </v-btn>
-    <v-dialog v-model="courseStore.showCreateDialog" persistent>
-        <CreateCourseDialog />
-    </v-dialog>
-    <!-- </v-col>
+  <v-btn
+    class="bottom-list-item"
+    size="60"
+    style="border-radius: 50%"
+    variant="outlined"
+    @click="courseStore.showCreateDialog = true"
+  >
+    <v-icon icon="mdi-plus" size="40"></v-icon>
+  </v-btn>
+  <v-dialog v-model="courseStore.showCreateDialog" persistent>
+    <CreateEnrolmentDialog />
+  </v-dialog>
+  <!-- </v-col>
         </v-row>
     </v-container> -->
 </template>
 
 <style scoped>
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-end;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: 100vh;
 }
 
 .text-white {
-    color: white;
+  color: white;
 }
 
 .text-body {
-    font-size: 1.25rem;
-    margin-bottom: 2%;
+  font-size: 1.25rem;
+  margin-bottom: 2%;
 }
 
 .avatar {
-    position: absolute;
-    top: 50%;
-    right: 0%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  right: 0%;
+  transform: translate(-50%, -50%);
 }
 
 .bottom-list-item {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    margin-right: 20px;
-    /* ปรับค่าตามที่คุณต้องการ */
-    margin-bottom: 20px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin-right: 20px;
+  /* ปรับค่าตามที่คุณต้องการ */
+  margin-bottom: 20px;
 }
 </style>

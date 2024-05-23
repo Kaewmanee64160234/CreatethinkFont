@@ -110,13 +110,6 @@ export const useUserStore = defineStore("userStore", () => {
       showEditDialog.value = false;
       showEditDialog2.value = false;
     };
-<<<<<<< HEAD
     return { currentUser, getUserImage, showEditDialog2, keyword, showEditDialog, users, getUsers, showDeleteDialog, showDialog, showDialog2, closeDialog, showDialog3, editUser, saveUser, deleteUser, resetUser, getUserBystidId };
-=======
-
-
-    return { currentUser, users, getUsers, showDialog, showDialog2, closeDialog, showDialog3};
->>>>>>> fa1fbfe1c6c832acd33ecbecee212aaf6408c28c
   });
   
-
