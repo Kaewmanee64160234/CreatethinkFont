@@ -7,7 +7,7 @@ export default interface Attendance{
     attendanceStatus:string;
     attendanceImage:string;
     attendanceConfirmStatus:string;
-    user?:User;
+    user?:User | null;
     assignment?:Assignment;
     createdDate?:Date;
     updatedDate?:Date;

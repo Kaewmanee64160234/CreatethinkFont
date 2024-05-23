@@ -31,6 +31,7 @@ const router = useRouter();
 const tab = ref('posts');
 const posts = ref<Assignment[]>([]);
 const imageUrls = ref([]);
+const imageUrlsResize = ref([]);
 const assigmentStore = useAssignmentStore();
 const courseStore = useCourseStore();
 const showTextArea = ref(false);
@@ -65,35 +66,57 @@ const handleFileChange = (event: Event) => {
 const openPost = () => {
     showTextArea.value = !showTextArea.value;
 };
+const resizeAndConvertImageToBase64 = async (imageUrl, maxWidth, maxHeight) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      let ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+      let width = img.width * ratio;
+      let height = img.height * ratio;
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg"));
+    };
+    img.onerror = reject;
+    img.src = imageUrl;
+  });
+};
 //create Post
 const createPost = async () => {
-    if (nameAssignment.value === '') {
-        return;
-    }
-    const newAssignment = {
-        assignmentTime: new Date(), nameAssignment: nameAssignment.value, course: { ...courseStore.currentCourse! },
-        assignmentId: 0,
-        attdances: [],
-        room: undefined,
-        createdDate: undefined,
-        updatedDate: undefined,
-        deletedDate: undefined
-    }
+  if (nameAssignment.value === '') {
+    return;
+  }
+  const newAssignment = {
+    assignmentTime: new Date(), 
+    nameAssignment: nameAssignment.value, 
+    course: { ...courseStore.currentCourse! },
+    assignmentId: 0,
+    attdances: [],
+    room: undefined,
+    createdDate: undefined,
+    updatedDate: undefined,
+    deletedDate: undefined
+  };
 
-    await assigmentStore.createAssignment(newAssignment);
-    if (imageUrl.value) {
-        
-        router.push({ path: '/mapping2', query: { imageUrls: imageUrls.value } });
-        nameAssignment.value = '';
-        showTextArea.value = false;
-        posts.value = assigmentStore.assignments;
-    } else {
-        throw new Error('Image URL is missing');
+  await assigmentStore.createAssignment(newAssignment);
+  if (imageUrl.value) {
+    // Resize the image before redirecting
+    try {
+      const resizedImageUrl = await resizeAndConvertImageToBase64(imageUrl.value, 800, 600);
+      imageUrlsResize.value.push(resizedImageUrl);
+      router.push({ path: '/mapping2', query: { imageUrls: imageUrlsResize.value } });
+      nameAssignment.value = '';
+    } catch (error) {
+      console.error('Failed to resize image:', error);
     }
-
-
+  } else {
+    throw new Error('Image URL is missing');
+  }
 }
-
 
 </script>
 <template>
