@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import CreateCourseDialog from "@/components/dialogs/CreateCourseDialog.vue";
 import CreateEnrolmentDialog from "@/components/dialogs/CreateEnrolmentDialog.vue";
+import DeleteEnrolmentDialog from "@/components/dialogs/DeleteEnrolmentDialog.vue";
 import EditCourseDialog from "@/components/dialogs/EditCourseDialog.vue";
 import { useCourseStore } from "@/stores/course.store";
+import { useEnrollmentStore } from "@/stores/enrollment.store";
+import Enrollment from "@/stores/types/Enrollment";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 const courseStore = useCourseStore();
 const router = useRouter();
-
+const enrollmentStore = useEnrollmentStore();
 onMounted(async () => {
-  await courseStore.getCourseByStudentId("64160049");
+  await enrollmentStore.getCourseByStudentId("64160144");
 });
 
 const formatThaiDate = (isoDateTime: string | undefined): string => {
@@ -25,6 +28,11 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
 
   return `${dateString} ${timeString}`;
 };
+
+const showDeleteDialog = (enrollment: Enrollment) => {
+  courseStore.showDeleteDialog = true;
+  enrollmentStore.currentEnrollment = enrollment;
+};
 </script>
 <template>
   <v-container>
@@ -33,7 +41,7 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
         cols="12"
         sm="6"
         md="4"
-        v-for="(item, index) of courseStore.courses"
+        v-for="(item, index) of enrollmentStore.enrollments"
         :key="index"
       >
         <v-card style="margin-left: 10%; margin-top: 15%">
@@ -43,7 +51,7 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
             cover
           >
             <v-card-title style="margin-top: 5%">
-              <h1 class="text-white">{{ item.nameCourses }}</h1>
+              <h1 class="text-white">{{ item.course?.nameCourses }}</h1>
             </v-card-title>
             <v-menu offset-y>
               <template #activator="{ props }">
@@ -57,32 +65,32 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item>
+                <v-list-item @click="showDeleteDialog(item)">
                   <v-list-item-title>Unenroll</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-dialog v-model="courseStore.showEditDialog" persistent>
-              <EditCourseDialog />
+            <v-dialog v-model="courseStore.showDeleteDialog" persistent>
+              <DeleteEnrolmentDialog />
             </v-dialog>
           </v-img>
           <v-avatar size="100" class="avatar">
             <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
           </v-avatar>
           <v-card-text>
-            <div class="text-body">กลุ่มเรียนที่ {{ item.session }}</div>
-            <div class="text-body">อาจารย์</div>
+            <div class="text-body">กลุ่มเรียนที่ {{ item.course?.session }}</div>
+            <div class="text-body">อาจารย์ {{ item.course?.user?.firstName }}</div>
             <div class="text-body">
-              เริมเรียนเลคเชอร์ {{ formatThaiDate(item.timeInLec) }}
+              เริมเรียนเลคเชอร์ {{ formatThaiDate(item.course?.timeInLec) }}
             </div>
             <div class="text-body">
-              เลิกเรียนเลคเชอร์ {{ formatThaiDate(item.timeOutLec) }}
+              เลิกเรียนเลคเชอร์ {{ formatThaiDate(item.course?.timeOutLec) }}
             </div>
-            <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
-              เริมเรียนแลป {{ formatThaiDate(item.timeInLab) }}
+            <div class="text-body" v-if="item.course?.typeCourses === 'เลคเชอร์และแลป'">
+              เริมเรียนแลป {{ formatThaiDate(item.course.timeInLab) }}
             </div>
-            <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
-              เลิกเรียนแลป {{ formatThaiDate(item.timeOutLab) }}
+            <div class="text-body" v-if="item.course?.typeCourses === 'เลคเชอร์และแลป'">
+              เลิกเรียนแลป {{ formatThaiDate(item.course.timeOutLab) }}
             </div>
           </v-card-text>
         </v-card>

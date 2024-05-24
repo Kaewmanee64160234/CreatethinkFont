@@ -57,15 +57,6 @@ export const useCourseStore = defineStore("courseStore", () => {
     }
   }
 
-  const getCourseByStudentId = async (userId: string) => {
-    try {
-      const res = await courseService.getCourseByStudentId(userId);
-      courses.value = res.data;
-      console.log(courses.value);
-    } catch (error) {
-      console.log(error);
-    }
-  }
   const createCourse = async (course:Course) => {
     try {
       const res = await courseService.createCourse(course);
@@ -85,5 +76,5 @@ export const useCourseStore = defineStore("courseStore", () => {
     }
   }
 
-  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course, updateCourse, getCourseByStudentId};
+  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course, updateCourse};
 });

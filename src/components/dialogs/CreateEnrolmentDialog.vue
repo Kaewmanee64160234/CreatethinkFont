@@ -1,7 +1,34 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import CreateEnrolmentDialog2 from "./CreateEnrolmentDialog2.vue";
+import { useEnrollmentStore } from "@/stores/enrollment.store";
+import { ref } from "vue";
 const courseStore = useCourseStore();
+const enrollmentStore = useEnrollmentStore();
+const courseId = ref("");
+
+const saveEnrollment = () => {
+  if (courseId.value === "") {
+    console.log("no data");
+    return;
+  }
+  const newEnrollment = {
+    userId: 4, ///mouckup data
+    courseId: courseId.value,
+    createdDate: undefined,
+    updatedDate: undefined,
+    deletedDate: undefined,
+  };
+  try {
+    // ส่งคำขอสร้าง enrollment
+    enrollmentStore.createEnrollment(newEnrollment);
+    console.log("enrollment", newEnrollment);
+    courseStore.showCreateDialog2 = true;
+    courseId.value = "";
+  } catch (error) {
+    console.error("Error creating enrollment:", error);
+  }
+};
 </script>
 
 <template>
@@ -22,14 +49,13 @@ const courseStore = useCourseStore();
               label="รหัสห้องเรียน"
               variant="outlined"
               class="colorText"
+              v-model="courseId"
             ></v-text-field>
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
-          <v-btn @click="courseStore.showCreateDialog2 = true" class="colorText"
-            >ต่อไป</v-btn
-          >
+          <v-btn @click="saveEnrollment" class="colorText">ต่อไป</v-btn>
         </v-card-actions>
         <v-dialog v-model="courseStore.showCreateDialog2" persistent>
           <CreateEnrolmentDialog2 />
@@ -57,6 +83,7 @@ const courseStore = useCourseStore();
 .colorText {
   color: #2a6ec5;
 }
+
 .title {
   word-wrap: break-word;
   white-space: normal;

@@ -12,6 +12,7 @@ const courseStore = useCourseStore();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const router = useRouter();
+console.log("user", courseStore.currentCourse?.user?.firstName);
 onMounted(async () => {
   await courseStore.getCourseByTeachId("64160049");
 });
@@ -101,7 +102,7 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
           </v-avatar>
           <v-card-text>
             <div class="text-body">กลุ่มเรียนที่ {{ item.session }}</div>
-            <div class="text-body">อาจารย์ {{ authStore.currentUser.firstName }}</div>
+            <div class="text-body">อาจารย์ {{ item.user?.firstName }}</div>
             <div class="text-body">
               เริมเรียนเลคเชอร์ {{ formatThaiDate(item.timeInLec) }}
             </div>
