@@ -17,7 +17,7 @@ const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160144");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
   console.log(JSON.stringify(userStore.currentUser));
 assignmentStore.assignment = assignmentStore.assignments.find(assignment => assignment.assignmentId ===  parseInt(route.params.assignmentId+'') );
   console.log('route: ' + route.params.assignmentId.toString());

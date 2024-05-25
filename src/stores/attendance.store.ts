@@ -18,8 +18,8 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   const createAttendance = async (attendance: Attendance,file:File) => {
     try {
       const res = await attendaceService.createAttendance(attendance,file);
-      if (res.status) {
-        console.log(res.data);
+      if (res!.status) {
+        console.log(res!.data);
       }
     } catch (error) {
       console.log(error);

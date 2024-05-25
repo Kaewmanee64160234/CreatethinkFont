@@ -9,26 +9,38 @@ function getAttendance() {
 function getAttendanceById(id: string) {
   return http.get(`/attendances/${id}`);
 }
+function printFormData(formData: FormData) {
+  formData.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
+  });
+}
 
-//create function create attendance
+function createAttendance(data: Attendance, file: File) {
+  const formData = new FormData();
+  if(data.user!.studentId === undefined){
+    formData.append("studentId","null")
+  }else{
+    formData.append("studentId", data.user!.studentId!);
 
-function createAttendance(data: Attendance,file:File) {
-    const formData = new FormData();
-    formData.append('attendanceDate', data.attendanceDate.toString());
-    formData.append('attendanceStatus', data.attendanceStatus);
-    formData.append('imageFile', file);
-    formData.append('attendanceConfirmStatus', data.attendanceConfirmStatus);
-    if(data.user){
-        formData.append('userId', data.user?.userId!.toString());
-    }
-    formData.append('assignmentId', data.assignment!.assignmentId+'');
-    return http.post('/attendances', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+  }
+formData.append("assignmentId", data.assignment!.assignmentId!.toString());
+formData.append("file", file);
+formData.append("attendanceConfirmStatus", data.attendanceConfirmStatus);
+formData.append("date", data.attendanceDate.toString());
+formData.append("attendanceStatus", data.attendanceStatus);
+formData.append("confirmStatus", data.attendanceConfirmStatus);
 
 
+
+  // attendanceConfirmStatus
+  formData.append("confirmStatus", data.attendanceConfirmStatus);
+
+  printFormData(formData);
+  return http.post("/attendances", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 //create function get attendance by course id
@@ -50,8 +62,7 @@ function getAttendanceByUserId(userId: string) {
 // updateAttendance
 
 function updateAttendance(attendance: Attendance) {
-
-  return http.patch(`/attendances/${attendance.attendanceId}`,attendance);
+  return http.patch(`/attendances/${attendance.attendanceId}`, attendance);
 }
 // getAttendanceByStatusInAssignment
 
@@ -67,5 +78,5 @@ export default {
   getAttendanceByAssignmentId,
   getAttendanceByUserId,
   updateAttendance,
-  getAttendanceByStatusInAssignment
+  getAttendanceByStatusInAssignment,
 };

@@ -35,6 +35,7 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
       const res = await assignmentService.createAssignment(data);
       if (res.data) {
         assignment.value = res.data;
+        console.log('assignment created', res.data);
         await getAssignmentByCourseId(data.course.coursesId);
       } else {
         alert('Error creating assignment');
