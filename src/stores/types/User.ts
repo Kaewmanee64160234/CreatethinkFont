@@ -14,4 +14,5 @@ export interface User {
   faceDescriptions?: Float32Array[];
   createdAt?: Date;
   updatedAt?: Date;
+  access_token?: string;
 }

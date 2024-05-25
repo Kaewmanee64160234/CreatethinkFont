@@ -15,8 +15,10 @@ export const useAuthStore = defineStore('authStore', () => {
     profileImage: '',
     faceDescriptions: [],
   });
+  const accessToken = ref('');
   const setCurrentUser = (user: User) => {
     currentUser.value = user;
+    
   };
   //fetchUserProfile
   const fetchUserProfile = () => {
@@ -25,18 +27,25 @@ export const useAuthStore = defineStore('authStore', () => {
 
   }
   //login user
-  const login = async () => {
+  const login = async (value: string) => {
     try {
+      currentUser.value.email = value;
       const response = await auth.login(currentUser.value);
-
-      if (response.status === 200) {
+      console.log(currentUser.value);
+      console.log(response);
+      // console.log()
+      if (response.status === 201 || response.status === 200 ) {
+        const token = response.data.access_token;
+        accessToken.value = token;
         setCurrentUser(response.data);
-        localStorage.setItem('token', response.data.access_token)
+        localStorage.setItem('token', token);
+        console.log('Stored token:', localStorage.getItem('token'));
+        localStorage.setItem('users',JSON.stringify(currentUser.value));
+        console.log(response.data);
         router.push('/mapping2');
       }
     } catch (error) {
       console.log(error);
-
     }
   }
   //logout user

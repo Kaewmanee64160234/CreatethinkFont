@@ -1,10 +1,10 @@
-//create  http axios
 import axios from "axios";
 import router from "@/router";
 
 const instance = axios.create({
   baseURL: "http://localhost:3000",
 });
+
 function delay(time: number) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {

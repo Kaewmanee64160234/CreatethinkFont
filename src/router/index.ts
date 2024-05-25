@@ -1,6 +1,16 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-;const routes: Array<RouteRecordRaw> = [
+import HomeView from '../views/HomeView.vue';
+import { ref } from 'vue';
+const user = ref<any | null>(localStorage.getItem('users'))
+// const user_ = JSON.parse(user.value)
+// const ezAutorized = () => {
+//   if (user_.role.toLowerCase() === 'users') {
+//     return router.push('/pageNotFound')
+//   } else {
+//     return true;
+//   }
+// }
+const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
@@ -32,6 +42,8 @@ import HomeView from '../views/HomeView.vue'
       },
       meta: {
         layout: "FullLayout",
+        // requiresAuth: true,
+        // beforeEnter:[ ezAutorized]
       }
     }
   ,
@@ -131,5 +143,23 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+const isLoggedIn = () => {
+  const user = localStorage.getItem('users')
+  if (user) {
+    return true
+  } else {
+    return false
+  }
+}
+router.beforeEach((to, from) => {
+  if (to.meta.requiresAuth && !isLoggedIn()) {
+    return {
+      path: '/',
+      query: { redirect: to.fullPath }
+    }
+  }
+})
+
 
 export default router
