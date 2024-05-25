@@ -76,7 +76,9 @@ const updateCourse = () => {
     // console.log("currentCourseID", courseStore.currentCourse.coursesId);
     // console.log("currentCourse", courseStore.currentCourse);
   }
-  courseStore.showCreateDialog3 = true;
+  courseStore.showCreateDialog2 = false;
+  courseStore.showCreateDialog = false;
+  courseStore.getCourseByTeachId("64160144");
 };
 </script>
 
@@ -372,7 +374,7 @@ const updateCourse = () => {
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
-          <v-btn @click="updateCourse()" class="colorText">ต่อไป </v-btn>
+          <v-btn @click="updateCourse()" class="colorText">เสร็จสิ้น </v-btn>
         </v-card-actions>
         <v-dialog v-model="courseStore.showCreateDialog3" persistent>
           <CreateCourseDialog3 />

@@ -135,8 +135,7 @@ function mapToUser(data: any): User {
       showEditDialog2.value = false;
     };
 
-    return { currentUser, users, getUsers, showDialog, showDialog2, closeDialog, showDialog3, editUser, saveUser, resetUser, showDeleteDialog, showEditDialog, showEditDialog2, deleteUser, getUserBystidId, getUserImage, keyword};
+    return { currentUser, getUserImage, showEditDialog2, keyword, showEditDialog, users, getUsers, showDeleteDialog, showDialog, showDialog2, closeDialog, showDialog3, editUser, saveUser, deleteUser, resetUser, getUserBystidId };
 
   });
   
-
