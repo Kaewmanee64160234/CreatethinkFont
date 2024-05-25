@@ -8,7 +8,7 @@ const enrollmentStore = useEnrollmentStore();
 const courseId = ref("");
 
 const saveEnrollment = () => {
-  if (courseId.value === "") {
+  if (courseId.value.length < 8) {
     console.log("no data");
     return;
   }
@@ -50,6 +50,11 @@ const saveEnrollment = () => {
               variant="outlined"
               class="colorText"
               v-model="courseId"
+              :rules="[
+                (v) =>
+                  /^[A-Za-z0-9]{8,}$/.test(v) ||
+                  'โปรดกรอกรหัสห้องเรียนอย่างน้อย 8 ตัวอักษร',
+              ]"
             ></v-text-field>
           </v-card-title>
         </v-card>

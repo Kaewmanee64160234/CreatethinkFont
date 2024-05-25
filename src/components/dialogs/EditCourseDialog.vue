@@ -6,11 +6,19 @@ const courseStore = useCourseStore();
 
 const editCourse = () => {
   if (courseStore.currentCourse) {
-    courseStore.updateCourse(
-      courseStore.currentCourse.coursesId,
-      courseStore.currentCourse
-    );
-    courseStore.showEditDialog2 = true;
+    if (
+      courseStore.currentCourse.nameCourses === "" ||
+      courseStore.currentCourse.typeCourses === ""
+    ) {
+      console.log("no data");
+      return;
+    } else {
+      courseStore.updateCourse(
+        courseStore.currentCourse.coursesId,
+        courseStore.currentCourse
+      );
+      courseStore.showEditDialog2 = true;
+    }
   }
 };
 </script>
@@ -31,6 +39,7 @@ const editCourse = () => {
               variant="outlined"
               class="colorText"
               v-model="courseStore.currentCourse!.nameCourses"
+              :rules="[(v) => !!v || 'โปรดกรอกชื่อรายวิชา']"
             ></v-text-field>
           </v-card-title>
         </v-card>
@@ -43,6 +52,7 @@ const editCourse = () => {
               v-model="courseStore.currentCourse!.typeCourses"
               variant="solo-filled"
               style="margin-top: 2%"
+              :rules="[(v) => !!v || 'โปรดเลือกประเภทรายวิชา']"
             ></v-select>
           </v-card-title>
         </v-card>
