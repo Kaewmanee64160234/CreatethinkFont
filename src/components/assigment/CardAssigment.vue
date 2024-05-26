@@ -20,12 +20,12 @@ function formatThaiDate(date: Date) {
 
 //create function goto mapping 2
 const goToMapping2 = () => {
-    assignmentStore.assignment = props.post;
+    assignmentStore.currentAssignment = props.post;
     router.push('/mapping2');
 }
 
 const gotoMappinfForStudent = () => {
-    assignmentStore.assignment = props.post;
+    assignmentStore.currentAssignment = props.post;
     router.push('/mappingForStudent/'+props.post.assignmentId);
 }
 
@@ -42,7 +42,7 @@ const gotoMappinfForStudent = () => {
                 <v-spacer></v-spacer>
                 <v-btn @click="gotoMappinfForStudent()" > <v-icon size="30">mdi-card-account-mail</v-icon>
                 </v-btn>
-                <v-btn @click="goToMapping2()" ><v-icon size="30">mdi-account-file-text-outline</v-icon></v-btn>
+                <!-- <v-btn @click="goToMapping2()" ><v-icon size="30">mdi-account-file-text-outline</v-icon></v-btn> -->
             </v-card-actions>
         </v-card>
     </div>
