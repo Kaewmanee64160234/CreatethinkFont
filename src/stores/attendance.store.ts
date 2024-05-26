@@ -18,8 +18,8 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   const createAttendance = async (attendance: Attendance,file:File) => {
     try {
       const res = await attendaceService.createAttendance(attendance,file);
-      if (res.status) {
-        console.log(res.data);
+      if (res!.status) {
+        console.log(res!.data);
       }
     } catch (error) {
       console.log(error);
@@ -29,23 +29,9 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   const getAttendanceByAssignmentId = async (id:string) => {
     try {
       const response = await attendaceService.getAttendanceByAssignmentId(id);
-      // Convert each attendance image data from buffer to base64 string
-      const convertedData = response.data.map((attendance:any) => {
-        if (attendance.attendanceImage && attendance.attendanceImage.data) {
-          // Convert the numeric byte array to a character string and then to base64
-          const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(attendance.attendanceImage.data))
-          );
-          // Assuming the image is JPEG
-          attendance.attendanceImage = `data:image/jpeg;base64,${base64String}`;
-        } else {
-          // Handle cases where there is no image
-          attendance.attendanceImage = null;
-        }
-        return attendance;
-      });
-  
-      attendances.value = convertedData;
+      
+      
+      attendances.value = response.data;
     } catch (e) {
       console.error("Failed to fetch attendances:", e);
     }
