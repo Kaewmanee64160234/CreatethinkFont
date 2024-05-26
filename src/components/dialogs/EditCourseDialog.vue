@@ -13,10 +13,10 @@ const editCourse = () => {
       console.log("no data");
       return;
     } else {
-      courseStore.updateCourse(
-        courseStore.currentCourse.coursesId,
-        courseStore.currentCourse
-      );
+      // courseStore.updateCourse(
+      //   courseStore.currentCourse.coursesId,
+      //   courseStore.currentCourse
+      // );
       courseStore.showEditDialog2 = true;
     }
   }

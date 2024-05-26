@@ -133,6 +133,11 @@ const editCourse2 = () => {
     courseStore.closeDialog2();
   }
 };
+
+const cancelEditCourse = () => {
+  courseStore.closeDialog2();
+  courseStore.getCourseByTeachId("64160049");
+};
 </script>
 
 <template>
@@ -467,7 +472,7 @@ const editCourse2 = () => {
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
+          <v-btn @click="cancelEditCourse">ยกเลิก</v-btn>
           <v-btn @click="editCourse2()" class="colorText">เสร็จสิ้น</v-btn>
         </v-card-actions>
       </v-card>

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import { ref, watch } from "vue";
-import CreateCourseDialog3 from "./CreateCourseDialog3.vue";
 import course from "@/services/course";
 const courseStore = useCourseStore();
 const selectedDate = ref(new Date());
@@ -87,6 +86,14 @@ const updateCourse = () => {
   courseStore.showCreateDialog2 = false;
   courseStore.showCreateDialog = false;
   courseStore.getCourseByTeachId("64160049");
+};
+
+const cancelCourse = async () => {
+  if (courseStore.currentCourse) {
+    await courseStore.deleteCourse(courseStore.currentCourse.coursesId);
+    await courseStore.getCourseByTeachId("64160144");
+    courseStore.closeDialog();
+  }
 };
 </script>
 
@@ -406,12 +413,9 @@ const updateCourse = () => {
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
+          <v-btn @click="cancelCourse">ยกเลิก</v-btn>
           <v-btn @click="updateCourse()" class="colorText">เสร็จสิ้น </v-btn>
         </v-card-actions>
-        <v-dialog v-model="courseStore.showCreateDialog3" persistent>
-          <CreateCourseDialog3 />
-        </v-dialog>
       </v-card>
     </v-row>
   </v-container>
