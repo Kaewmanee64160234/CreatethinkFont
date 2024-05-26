@@ -43,7 +43,7 @@ function createAttendance(data: Attendance, file: File) {
 //create function get attendance by course id
 
 function getAttendanceByCourseId(id: string) {
-  return http.get(`/attendances/course/${id}`);
+  return http.get(`/attendances/courses/${id}`);
 }
 
 //create function get attendance by ass Assignment id
@@ -68,14 +68,24 @@ function getAttendanceByStatusInAssignment(assignmentId: string) {
 }
 
 // confirmAttendance function
-function confirmAttendance(attendaceId:string){
+function confirmAttendance(attendaceId: string) {
   return http.patch(`/attendances/confirm/${attendaceId}`);
 }
 //rejectAttendance function
 
-function rejectAttendance(attendaceId:string){
+function rejectAttendance(attendaceId: string) {
   return http.patch(`/attendances/reject/${attendaceId}`);
 }
+// checkAllAttendance
+
+function checkAllAttendance(assigmentId:string){
+  // '/checkAllAttendance/:courseId
+  console.log(assigmentId);
+  return http.get(`/attendances/checkAllAttendance/${assigmentId}`);
+}
+
+
+
 
 export default {
   getAttendance,
@@ -87,5 +97,6 @@ export default {
   updateAttendance,
   getAttendanceByStatusInAssignment,
   confirmAttendance,
-  rejectAttendance
+  rejectAttendance,
+  checkAllAttendance
 };

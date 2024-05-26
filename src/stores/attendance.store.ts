@@ -3,8 +3,10 @@ import Attendance from "./types/Attendances";
 import { ref } from "vue";
 import attendaceService from "@/services/attendace.service";
 import router from "@/router";
+import { useAssignmentStore } from "./assignment.store";
 export const useAttendanceStore = defineStore("attendanceStore", () => {
   const attendances = ref<Attendance[]>();
+  const assigmentStore = useAssignmentStore();
   const currentAttendance = ref<Attendance & { files: File[] }>({
     attendanceConfirmStatus: "",
     attendanceDate: new Date(),
@@ -108,13 +110,36 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
       const res = await attendaceService.rejectAttendance(attendanceId);
       if (res.data) {
         currentAttendance.value = res.data;
-         getAttendanceByStatusInAssignment(
+        getAttendanceByStatusInAssignment(
           currentAttendance.value.assignment?.assignmentId + ""
         );
       }
     } catch (error) {
       console.log(error);
       console.error("An error occurred during rejectAttendance");
+    }
+  };
+
+  //// getAttendanceByCourseId
+  const getAttendanceByCourseId = async (id: string) => {
+    try {
+      const res = await attendaceService.getAttendanceByCourseId(id);
+      attendances.value = res.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // checkAllAttendance
+  const checkAllAttendance = async (
+    assignmentId: string,
+
+  ) => {
+    try {
+      const res = await attendaceService.checkAllAttendance(assignmentId);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -129,5 +154,7 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     getAttendanceByStatusInAssignment,
     confirmAttendanceByTeacher,
     rejectAttendanceByTeacher,
+    getAttendanceByCourseId,
+    checkAllAttendance,
   };
 });
