@@ -17,12 +17,8 @@ function getCourseByTeachId(teachId: string) {
   return http.get(`/courses/teach/${teachId}`);
 }
 
-function getCourseByStudentId(studentId: string) {
-  return http.get(`/courses/student/${studentId}`);
-}
-
 function createCourse(course: Course) {
   return http.post("/courses/", course);
 }
   
-export default { getCourse , deleteCourse, updateCourse , getCourseByTeachId, getCourseByStudentId, createCourse};
+export default { getCourse , deleteCourse, updateCourse , getCourseByTeachId, createCourse};
