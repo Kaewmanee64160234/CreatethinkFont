@@ -150,6 +150,10 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
 .text-body {
   font-size: 1.25rem;
   margin-bottom: 2%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
 }
 
 .avatar {

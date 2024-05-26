@@ -3,7 +3,6 @@ import { useCourseStore } from "@/stores/course.store";
 import { useEnrollmentStore } from "@/stores/enrollment.store";
 const courseStore = useCourseStore();
 const enrollmentStore = useEnrollmentStore();
-
 const formatThaiDate = (isoDateTime: string | undefined): string => {
   if (!isoDateTime) {
     return "";
@@ -18,9 +17,20 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
   return `${dateString} ${timeString}`;
 };
 
-const accept = async () => {
+const saveEnrollment = async () => {
   courseStore.closeDialog();
   await enrollmentStore.getCourseByStudentId("64160144"); ///mockup data
+};
+
+const cancel = async () => {
+  if (enrollmentStore.currentEnrollment) {
+    await enrollmentStore.deleteEnrollment(
+      enrollmentStore.currentEnrollment!.enrollmentId!
+    );
+    courseStore.showDeleteDialog = false;
+    await enrollmentStore.getCourseByStudentId("64160144");
+    courseStore.closeDialog();
+  }
 };
 </script>
 
@@ -84,8 +94,8 @@ const accept = async () => {
           </v-card-text>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
-          <v-btn @click="accept" class="colorText">เข้าร่วม</v-btn>
+          <v-btn @click="cancel">ยกเลิก</v-btn>
+          <v-btn @click="saveEnrollment" class="colorText">เข้าร่วม</v-btn>
         </v-card-actions>
       </v-card>
     </v-row>

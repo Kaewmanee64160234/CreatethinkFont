@@ -14,7 +14,6 @@ const enrollmentStore = useEnrollmentStore();
 onMounted(async () => {
   await enrollmentStore.getCourseByStudentId("64160144");
 });
-
 const formatThaiDate = (isoDateTime: string | undefined): string => {
   if (!isoDateTime) {
     return "";
