@@ -8,6 +8,7 @@ import router from '@/router';
 import { useCourseStore } from '@/stores/course.store';
 import assignment from '@/services/assignment';
 import { useAssignmentStore } from '@/stores/assignment.store';
+const url = 'http://localhost:3000'
 
 const route = useRoute();
 const attendanceStore = useAttendanceStore();
@@ -17,7 +18,7 @@ const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160144");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
   console.log(JSON.stringify(userStore.currentUser));
 assignmentStore.assignment = assignmentStore.assignments.find(assignment => assignment.assignmentId ===  parseInt(route.params.assignmentId+'') );
   console.log('route: ' + route.params.assignmentId.toString());
@@ -69,7 +70,6 @@ const reCheckAttendance = async (attendance: Attendance) => {
 
 
 }
-
 </script>
 <template>
   <v-container style="margin-top: 5%;">
@@ -78,9 +78,10 @@ const reCheckAttendance = async (attendance: Attendance) => {
     <v-row>
       <v-col v-for="student in attendanceStore.attendances" :key="student.attendanceId" cols="12" sm="6" md="4">
         <v-card class="pa-3" outlined>
+
           <!-- Student image and information -->
           <div class="d-flex flex-row align-center">
-            <v-img :src="student.attendanceImage" height="200px" width="140px" class="mr-3"
+            <v-img  :src="`${url}/attendances/image/${student.attendanceImage}`" height="200px" width="140px" class="mr-3"
               :alt="`Student Image for ${student.user ? student.user.firstName : 'Unknown'}`"></v-img>
 
             <!-- Student Info -->
