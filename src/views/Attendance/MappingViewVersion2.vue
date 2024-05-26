@@ -16,6 +16,7 @@ import user from "@/services/user";
 import Attendance from "@/stores/types/Attendances";
 import router from "@/router";
 import assignment from "@/services/assignment";
+import { User } from "@/stores/types/User";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
@@ -124,7 +125,7 @@ const loadImageAndProcess = (dataUrl: string, index: number) => {
 onMounted(async () => {
   const route = useRoute();
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160047");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
 
   console.log("Route object:", route); // Debugging line to check the entire route object
 
@@ -232,41 +233,35 @@ const confirmAttendance = async () => {
       // Determine user object based on identification
       let identifiedUser = identifications.value[i].name !== "Unknown"
         ? userStore.users.find(user => user.firstName === identifications.value[i].name)
-        : null;
-      if (identifiedUser === null) {
-        // setuer id from i 
-        identifiedUser = {
-          studentId: i + '',
-          firstName: 'Unknown'
-          ,
-          lastName: 'Unknown',
-          email: 'Unknown',
+        : {
+          studentId: i+'',
+          firstName: "Unknown",
+          lastName: "Unknown",
           faceDescriptions: []
+        } as User;
+   
+  
 
-        }
+      // Log the attempt to create attendance
+      // console.log("Submitting:", attendanceData);
+      await attendaceStore.createAttendance({
+        attendanceId: 0,
+        attendanceDate: new Date(),
+        attendanceStatus: "present" ,
+        attendanceConfirmStatus:  identifiedUser ? "confirmed" : "notConfirmed",
+        assignment: assigmentStore.assignment,
+        user: identifiedUser,
+        attendanceImage: ""
+      }, imageFile);
+      // console.log("Attendance recorded successfully for", identifications.value[i].name);
 
-      }
-
-        // Log the attempt to create attendance
-        // console.log("Submitting:", attendanceData);
-        await attendaceStore.createAttendance({
-          attendanceId: 0,
-          attendanceDate: new Date(),
-          attendanceStatus: identifiedUser ? "Present" : "Unknown",
-          attendanceConfirmStatus: "not Confirm",
-          assignment: assigmentStore.assignment,
-          user: identifiedUser,
-          attendanceImage: ""
-        }, imageFile);
-        // console.log("Attendance recorded successfully for", identifications.value[i].name);
-
-      } catch (error) {
-        console.error("Error recording attendance for", identifications.value[i].name, ":", error);
-        console.error("Detailed Error:", error instanceof Event ? "DOM Event error, check network or permissions." : error);
-      }
+    } catch (error) {
+      console.error("Error recording attendance for", identifications.value[i].name, ":", error);
+      console.error("Detailed Error:", error instanceof Event ? "DOM Event error, check network or permissions." : error);
     }
+  }
   router.push('/mappingForStudent/' + assigmentStore.assignment?.assignmentId);
-  };
+};
 
 
 </script>

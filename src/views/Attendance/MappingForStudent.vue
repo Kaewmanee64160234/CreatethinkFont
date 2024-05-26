@@ -18,7 +18,7 @@ const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160049");
   console.log(JSON.stringify(userStore.currentUser));
 assignmentStore.assignment = assignmentStore.assignments.find(assignment => assignment.assignmentId ===  parseInt(route.params.assignmentId+'') );
   console.log('route: ' + route.params.assignmentId.toString());
@@ -56,8 +56,7 @@ const confirmAttendance = async (attendance: Attendance) => {
 const reCheckAttendance = async (attendance: Attendance) => {
   try {
     attendance.assignment = assignmentStore.assignment;
-
-    attendance.attendanceStatus = 'recheck';
+    attendance.attendanceStatus = 'present';
     attendance.attendanceConfirmStatus = 'recheck';
     attendance.user = userStore.currentUser;
     console.log(JSON.stringify(attendance));
@@ -97,19 +96,11 @@ const reCheckAttendance = async (attendance: Attendance) => {
           </div>
 
           <!-- Buttons -->
+          
           <v-row class="mt-3">
             <v-col cols="12">
-              <v-btn v-if="student.user?.studentId == userStore.currentUser!.studentId && student.attendanceConfirmStatus != 'recheck' && student.attendanceConfirmStatus != 'confirmed'"
-                @click="confirmAttendance(student)" block color="green"
-               >
-                ยืนยันการเข้าเรียน
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
               <v-btn block color="orange" @click="reCheckAttendance(student)"
-              :disabled="student.attendanceConfirmStatus=='recheck'">
+           >
                 ตรวจสอบอีกครั้ง
               </v-btn>
             </v-col>

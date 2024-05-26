@@ -29,7 +29,7 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   const getAttendanceByAssignmentId = async (id:string) => {
     try {
       const response = await attendaceService.getAttendanceByAssignmentId(id);
-      
+      console.log(response.data);
       
       attendances.value = response.data;
     } catch (e) {
