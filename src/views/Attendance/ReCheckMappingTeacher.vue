@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useAttendanceStore } from '../../stores/attendance.store';
 import { useRoute } from 'vue-router';
+import Attendance from '@/stores/types/Attendances';
 
 const attendanceStore = useAttendanceStore();
 const route = useRoute();
@@ -10,6 +11,33 @@ onMounted(async () => {
     const id = route.params.assignmentId;
   await attendanceStore.getAttendanceByStatusInAssignment(id+'') // Assuming this function exists and fetches the attendances
 });
+
+// confirm student 
+const confirmAttendance = async (attendance:Attendance) => {
+  if (confirm("Do you want to confirm this attendance?")) {
+    try {
+      attendance.attendanceStatus = 'present';
+      attendance.attendanceConfirmStatus = 'confirmed';
+      await attendanceStore.confirmAttendanceByTeacher(attendance.attendanceId+'');
+      alert('Attendance has been confirmed.');
+    } catch (error) {
+      console.error("Error recording attendance:", error);
+      alert('Failed to confirm attendance.');
+    }
+  }
+};
+//reject student
+const reCheckAttendance = async (attendance:Attendance) => {
+  try {
+    attendance.attendanceStatus = 'present';
+    attendance.attendanceConfirmStatus = 'recheck';
+    await attendanceStore.rejectAttendanceByTeacher(attendance.attendanceId+'');
+    alert('Attendance has been recheck.');
+  } catch (error) {
+    console.error("Error recording attendance:", error);
+    alert('Failed to recheck attendance.');
+  }
+};
 </script>
 
 <template>

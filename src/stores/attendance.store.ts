@@ -5,19 +5,19 @@ import attendaceService from "@/services/attendace.service";
 import router from "@/router";
 export const useAttendanceStore = defineStore("attendanceStore", () => {
   const attendances = ref<Attendance[]>();
-  const currentAttendance = ref<Attendance &  { files: File[] }>({
-    attendanceConfirmStatus: "", 
+  const currentAttendance = ref<Attendance & { files: File[] }>({
+    attendanceConfirmStatus: "",
     attendanceDate: new Date(),
     attendanceId: 0,
     attendanceImage: "",
-    attendanceStatus:'',
-    files: []
+    attendanceStatus: "",
+    files: [],
   });
 
   // create attendance
-  const createAttendance = async (attendance: Attendance,file:File) => {
+  const createAttendance = async (attendance: Attendance, file: File) => {
     try {
-      const res = await attendaceService.createAttendance(attendance,file);
+      const res = await attendaceService.createAttendance(attendance, file);
       if (res!.status) {
         console.log(res!.data);
       }
@@ -26,17 +26,16 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     }
   };
   //get attendace by assigment id
-  const getAttendanceByAssignmentId = async (id:string) => {
+  const getAttendanceByAssignmentId = async (id: string) => {
     try {
       const response = await attendaceService.getAttendanceByAssignmentId(id);
       console.log(response.data);
-      
+
       attendances.value = response.data;
     } catch (e) {
       console.error("Failed to fetch attendances:", e);
     }
   };
-  
 
   //get attdent by user id
   const getAttendanceByUserId = async (id: string) => {
@@ -61,31 +60,63 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   const confirmAttendance = async (attendance: Attendance) => {
     try {
       const res = await attendaceService.updateAttendance(attendance);
-      
-   
     } catch (error) {
       // Log the error object which might contain additional info
-      console.error('Error confirming attendance:', error);
+      console.error("Error confirming attendance:", error);
 
-      window.alert('An error occurred during confirmation');
+      window.alert("An error occurred during confirmation");
     }
-}
+  };
 
-// getAttendanceByStatusInAssignment
+  // getAttendanceByStatusInAssignment
   async function getAttendanceByStatusInAssignment(assignmentId: string) {
-  try {
-    const res = await attendaceService.getAttendanceByStatusInAssignment(assignmentId);
-    console.log(res.data);
-  
+    try {
+      const res = await attendaceService.getAttendanceByStatusInAssignment(
+        assignmentId
+      );
+      console.log(res.data);
 
-    attendances.value = res.data;
-    
-  } catch (error) {
-    console.error('An error occurred during getAttendanceByStatusInAssignment:', error);
+      attendances.value = res.data;
+    } catch (error) {
+      console.error(
+        "An error occurred during getAttendanceByStatusInAssignment:",
+        error
+      );
+    }
   }
 
-}
-  
+  //confirmAttendance
+
+  const confirmAttendanceByTeacher = async (attendanceId: string) => {
+    try {
+      const res = await attendaceService.confirmAttendance(attendanceId);
+      if (res.data) {
+        currentAttendance.value = res.data;
+
+        getAttendanceByStatusInAssignment(
+          currentAttendance.value.assignment?.assignmentId + ""
+        );
+      }
+    } catch (error) {
+      console.error("An error occurred during confirmAttendance");
+    }
+  };
+
+  // rejectAttendanceByTeacher
+  const rejectAttendanceByTeacher = async (attendanceId: string) => {
+    try {
+      const res = await attendaceService.rejectAttendance(attendanceId);
+      if (res.data) {
+        currentAttendance.value = res.data;
+         getAttendanceByStatusInAssignment(
+          currentAttendance.value.assignment?.assignmentId + ""
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      console.error("An error occurred during rejectAttendance");
+    }
+  };
 
   return {
     attendances,
@@ -95,7 +126,8 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     getAttendanceByUserId,
     updateAttendance,
     confirmAttendance,
-    getAttendanceByStatusInAssignment
-    
+    getAttendanceByStatusInAssignment,
+    confirmAttendanceByTeacher,
+    rejectAttendanceByTeacher,
   };
 });

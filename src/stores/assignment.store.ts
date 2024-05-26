@@ -44,6 +44,15 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
       console.error('Error creating assignment:', e);
     }
   };
+  //get Assignment by id
+  const getAssignmentById = async (id: string) => {
+    try {
+      const res = await assignmentService.getAssignmentById(id);
+      currentAssignment.value = res.data;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
       // assignments.value.push(res.data);
    
@@ -54,6 +63,7 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
     getAssignments,
     assignment,
     createAssignment,
-    currentAssignment
+    currentAssignment,
+    getAssignmentById
   };
 });

@@ -67,6 +67,16 @@ function getAttendanceByStatusInAssignment(assignmentId: string) {
   return http.get(`/attendances/assignments/status/${assignmentId}`);
 }
 
+// confirmAttendance function
+function confirmAttendance(attendaceId:string){
+  return http.patch(`/attendances/confirm/${attendaceId}`);
+}
+//rejectAttendance function
+
+function rejectAttendance(attendaceId:string){
+  return http.patch(`/attendances/reject/${attendaceId}`);
+}
+
 export default {
   getAttendance,
   createAttendance,
@@ -76,4 +86,6 @@ export default {
   getAttendanceByUserId,
   updateAttendance,
   getAttendanceByStatusInAssignment,
+  confirmAttendance,
+  rejectAttendance
 };

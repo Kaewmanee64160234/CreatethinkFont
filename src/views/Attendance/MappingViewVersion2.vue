@@ -8,30 +8,20 @@ import type {
   WithFaceLandmarks,
   WithFaceDescriptor,
 } from "face-api.js"; // Import types
-import Person from "@/stores/types/Person";
 import { useAssignmentStore } from "@/stores/assignment.store";
 import { useAttendanceStore } from "@/stores/attendance.store";
 import { useUserStore } from "@/stores/user.store";
-import user from "@/services/user";
-import Attendance from "@/stores/types/Attendances";
 import router from "@/router";
-import assignment from "@/services/assignment";
 import { User } from "@/stores/types/User";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
 }
-interface RouteQuery {
-  imageUrls?: string[];
-}
-
-const route = useRoute();
 
 const imageUrls = ref<string[]>([]);
 const identifications = ref<{ name: string; studentId: string }[]>([]);
 const croppedImagesDataUrls = ref<string[]>([]);
 const canvasRefs = reactive<CanvasRefs>({});
-const authStore = useAuthStore();
 const assigmentStore = useAssignmentStore();
 const attendaceStore = useAttendanceStore();
 const userStore = useUserStore();
@@ -125,7 +115,7 @@ const loadImageAndProcess = (dataUrl: string, index: number) => {
 onMounted(async () => {
   const route = useRoute();
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160049");
 
   console.log("Route object:", route); // Debugging line to check the entire route object
 
@@ -277,6 +267,8 @@ const confirmAttendance = async () => {
     </v-row>
     <!-- Layout Row for Image Display and Identifications -->
     <v-row>
+      {{ userStore.currentUser?.studentId }}
+
       <!-- Column for Original Images with Canvas Overlay -->
       <v-col cols="12" md="6">
         <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index"
@@ -291,7 +283,6 @@ const confirmAttendance = async () => {
             "></canvas>
         </div>
       </v-col>
-      {{ identifications }}
       <!-- Column for Identification and Cropped Images Display, 3 per row -->
       <v-col cols="12" md="6">
         <v-row>
