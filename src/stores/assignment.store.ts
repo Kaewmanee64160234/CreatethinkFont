@@ -4,10 +4,35 @@ import { defineStore } from "pinia";
 import assignmentService from "@/services/assignment";
 
 export const useAssignmentStore = defineStore("assignmentStore", () => {
-  const assignments = ref<Assignment[]>([]);
+  const assignments = ref<Assignment[]>([
+    {
+      assignmentId: 0,
+
+      assignmentTime: new Date(),
+      nameAssignment: "",
+      course: {
+        userId: -1,
+        coursesId: "",
+        credit: 0,
+        fullScore: 0,
+        nameCourses: "",
+        session: "",
+        stdAmount: 0,
+        timeInLec: new Date(),
+        timeOutLec: new Date(),
+        typeCourses: "",
+
+        user: {
+          userId: 0,
+          firstName: "",
+          lastName: "",
+          email: "",
+        },
+      },
+    },
+  ]);
   const assignment = ref<Assignment>();
   const currentAssignment = ref<Assignment>();
-
 
   //get
   const getAssignments = async () => {
@@ -23,30 +48,38 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
     try {
       const res = await assignmentService.getAssignmentByCourseId(id);
       //map assignment
-        assignments.value = res.data;
-        console.log(id);
+      assignments.value = res.data;
+      console.log(id);
     } catch (e) {
       console.log(e);
     }
   };
   //create Assignment
-  const createAssignment = async (data:Assignment) => {
+  const createAssignment = async (data: Assignment) => {
     try {
       const res = await assignmentService.createAssignment(data);
       if (res.data) {
         assignment.value = res.data;
-        console.log('assignment created', res.data);
+        console.log("assignment created", res.data);
         await getAssignmentByCourseId(data.course.coursesId);
       } else {
-        alert('Error creating assignment');
+        alert("Error creating assignment");
       }
     } catch (e) {
-      console.error('Error creating assignment:', e);
+      console.error("Error creating assignment:", e);
+    }
+  };
+  //get Assignment by id
+  const getAssignmentById = async (id: string) => {
+    try {
+      const res = await assignmentService.getAssignmentById(id);
+      currentAssignment.value = res.data;
+    } catch (e) {
+      console.log(e);
     }
   };
 
-      // assignments.value.push(res.data);
-   
+  // assignments.value.push(res.data);
 
   return {
     assignments,
@@ -54,6 +87,7 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
     getAssignments,
     assignment,
     createAssignment,
-    currentAssignment
+    currentAssignment,
+    getAssignmentById,
   };
 });

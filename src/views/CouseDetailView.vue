@@ -8,6 +8,9 @@ import Assignment from '@/stores/types/Assignment';
 import CardAssigment from '@/components/assigment/CardAssigment.vue';
 import { useCourseStore } from '@/stores/course.store';
 import { useAuthStore } from '@/stores/auth';
+import { useUserStore } from '@/stores/user.store';
+import { useAttendanceStore } from '@/stores/attendance.store';
+import Attendance from '@/stores/types/Attendances';
 const route = useRoute();
 const id = ref(route.params.idCourse);
 const tabs = [
@@ -16,16 +19,6 @@ const tabs = [
 
     { id: 3, title: 'Record' },
 ];
-const headers = [
-    { text: 'รหัสนักศึกษา', value: 'id', align: 'start' },
-    { text: 'ชื่อ-นามสกุล', value: 'name' },
-    { text: 'คะแนนเต็ม(%)', value: 'points' },
-    { text: 'เช็คความถูกต้อง', value: 'isCorrect', sortable: false },
-]
-const students = [
-    { id: '64160047', name: 'ฟาฟิศ ศิริรักษ์โกเมน', points: 100, isCorrect: true },
-    { id: '64160048', name: 'กฤษณ์ กิจงานที่พึ่ง', points: 100, isCorrect: true },
-    { id: '64160049', name: 'ปวงชน ปัญญามั่น', points: 100, isCorrect: false },]
 
 const router = useRouter();
 const tab = ref('posts');
@@ -39,11 +32,18 @@ const nameAssignment = ref('');
 const authStore = useAuthStore();
 const imageUrl = ref(null); // Store the image URL
 const file = ref(null); // File reference for uploads
+const userStore = useUserStore();
+const attendanceStore = useAttendanceStore();
 //mounted get assigment by course id
 onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
+    await attendanceStore.getAttendanceByCourseId(id.value.toString());
     posts.value = assigmentStore.assignments;
-})
+    await userStore.getUsers();
+    console.log(assigmentStore.assignments);
+    console.log(attendanceStore.attendances);
+
+});
 const processFile = (url: string) => {
 
     imageUrls.value.push(url);
@@ -74,53 +74,57 @@ const openPost = () => {
     showTextArea.value = !showTextArea.value;
 };
 const resizeAndConvertImageToBase64 = (imageUrl, maxWidth, maxHeight) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous'; // If images are from an external source
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-      const width = img.width * ratio;
-      const height = img.height * ratio;
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous'; // If images are from an external source
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+            const width = img.width * ratio;
+            const height = img.height * ratio;
 
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL("image/jpeg"));
-    };
-    img.onerror = () => reject(new Error(`Failed to load image at ${imageUrl}`));
-    img.src = imageUrl;
-  });
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg"));
+        };
+        img.onerror = () => reject(new Error(`Failed to load image at ${imageUrl}`));
+        img.src = imageUrl;
+    });
 };
 
 //create Post
 const createPost = async () => {
-  if (nameAssignment.value === '') {
-    return;
-  }
-  const newAssignment = {
-    assignmentTime: new Date(), 
-    nameAssignment: nameAssignment.value, 
-    course: { ...courseStore.currentCourse! },
-    assignmentId: 0,
-    attdances: [],
-    room: undefined,
-    createdDate: undefined,
-    updatedDate: undefined,
-    deletedDate: undefined
-  };
+    if (nameAssignment.value === '') {
+        return;
+    }
+    const newAssignment = {
+        assignmentTime: new Date(),
+        nameAssignment: nameAssignment.value,
+        course: { ...courseStore.currentCourse! },
+        assignmentId: 0,
+        attdances: [],
+        room: undefined,
+        createdDate: undefined,
+        updatedDate: undefined,
+        deletedDate: undefined
+    };
 
-  await assigmentStore.createAssignment(newAssignment);
-  if (imageUrlsResize.value.length > 0) {
-    router.push({ path: '/mapping2', query: { imageUrls: imageUrlsResize.value } });
-    nameAssignment.value = '';
-    imageUrlsResize.value = []; // Clear the images after posting
-  } else {
-    console.error('No images available for posting.');
-  }
+    await assigmentStore.createAssignment(newAssignment);
+    if (imageUrlsResize.value.length > 0) {
+        router.push({ path: '/mapping2', query: { imageUrls: imageUrlsResize.value } });
+        nameAssignment.value = '';
+        imageUrlsResize.value = []; // Clear the images after posting
+    } else {
+        console.error('No images available for posting.');
+    }
 }
-
+// getAttendanceStatus
+function getAttendanceStatus(attendances: Attendance[], userId: number, assignmentId: number): string {
+    const attendance = attendances?.find(att => att.user?.userId === userId && att.assignment?.assignmentId === assignmentId);
+    return attendance ? attendance.attendanceStatus : 'No Record Found';
+}
 
 </script>
 <template>
@@ -210,38 +214,51 @@ const createPost = async () => {
             </v-tab-item>
 
             <!-- Tab content for Assignments -->
-            <v-tab-item v-else value="Record">
+            <!-- Tab Item for Users -->
+            <v-tab-item v-else>
                 <v-card class="mx-auto" color="primary" max-width="1200" outlined style="padding: 20px;">
                     <v-card-title>
                         <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
                     </v-card-title>
                 </v-card>
                 <v-card class="my-3" style="width: 70%;">
-                    <v-card-title>
-                        Student Performance
-                    </v-card-title>
+                    <v-card-title>Student Performance</v-card-title>
+                   
+                </v-card>
+
+
+            <!-- Tab Item for Assignment Attendance -->
+            
+                <v-card class="mx-auto" outlined style="padding: 20px;">
+                    <v-card-title>Assignment Attendance Details</v-card-title>
                     <v-table>
-                        <template v-slot:default>
-                            <thead>
-                                <tr>
-                                    <th class="text-left">ID</th>
-                                    <th class="text-left">Name</th>
-                                    <th class="text-left">Present</th>
-                                    <th class="text-left">Absent</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="item in students" :key="item.id">
-                                    <td>{{ item.id }}</td>
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ item.points }}%</td>
-                                    <td> <v-icon v-if="item.isCorrect == true"
-                                            color="green">mdi-checkbox-marked-circle</v-icon>
-                                        <v-icon v-if="item.isCorrect == false" color="red">mdi-close-circle</v-icon>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </template>
+                        <thead>
+                            <tr>
+                                <th class="text-left">Student Name</th>
+                                <th v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
+                                    {{ assignment.nameAssignment }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="user in userStore.users" :key="user.userId">
+                            
+                                <td>{{ user.firstName + ' ' + user.lastName }}</td>
+                                <td v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
+                                    <template
+                                        v-if="getAttendanceStatus(attendanceStore.attendances!,user.userId!,assignment.assignmentId!) === 'present'">
+                                        <v-icon color="green">mdi-check-circle</v-icon> Present
+                                    </template>
+                                    <template
+                                        v-else-if="getAttendanceStatus(attendanceStore.attendances!,user.userId!,assignment.assignmentId!) === 'late'">
+                                        <v-icon color="orange">mdi-clock-outline</v-icon> Late
+                                    </template>
+                                    <template v-else>
+                                        <v-icon color="red">mdi-close-circle</v-icon> Absent
+                                    </template>
+                                </td>
+                            </tr>
+                        </tbody>
                     </v-table>
                 </v-card>
             </v-tab-item>

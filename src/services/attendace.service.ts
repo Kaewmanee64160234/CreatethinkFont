@@ -17,20 +17,17 @@ function printFormData(formData: FormData) {
 
 function createAttendance(data: Attendance, file: File) {
   const formData = new FormData();
-  if(data.user!.studentId === undefined){
-    formData.append("studentId","null")
-  }else{
+  if (data.user!.studentId === undefined) {
+    formData.append("studentId", "null");
+  } else {
     formData.append("studentId", data.user!.studentId!);
-
   }
-formData.append("assignmentId", data.assignment!.assignmentId!.toString());
-formData.append("file", file);
-formData.append("attendanceConfirmStatus", data.attendanceConfirmStatus);
-formData.append("date", data.attendanceDate.toString());
-formData.append("attendanceStatus", data.attendanceStatus);
-formData.append("confirmStatus", data.attendanceConfirmStatus);
-
-
+  formData.append("assignmentId", data.assignment!.assignmentId!.toString());
+  formData.append("file", file);
+  formData.append("attendanceConfirmStatus", data.attendanceConfirmStatus);
+  formData.append("date", data.attendanceDate.toString());
+  formData.append("attendanceStatus", data.attendanceStatus);
+  formData.append("confirmStatus", data.attendanceConfirmStatus);
 
   // attendanceConfirmStatus
   formData.append("confirmStatus", data.attendanceConfirmStatus);
@@ -46,7 +43,7 @@ formData.append("confirmStatus", data.attendanceConfirmStatus);
 //create function get attendance by course id
 
 function getAttendanceByCourseId(id: string) {
-  return http.get(`/attendances/course/${id}`);
+  return http.get(`/attendances/courses/${id}`);
 }
 
 //create function get attendance by ass Assignment id
@@ -70,6 +67,26 @@ function getAttendanceByStatusInAssignment(assignmentId: string) {
   return http.get(`/attendances/assignments/status/${assignmentId}`);
 }
 
+// confirmAttendance function
+function confirmAttendance(attendaceId: string) {
+  return http.patch(`/attendances/confirm/${attendaceId}`);
+}
+//rejectAttendance function
+
+function rejectAttendance(attendaceId: string) {
+  return http.patch(`/attendances/reject/${attendaceId}`);
+}
+// checkAllAttendance
+
+function checkAllAttendance(assigmentId:string){
+  // '/checkAllAttendance/:courseId
+  console.log(assigmentId);
+  return http.get(`/attendances/checkAllAttendance/${assigmentId}`);
+}
+
+
+
+
 export default {
   getAttendance,
   createAttendance,
@@ -79,4 +96,7 @@ export default {
   getAttendanceByUserId,
   updateAttendance,
   getAttendanceByStatusInAssignment,
+  confirmAttendance,
+  rejectAttendance,
+  checkAllAttendance
 };
