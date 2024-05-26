@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 
 const attendanceStore = useAttendanceStore();
 const route = useRoute();
+const url = 'http://localhost:3000'
 onMounted(async () => {
     const id = route.params.assignmentId;
   await attendanceStore.getAttendanceByStatusInAssignment(id+'') // Assuming this function exists and fetches the attendances
@@ -43,9 +44,10 @@ onMounted(async () => {
       <v-col cols="12" md="4">
         <div v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
           <v-card class="mb-4">
-            <v-img :src="attendee.attendanceImage" height="200px"></v-img>
+            <v-img :src="`${url}/attendances/image/${attendee.attendanceImage}`" height="200px"></v-img>
             <!-- <v-img :src="attendee." height="200px"></v-img> -->
-            <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }}</v-card-title>
+         
+            <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }} </v-card-title>
             <v-card-subtitle>{{ attendee.user?.studentId }}</v-card-subtitle>
             <v-card-text>
               <div>เข้าเรียน: {{ attendee.attendanceStatus }}</div>

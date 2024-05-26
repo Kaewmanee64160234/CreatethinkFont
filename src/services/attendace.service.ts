@@ -17,20 +17,17 @@ function printFormData(formData: FormData) {
 
 function createAttendance(data: Attendance, file: File) {
   const formData = new FormData();
-  if(data.user!.studentId === undefined){
-    formData.append("studentId","null")
-  }else{
+  if (data.user!.studentId === undefined) {
+    formData.append("studentId", "null");
+  } else {
     formData.append("studentId", data.user!.studentId!);
-
   }
-formData.append("assignmentId", data.assignment!.assignmentId!.toString());
-formData.append("file", file);
-formData.append("attendanceConfirmStatus", data.attendanceConfirmStatus);
-formData.append("date", data.attendanceDate.toString());
-formData.append("attendanceStatus", data.attendanceStatus);
-formData.append("confirmStatus", data.attendanceConfirmStatus);
-
-
+  formData.append("assignmentId", data.assignment!.assignmentId!.toString());
+  formData.append("file", file);
+  formData.append("attendanceConfirmStatus", data.attendanceConfirmStatus);
+  formData.append("date", data.attendanceDate.toString());
+  formData.append("attendanceStatus", data.attendanceStatus);
+  formData.append("confirmStatus", data.attendanceConfirmStatus);
 
   // attendanceConfirmStatus
   formData.append("confirmStatus", data.attendanceConfirmStatus);

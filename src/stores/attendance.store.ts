@@ -76,22 +76,9 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
   try {
     const res = await attendaceService.getAttendanceByStatusInAssignment(assignmentId);
     console.log(res.data);
-    const convertedData = res.data.map((attendance:any) => {
-      if (attendance.attendanceImage && attendance.attendanceImage.data) {
-        // Convert the numeric byte array to a character string and then to base64
-        const base64String = btoa(
-          String.fromCharCode(...new Uint8Array(attendance.attendanceImage.data))
-        );
-        // Assuming the image is JPEG
-        attendance.attendanceImage = `data:image/jpeg;base64,${base64String}`;
-      } else {
-        // Handle cases where there is no image
-        attendance.attendanceImage = null;
-      }
-      return attendance;
-    });
+  
 
-    attendances.value = convertedData;
+    attendances.value = res.data;
     
   } catch (error) {
     console.error('An error occurred during getAttendanceByStatusInAssignment:', error);
