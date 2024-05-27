@@ -6,13 +6,16 @@ import EditCourseDialog from "@/components/dialogs/EditCourseDialog.vue";
 import { useCourseStore } from "@/stores/course.store";
 import { useEnrollmentStore } from "@/stores/enrollment.store";
 import Enrollment from "@/stores/types/Enrollment";
+import { useUserStore } from "@/stores/user.store";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 const courseStore = useCourseStore();
+const userStore = useUserStore();
 const router = useRouter();
 const enrollmentStore = useEnrollmentStore();
 onMounted(async () => {
   await enrollmentStore.getCourseByStudentId("64160144");
+  await userStore.getUsers();
 });
 
 const formatThaiDate = (isoDateTime: string | undefined): string => {

@@ -8,7 +8,7 @@ import router from '@/router';
 
 export const useAuthStore = defineStore('authStore', () => {
   const currentUser = ref<User>({
-    userId: 0,
+    userId: -1,
     firstName: '',
     lastName: '',
     email: '',
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('authStore', () => {
       console.log(currentUser.value);
       console.log(response);
       // console.log()
-      if (response.status === 201 || response.status === 200 ) {
+      if (response.status === 201 || response.status === 200) {
         const token = response.data.access_token;
         accessToken.value = token;
         setCurrentUser(response.data);
@@ -42,10 +42,16 @@ export const useAuthStore = defineStore('authStore', () => {
         console.log('Stored token:', localStorage.getItem('token'));
         localStorage.setItem('users',JSON.stringify(currentUser.value));
         console.log(response.data);
-        router.push('/mapping2');
+        router.push('/enrolmentManagement');
       }
     } catch (error) {
-      console.log(error);
+      if ((error as any).response && (error as any).response.status === 404) {
+        console.log('User not found');
+        alert('User not found. Please check your credentials and try again.');
+      } else {
+        console.log('Unexpected error:', error);
+        alert('An unexpected error occurred. Please try again later.');
+      }
     }
   }
   //logout user

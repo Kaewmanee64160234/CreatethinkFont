@@ -2,8 +2,13 @@
 import { User } from "@/stores/types/User";
 import http from "./axios";
 import axios from "axios";
+
 function getUser() {
-    return http.get("/users");
+  return http.get("/users"
+    , {headers: {
+    'Authorization': `Bearer ${ localStorage.getItem('authToken') }`}
+});
+    
   }
 //create user
 function saveUser(user: User & { files: File[] }) {
@@ -29,7 +34,7 @@ function saveUser(user: User & { files: File[] }) {
 
   return http.post("/users", formData, {
     headers: {
-      'Content-Type': 'multipart/form-data', 
+      'Content-Type': 'multipart/form-data',
     }
   });
 }
@@ -66,18 +71,18 @@ function updateUser(user: User & { files: File[] }, userId: number) {
 
 //delete user
 function deleteUser(id: number) {
-    return http.delete(`/users/${id}`);
-  }
+  return http.delete(`/users/${id}`);
+}
 //find user by studentId and teacherId
 function getUserBystidId(studentId: string, teacherId: string) {
-    return http.get(`/users/find/${studentId}/${teacherId}`);
-  }
+  return http.get(`/users/find/${studentId}/${teacherId}`);
+}
 
 //get user imageProfile by id
 function getUserImage(id: number) {
-    return http.get(`/users/profileImage/${id}`);
-  }
+  return http.get(`/users/profileImage/${id}`);
+}
 
 
 
-export default { getUser, getUserImage, saveUser, deleteUser, updateUser, getUserBystidId};
+export default { getUser, getUserImage, saveUser, deleteUser, updateUser, getUserBystidId };

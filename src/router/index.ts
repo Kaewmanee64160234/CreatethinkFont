@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue';
 import { ref } from 'vue';
 const user = ref<any | null>(localStorage.getItem('users'))
-// const user_ = JSON.parse(user.value)
+const user_ = JSON.parse(user.value)
 // const ezAutorized = () => {
 //   if (user_.role.toLowerCase() === 'users') {
 //     return router.push('/pageNotFound')
