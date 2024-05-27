@@ -2,31 +2,45 @@
 import { useCourseStore } from "@/stores/course.store";
 import CreateEnrolmentDialog2 from "./CreateEnrolmentDialog2.vue";
 import { useEnrollmentStore } from "@/stores/enrollment.store";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import course from "@/services/course";
 const courseStore = useCourseStore();
 const enrollmentStore = useEnrollmentStore();
 const courseId = ref("");
 
+onMounted(() => {
+  courseStore.getCourses();
+});
 const saveEnrollment = () => {
-  if (courseId.value === "") {
+  if (courseId.value.length < 8) {
     console.log("no data");
     return;
   }
-  const newEnrollment = {
-    userId: 4, ///mouckup data
-    courseId: courseId.value,
-    createdDate: undefined,
-    updatedDate: undefined,
-    deletedDate: undefined,
-  };
-  try {
-    // ส่งคำขอสร้าง enrollment
-    enrollmentStore.createEnrollment(newEnrollment);
-    console.log("enrollment", newEnrollment);
-    courseStore.showCreateDialog2 = true;
-    courseId.value = "";
-  } catch (error) {
-    console.error("Error creating enrollment:", error);
+  for (let i = 0; i < courseStore.courses.length; i++) {
+    if (courseId.value == courseStore.courses[i].coursesId) {
+      //วน check ว่ามี courseId ที่ตรงกับที่กรอกมาหรือไม่
+      console.log("enrollment", courseStore.courses[i]);
+      const newEnrollment = {
+        userId: 4, ///mouckup data
+        courseId: courseId.value,
+        createdDate: undefined,
+        updatedDate: undefined,
+        deletedDate: undefined,
+      };
+      try {
+        // ส่งคำขอสร้าง enrollment
+        enrollmentStore.createEnrollment(newEnrollment);
+        console.log("enrollment", newEnrollment);
+        courseStore.showCreateDialog2 = true;
+        courseId.value = "";
+      } catch (error) {
+        console.error("Error creating enrollment:", error);
+      }
+    } else {
+      console.log("no courseID"); // ไม่มี courseId ที่ตรงกับที่กรอกมา
+      courseId.value = "";
+      return;
+    }
   }
 };
 </script>
@@ -50,6 +64,11 @@ const saveEnrollment = () => {
               variant="outlined"
               class="colorText"
               v-model="courseId"
+              :rules="[
+                (v) =>
+                  /^[A-Za-z0-9]{8,}$/.test(v) ||
+                  'โปรดกรอกรหัสห้องเรียนอย่างน้อย 8 ตัวอักษร',
+              ]"
             ></v-text-field>
           </v-card-title>
         </v-card>

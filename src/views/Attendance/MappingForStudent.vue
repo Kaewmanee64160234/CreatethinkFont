@@ -18,10 +18,10 @@ const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160234");
+  userStore.currentUser = userStore.users.find(user => user.studentId === "64160047");
   console.log(JSON.stringify(userStore.currentUser));
-assignmentStore.assignment = assignmentStore.assignments.find(assignment => assignment.assignmentId ===  parseInt(route.params.assignmentId+'') );
-  console.log('route: ' + route.params.assignmentId.toString());
+  await assignmentStore.getAssignmentById(route.params.assignmentId.toString());
+  console.log(JSON.stringify(assignmentStore.currentAssignment));
   await attendanceStore.getAttendanceByAssignmentId(route.params.assignmentId.toString());
 });
 
@@ -31,7 +31,7 @@ const confirmAttendance = async (attendance: Attendance) => {
   if (confirm("Do you want to confirm this attendance?")) {
     try {
       // Set attendance status
-      attendance.assignment = assignmentStore.assignment;
+      attendance.assignment = assignmentStore.currentAssignment;
       attendance.attendanceStatus = 'present';
       attendance.attendanceConfirmStatus = 'confirmed';
       if (attendance.user === null) {
@@ -45,7 +45,7 @@ const confirmAttendance = async (attendance: Attendance) => {
       alert('Attendance has been confirmed.');
 
       // Redirect after successful confirmation
-      router.push('/resheckMappingTeacher/' + assignmentStore.assignment?.assignmentId); // Replace '/next-page-route' with your specific route
+      // router.push('/resheckMappingTeacher/' + assignmentStore.currentAssignment?.assignmentId); // Replace '/next-page-route' with your specific route
     } catch (error) {
       console.error("Error recording attendance:", error);
       alert('Failed to confirm attendance.'); // Show error alert
@@ -55,14 +55,13 @@ const confirmAttendance = async (attendance: Attendance) => {
 
 const reCheckAttendance = async (attendance: Attendance) => {
   try {
-    attendance.assignment = assignmentStore.assignment;
-
-    attendance.attendanceStatus = 'recheck';
+    attendance.assignment = assignmentStore.currentAssignment;
+    attendance.attendanceStatus = 'present';
     attendance.attendanceConfirmStatus = 'recheck';
     attendance.user = userStore.currentUser;
     console.log(JSON.stringify(attendance));
     await attendanceStore.confirmAttendance(attendance);
-    router.push('/resheckMappingTeacher/' + assignmentStore.assignment?.assignmentId); // Replace '/next-page-route' with your specific route
+    router.push('/resheckMappingTeacher/' + assignmentStore.currentAssignment?.assignmentId); // Replace '/next-page-route' with your specific route
 
   } catch (error) {
     console.log(error);
@@ -81,8 +80,8 @@ const reCheckAttendance = async (attendance: Attendance) => {
 
           <!-- Student image and information -->
           <div class="d-flex flex-row align-center">
-            <v-img  :src="`${url}/attendances/image/${student.attendanceImage}`" height="200px" width="140px" class="mr-3"
-              :alt="`Student Image for ${student.user ? student.user.firstName : 'Unknown'}`"></v-img>
+            <v-img :src="`${url}/attendances/image/${student.attendanceImage}`" height="200px" width="140px"
+              class="mr-3" :alt="`Student Image for ${student.user ? student.user.firstName : 'Unknown'}`"></v-img>
 
             <!-- Student Info -->
             <div class="d-flex flex-column justify-space-between">
@@ -97,19 +96,10 @@ const reCheckAttendance = async (attendance: Attendance) => {
           </div>
 
           <!-- Buttons -->
+
           <v-row class="mt-3">
             <v-col cols="12">
-              <v-btn v-if="student.user?.studentId == userStore.currentUser!.studentId && student.attendanceConfirmStatus != 'recheck' && student.attendanceConfirmStatus != 'confirmed'"
-                @click="confirmAttendance(student)" block color="green"
-               >
-                ยืนยันการเข้าเรียน
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-btn block color="orange" @click="reCheckAttendance(student)"
-              :disabled="student.attendanceConfirmStatus=='recheck'">
+              <v-btn block color="orange" @click="reCheckAttendance(student)">
                 ตรวจสอบอีกครั้ง
               </v-btn>
             </v-col>

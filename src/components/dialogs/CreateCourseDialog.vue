@@ -11,7 +11,7 @@ const courseId = ref("");
 const typeCourse = ref("");
 
 const saveCourse = async () => {
-  if (nameCourse.value === "" && typeCourse.value === "" && courseId.value === "") {
+  if (nameCourse.value === "" || typeCourse.value === "" || courseId.value.length < 8) {
     console.log("no data");
     return;
   }
@@ -80,6 +80,7 @@ const saveCourse = async () => {
               variant="outlined"
               class="colorText"
               v-model="nameCourse"
+              :rules="[(v) => !!v || 'โปรดกรอกชื่อรายวิชาให้ถูกต้อง']"
             ></v-text-field>
           </v-card-title>
         </v-card>
@@ -94,6 +95,11 @@ const saveCourse = async () => {
               variant="outlined"
               class="colorText"
               v-model="courseId"
+              :rules="[
+                (v) =>
+                  /^[A-Za-z0-9]{8,}$/.test(v) ||
+                  'โปรดกรอกรหัสห้องเรียนอย่างน้อย 8 ตัวอักษร',
+              ]"
             ></v-text-field>
           </v-card-title>
         </v-card>
@@ -106,6 +112,7 @@ const saveCourse = async () => {
               variant="solo-filled"
               style="margin-top: 2%"
               v-model="typeCourse"
+              :rules="[(v) => !!v || 'โปรดเลือกประเภทรายวิชา']"
             ></v-select>
           </v-card-title>
         </v-card>

@@ -100,28 +100,43 @@ function formatISODateTime(date: Date, time: string): string {
 
 const editCourse2 = () => {
   if (courseStore.currentCourse) {
-    courseStore.currentCourse.timeInLec = new Date(
-      formatISODateTime(selectedDate.value, selectedTime.value)
-    );
-    courseStore.currentCourse.timeOutLec = new Date(
-      formatISODateTime(selectedDate2.value, selectedTime2.value)
-    );
-    if (courseStore.currentCourse.typeCourses === "เลคเชอร์และแลป") {
-      courseStore.currentCourse.timeInLab = new Date(
-        formatISODateTime(selectedDate3.value, selectedTime3.value)
+    if (
+      courseStore.currentCourse.coursesId.length < 8 ||
+      courseStore.currentCourse.credit <= 0 ||
+      courseStore.currentCourse.session === "" ||
+      courseStore.currentCourse.stdAmount <= 0 ||
+      courseStore.currentCourse.fullScore <= 0
+    ) {
+      console.log("no data");
+      return;
+    } else {
+      courseStore.currentCourse.timeInLec = new Date(
+        formatISODateTime(selectedDate.value, selectedTime.value)
       );
-      courseStore.currentCourse.timeOutLab = new Date(
-        formatISODateTime(selectedDate4.value, selectedTime4.value)
+      courseStore.currentCourse.timeOutLec = new Date(
+        formatISODateTime(selectedDate2.value, selectedTime2.value)
       );
+      if (courseStore.currentCourse.typeCourses === "เลคเชอร์และแลป") {
+        courseStore.currentCourse.timeInLab = new Date(
+          formatISODateTime(selectedDate3.value, selectedTime3.value)
+        );
+        courseStore.currentCourse.timeOutLab = new Date(
+          formatISODateTime(selectedDate4.value, selectedTime4.value)
+        );
+      }
+      courseStore.updateCourse(
+        courseStore.currentCourse.coursesId,
+        courseStore.currentCourse
+      );
+      console.log("currentCourse", courseStore.currentCourse);
     }
-    courseStore.updateCourse(
-      courseStore.currentCourse.coursesId,
-      courseStore.currentCourse
-    );
-    // console.log("currentCourseID", courseStore.currentCourse.coursesId);
-    console.log("currentCourse", courseStore.currentCourse);
+    courseStore.closeDialog2();
   }
-  courseStore.showEditDialog3 = true;
+};
+
+const cancelEditCourse = () => {
+  courseStore.closeDialog2();
+  courseStore.getCourseByTeachId("64160049");
 };
 </script>
 
@@ -143,6 +158,7 @@ const editCourse2 = () => {
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.session"
+                  :rules="[(v) => !!v || 'โปรดกรอกกลุ่มที่เรียนให้ถูกต้อง']"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -154,6 +170,11 @@ const editCourse2 = () => {
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.coursesId"
+                  :rules="[
+                    (v) =>
+                      /^[A-Za-z0-9]{8,}$/.test(v) ||
+                      'โปรดกรอกรหัสวิชาอย่างน้อย 8 ตัวอักษร',
+                  ]"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -165,6 +186,10 @@ const editCourse2 = () => {
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.credit"
+                  :rules="[
+                    (v) => !!v || 'โปรดกรอกจำนวนหน่วยกิตให้ถูกต้อง',
+                    (v) => /^[0-9]+$/.test(v) || 'โปรดกรอกตัวเลขเท่านั้น',
+                  ]"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -176,6 +201,10 @@ const editCourse2 = () => {
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.stdAmount"
+                  :rules="[
+                    (v) => !!v || 'โปรดกรอกจำนวนนักเรียนให้ถูกต้อง',
+                    (v) => /^[0-9]+$/.test(v) || 'โปรดกรอกตัวเลขเท่านั้น',
+                  ]"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -433,18 +462,19 @@ const editCourse2 = () => {
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.fullScore"
+                  :rules="[
+                    (v) => !!v || 'โปรดกรอกคะแนนเต็มให้ถูกต้อง',
+                    (v) => /^[0-9]+$/.test(v) || 'โปรดกรอกตัวเลขเท่านั้น',
+                  ]"
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
-          <v-btn @click="editCourse2()" class="colorText">ต่อไป </v-btn>
+          <v-btn @click="cancelEditCourse">ยกเลิก</v-btn>
+          <v-btn @click="editCourse2()" class="colorText">เสร็จสิ้น</v-btn>
         </v-card-actions>
-        <v-dialog v-model="courseStore.showEditDialog3" max-width="2900px">
-          <EditCourseDialog3 />
-        </v-dialog>
       </v-card>
     </v-row>
   </v-container>

@@ -1,14 +1,12 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
 import { ref, watch } from "vue";
-import CreateCourseDialog3 from "./CreateCourseDialog3.vue";
 import course from "@/services/course";
 const courseStore = useCourseStore();
 const selectedDate = ref(new Date());
 const showDatePicker = ref(false);
 const selectedTime = ref("00:00");
 const showTimePicker = ref(false);
-const selectedDate2 = ref(new Date());
 const showDatePicker2 = ref(false);
 const selectedTime2 = ref("00:00");
 const showTimePicker2 = ref(false);
@@ -16,7 +14,6 @@ const selectedDate3 = ref(new Date());
 const showDatePicker3 = ref(false);
 const selectedTime3 = ref("00:00");
 const showTimePicker3 = ref(false);
-const selectedDate4 = ref(new Date());
 const showDatePicker4 = ref(false);
 const selectedTime4 = ref("00:00");
 const showTimePicker4 = ref(false);
@@ -51,45 +48,63 @@ function formatISODateTime(date: Date, time: string): string {
 
 const updateCourse = () => {
   if (courseStore.currentCourse) {
-    courseStore.currentCourse.credit = credit.value;
-    courseStore.currentCourse.session = session.value;
-    courseStore.currentCourse.stdAmount = stdAmount.value;
-    courseStore.currentCourse.fullScore = fullScore.value;
-    courseStore.currentCourse.timeInLec = new Date(
-      formatISODateTime(selectedDate.value, selectedTime.value)
-    );
-    courseStore.currentCourse.timeOutLec = new Date(
-      formatISODateTime(selectedDate2.value, selectedTime2.value)
-    );
-    if (courseStore.currentCourse.typeCourses === "เลคเชอร์และแลป") {
-      courseStore.currentCourse.timeInLab = new Date(
-        formatISODateTime(selectedDate3.value, selectedTime3.value)
+    if (
+      credit.value <= 0 ||
+      session.value === "" ||
+      stdAmount.value <= 0 ||
+      fullScore.value <= 0
+    ) {
+      console.log("no data");
+      return;
+    } else {
+      courseStore.currentCourse.credit = credit.value;
+      courseStore.currentCourse.session = session.value;
+      courseStore.currentCourse.stdAmount = stdAmount.value;
+      courseStore.currentCourse.fullScore = fullScore.value;
+      courseStore.currentCourse.timeInLec = new Date(
+        formatISODateTime(selectedDate.value, selectedTime.value)
       );
-      courseStore.currentCourse.timeOutLab = new Date(
-        formatISODateTime(selectedDate4.value, selectedTime4.value)
+      courseStore.currentCourse.timeOutLec = new Date(
+        formatISODateTime(selectedDate.value, selectedTime2.value)
       );
+      if (courseStore.currentCourse.typeCourses === "เลคเชอร์และแลป") {
+        courseStore.currentCourse.timeInLab = new Date(
+          formatISODateTime(selectedDate3.value, selectedTime3.value)
+        );
+        courseStore.currentCourse.timeOutLab = new Date(
+          formatISODateTime(selectedDate.value, selectedTime4.value)
+        );
+      }
+      courseStore.updateCourse(
+        courseStore.currentCourse.coursesId,
+        courseStore.currentCourse
+      );
+      // console.log("currentCourseID", courseStore.currentCourse.coursesId);
+      // console.log("currentCourse", courseStore.currentCourse);
     }
-    courseStore.updateCourse(
-      courseStore.currentCourse.coursesId,
-      courseStore.currentCourse
-    );
-    // console.log("currentCourseID", courseStore.currentCourse.coursesId);
-    // console.log("currentCourse", courseStore.currentCourse);
   }
   courseStore.showCreateDialog2 = false;
   courseStore.showCreateDialog = false;
-  courseStore.getCourseByTeachId("64160144");
+  courseStore.getCourseByTeachId("64160049");
+};
+
+const cancelCourse = async () => {
+  if (courseStore.currentCourse) {
+    await courseStore.deleteCourse(courseStore.currentCourse.coursesId);
+    await courseStore.getCourseByTeachId("64160144");
+    courseStore.closeDialog();
+  }
 };
 </script>
 
 <template>
   <v-container>
     <v-row justify="center">
-      <v-card style="width: 30vw">
+      <v-card style="width: 30vw; height: auto">
         <v-card-title style="margin-left: 3%; margin-top: 1%">
           <h2>รายละเอียดห้องเรียน</h2>
         </v-card-title>
-        <v-card variant="outlined" class="textarea" style="width: 27vw">
+        <v-card variant="outlined" class="textarea" style="width: 27vw; height: auto">
           <v-card-title>
             <h3 style="margin-bottom: 2%">สร้างรายละเอียดวิชา</h3>
             <v-row style="height: 8vh">
@@ -97,7 +112,11 @@ const updateCourse = () => {
                 <p>กลุ่มเรียนที่</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="session"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="session"
+                  :rules="[(v) => !!v || 'โปรดกรอกกลุ่มที่เรียนให้ถูกต้อง']"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row style="height: 8vh">
@@ -105,7 +124,14 @@ const updateCourse = () => {
                 <p>จำนวนหน่วยกิต</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="credit"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="credit"
+                  :rules="[
+                    (v) => !!v || 'โปรดกรอกจำนวนหน่วยกิตให้ถูกต้อง',
+                    (v) => /^[0-9]+$/.test(v) || 'โปรดกรอกตัวเลขเท่านั้น',
+                  ]"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row style="height: 8vh">
@@ -113,7 +139,14 @@ const updateCourse = () => {
                 <p>จำนวนนักเรียน</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="stdAmount"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="stdAmount"
+                  :rules="[
+                    (v) => !!v || 'โปรดกรอกจำนวนนักเรียนให้ถูกต้อง',
+                    (v) => /^[0-9]+$/.test(v) || 'โปรดกรอกตัวเลขเท่านั้น',
+                  ]"
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row style="height: 8vh">
@@ -191,8 +224,8 @@ const updateCourse = () => {
                   <template v-slot:activator="{ props }">
                     <v-text-field
                       label="วันที่เลิกเลคเชอร์"
-                      v-model="selectedDate2"
-                      :value="formatThaiDate(selectedDate2)"
+                      v-model="selectedDate"
+                      :value="formatThaiDate(selectedDate)"
                       variant="outlined"
                       readonly
                       @click:append="showDatePicker2 = !showDatePicker2"
@@ -203,7 +236,7 @@ const updateCourse = () => {
                     </v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="selectedDate2"
+                    v-model="selectedDate"
                     show-adjacent-month
                   ></v-date-picker>
                 </v-menu>
@@ -317,8 +350,8 @@ const updateCourse = () => {
                   <template v-slot:activator="{ props }">
                     <v-text-field
                       label="วันที่เลิกแลป"
-                      v-model="selectedDate4"
-                      :value="formatThaiDate(selectedDate4)"
+                      v-model="selectedDate3"
+                      :value="formatThaiDate(selectedDate3)"
                       variant="outlined"
                       readonly
                       @click:append="showDatePicker4 = !showDatePicker4"
@@ -329,7 +362,7 @@ const updateCourse = () => {
                     </v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="selectedDate4"
+                    v-model="selectedDate3"
                     show-adjacent-month
                   ></v-date-picker>
                 </v-menu>
@@ -367,18 +400,22 @@ const updateCourse = () => {
                 <p>คะแนนเต็ม</p>
               </v-col>
               <v-col align="left" class="fields">
-                <v-text-field variant="outlined" v-model="fullScore"></v-text-field>
+                <v-text-field
+                  variant="outlined"
+                  v-model="fullScore"
+                  :rules="[
+                    (v) => !!v || 'โปรดกรอกคะแนนเต็มให้ถูกต้อง',
+                    (v) => /^[0-9]+$/.test(v) || 'โปรดกรอกตัวเลขเท่านั้น',
+                  ]"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-card-title>
         </v-card>
         <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
+          <v-btn @click="cancelCourse">ยกเลิก</v-btn>
           <v-btn @click="updateCourse()" class="colorText">เสร็จสิ้น </v-btn>
         </v-card-actions>
-        <v-dialog v-model="courseStore.showCreateDialog3" persistent>
-          <CreateCourseDialog3 />
-        </v-dialog>
       </v-card>
     </v-row>
   </v-container>

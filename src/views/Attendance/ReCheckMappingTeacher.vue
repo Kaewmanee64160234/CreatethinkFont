@@ -2,21 +2,56 @@
 import { ref, onMounted } from 'vue';
 import { useAttendanceStore } from '../../stores/attendance.store';
 import { useRoute } from 'vue-router';
+import Attendance from '@/stores/types/Attendances';
+import { useAssignmentStore } from '@/stores/assignment.store';
+import Assignment from '@/stores/types/Assignment';
 
 const attendanceStore = useAttendanceStore();
+const assignmentStore = useAssignmentStore();
 const route = useRoute();
+const url = 'http://localhost:3000'
 onMounted(async () => {
     const id = route.params.assignmentId;
   await attendanceStore.getAttendanceByStatusInAssignment(id+'') // Assuming this function exists and fetches the attendances
 });
+
+// confirm student 
+const confirmAttendance = async (attendance:Attendance) => {
+  if (confirm("Do you want to confirm this attendance?")) {
+    try {
+      attendance.attendanceStatus = 'present';
+      attendance.attendanceConfirmStatus = 'confirmed';
+      await attendanceStore.confirmAttendanceByTeacher(attendance.attendanceId+'');
+      alert('Attendance has been confirmed.');
+    } catch (error) {
+      console.error("Error recording attendance:", error);
+      alert('Failed to confirm attendance.');
+    }
+  }
+};
+//reject student
+const reCheckAttendance = async (attendance:Attendance) => {
+  try {
+    attendance.attendanceStatus = 'present';
+    attendance.attendanceConfirmStatus = 'recheck';
+    await attendanceStore.rejectAttendanceByTeacher(attendance.attendanceId+'');
+    alert('Attendance has been recheck.');
+  } catch (error) {
+    console.error("Error recording attendance:", error);
+    alert('Failed to recheck attendance.');
+  }
+};
 </script>
 
 <template>
-  <v-container style="margin-top: 5%;">
+  <v-container style="margin-top: 10%;margin-left: 10%;">
     <v-row>
+      <v-btn @click="attendanceStore.checkAllAttendance( route.params.assignmentId+'')">ยืนยันการcheckชื่อ</v-btn>
+
       <v-col cols="12" md="8">
        <!-- table -->
         <v-simple-table>
+          
           <template v-slot:default>
             <thead>
               <tr>
@@ -43,9 +78,10 @@ onMounted(async () => {
       <v-col cols="12" md="4">
         <div v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
           <v-card class="mb-4">
-            <v-img :src="attendee.attendanceImage" height="200px"></v-img>
+            <v-img :src="`${url}/attendances/image/${attendee.attendanceImage}`" height="200px"></v-img>
             <!-- <v-img :src="attendee." height="200px"></v-img> -->
-            <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }}</v-card-title>
+         
+            <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }} </v-card-title>
             <v-card-subtitle>{{ attendee.user?.studentId }}</v-card-subtitle>
             <v-card-text>
               <div>เข้าเรียน: {{ attendee.attendanceStatus }}</div>

@@ -63,7 +63,7 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
           @click="goToCourseDetail(item.coursesId, item)"
         >
           <v-img
-            height="15vh"
+            height="100"
             src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
             cover
           >
@@ -115,6 +115,10 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
             <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
               เลิกเรียนแลป {{ formatThaiDate(item.timeOutLab) }}
             </div>
+            <div v-else>
+              <div class="text-body">เริมเรียนแลป ไม่มี</div>
+              <div class="text-body">เลิกเรียนแลป ไม่มี</div>
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -150,11 +154,15 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
 .text-body {
   font-size: 1.25rem;
   margin-bottom: 2%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
 }
 
 .avatar {
   position: absolute;
-  top: 50%;
+  top: 30%;
   right: 0%;
   transform: translate(-50%, -50%);
 }
