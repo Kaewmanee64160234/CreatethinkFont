@@ -473,8 +473,13 @@ const cancelEditCourse = () => {
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="cancelEditCourse">ยกเลิก</v-btn>
-          <v-btn @click="editCourse2()" class="colorText">เสร็จสิ้น</v-btn>
+          <v-btn @click="courseStore.showEditDialog3 = true" class="colorText"
+            >ต่อไป</v-btn
+          >
         </v-card-actions>
+        <v-dialog v-model="courseStore.showEditDialog3" persistent>
+          <EditCourseDialog3 />
+        </v-dialog>
       </v-card>
     </v-row>
   </v-container>

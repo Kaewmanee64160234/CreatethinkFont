@@ -1,16 +1,23 @@
 <script lang="ts" setup>
 import { useCourseStore } from "@/stores/course.store";
-import { ref } from "vue";
-import CreateCourseDialog2 from "./CreateCourseDialog2.vue";
-import course from "@/services/course";
+import { onMounted, ref } from "vue";
+import { useEnrollmentStore } from "@/stores/enrollment.store";
 const courseStore = useCourseStore();
+const enrollmentStore = useEnrollmentStore();
+const selectedEnrollment = ref<number[]>([]);
 
-const rePage = () => {
-  courseStore.showEditDialog = false;
-  courseStore.showEditDialog2 = false;
-  courseStore.showEditDialog3 = false;
-  courseStore.getCourseByTeachId("64160144");
+const deleteSelectedEnrollments = async () => {
+  for (const id of selectedEnrollment.value) {
+    await enrollmentStore.deleteEnrollment(id);
+  }
+  selectedEnrollment.value = []; // Clear selected enrollments
+  await enrollmentStore.getStudentByCourseId(courseStore.currentCourse!.coursesId);
+  courseStore.closeDialog2();
 };
+
+onMounted(async () => {
+  await enrollmentStore.getStudentByCourseId(courseStore.currentCourse!.coursesId);
+});
 </script>
 
 <template>
@@ -26,26 +33,30 @@ const rePage = () => {
           style="width: 27vw; overflow-y: scroll"
         >
           <v-card-title>
-            <div style="margin-bottom: 2%">เลือกนิสิตที่จะเข้าร่วมในรายวิชานี้</div>
+            <div style="margin-bottom: 2%">เลือกนิสิตที่จะลบออกจากวิชานี้</div>
           </v-card-title>
-          <v-row>
+          <v-row v-for="(item, index) of enrollmentStore.enrollments" :key="index">
             <v-col cols="auto" style="margin-left: 2%; margin-bottom: 1%">
               <v-avatar size="50">
-                <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
+                <v-img :src="item.user?.profileImage"></v-img>
               </v-avatar>
             </v-col>
             <v-col align="left">
-              <h3>Name</h3>
-              <p>มิสแกรนด์</p>
+              <h3>{{ item.user?.firstName }} {{ item.user?.lastName }}</h3>
+              <p>{{ item.user?.email }}</p>
             </v-col>
             <v-col cols="auto" align="right">
-              <v-checkbox color="primary"></v-checkbox>
+              <v-checkbox
+                color="primary"
+                v-model="selectedEnrollment"
+                :value="item.enrollmentId"
+              ></v-checkbox>
             </v-col>
           </v-row>
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
-          <v-btn @click="rePage" class="colorText">เสร็จสิ้น</v-btn>
+          <v-btn @click="deleteSelectedEnrollments()" class="colorText">เสร็จสิ้น</v-btn>
         </v-card-actions>
       </v-card>
     </v-row>

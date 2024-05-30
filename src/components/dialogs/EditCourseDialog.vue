@@ -58,7 +58,7 @@ const editCourse = () => {
         </v-card>
         <v-card-actions class="actions">
           <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
-          <v-btn @click="editCourse()" class="colorText"
+          <v-btn @click="courseStore.showEditDialog2 = true" class="colorText"
             >ต่อไป
             <v-dialog v-model="courseStore.showEditDialog2" persistent>
               <EditCourseDialog2 />
