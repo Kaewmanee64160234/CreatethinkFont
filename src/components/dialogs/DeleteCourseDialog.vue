@@ -42,6 +42,6 @@ const deleteCourse = async (idCourse: string) => {
 }
 .cardText {
   width: auto;
-  height: 18vh;
+  height: auto;
 }
 </style>

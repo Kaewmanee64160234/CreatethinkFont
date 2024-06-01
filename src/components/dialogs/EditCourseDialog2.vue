@@ -150,23 +150,17 @@ const cancelEditCourse = () => {
         <v-card variant="outlined" class="textarea" style="width: 27vw">
           <v-card-title>
             <h3 style="margin-bottom: 2%">สร้างรายละเอียดวิชา</h3>
-            <v-row style="height: 8vh">
-              <v-col cols="3">
+            <v-row>
+              <v-col cols="12" sm="6">
                 <p>กลุ่มเรียนที่</p>
-              </v-col>
-              <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.session"
                   :rules="[(v) => !!v || 'โปรดกรอกกลุ่มที่เรียนให้ถูกต้อง']"
                 ></v-text-field>
               </v-col>
-            </v-row>
-            <v-row style="height: 8vh">
-              <v-col cols="3">
+              <v-col cols="12" sm="6">
                 <p>รหัสวิชา</p>
-              </v-col>
-              <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.coursesId"
@@ -178,11 +172,9 @@ const cancelEditCourse = () => {
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row style="height: 8vh">
-              <v-col cols="3">
+            <v-row>
+              <v-col cols="12" sm="6">
                 <p>จำนวนหน่วยกิต</p>
-              </v-col>
-              <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.credit"
@@ -192,12 +184,8 @@ const cancelEditCourse = () => {
                   ]"
                 ></v-text-field>
               </v-col>
-            </v-row>
-            <v-row style="height: 8vh">
-              <v-col cols="3">
+              <v-col cols="12" sm="6">
                 <p>จำนวนนักเรียน</p>
-              </v-col>
-              <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.stdAmount"
@@ -208,11 +196,9 @@ const cancelEditCourse = () => {
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row style="height: 8vh">
-              <v-col cols="2">
+            <v-row>
+              <v-col cols="12" sm="6">
                 <p>วันที่</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showDatePicker"
                   :close-on-content-click="false"
@@ -240,11 +226,8 @@ const cancelEditCourse = () => {
                   ></v-date-picker>
                 </v-menu>
               </v-col>
-
-              <v-col cols="auto">
+              <v-col cols="12" sm="6">
                 <p>เวลา</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showTimePicker"
                   :close-on-content-click="false"
@@ -268,11 +251,9 @@ const cancelEditCourse = () => {
                 </v-menu>
               </v-col>
             </v-row>
-            <v-row style="height: 8vh">
-              <v-col cols="2">
+            <v-row>
+              <v-col cols="12" sm="6">
                 <p>วันที่</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showDatePicker2"
                   :close-on-content-click="false"
@@ -300,11 +281,8 @@ const cancelEditCourse = () => {
                   ></v-date-picker>
                 </v-menu>
               </v-col>
-
-              <v-col cols="auto">
+              <v-col cols="12" sm="6">
                 <p>เวลา</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showTimePicker2"
                   :close-on-content-click="false"
@@ -328,14 +306,9 @@ const cancelEditCourse = () => {
                 </v-menu>
               </v-col>
             </v-row>
-            <v-row
-              style="height: 8vh"
-              v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'"
-            >
-              <v-col cols="2">
+            <v-row v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'">
+              <v-col cols="12" sm="6">
                 <p>วันที่</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showDatePicker3"
                   :close-on-content-click="false"
@@ -363,11 +336,8 @@ const cancelEditCourse = () => {
                   ></v-date-picker>
                 </v-menu>
               </v-col>
-
-              <v-col cols="auto">
+              <v-col cols="12" sm="6">
                 <p>เวลา</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showTimePicker3"
                   :close-on-content-click="false"
@@ -391,14 +361,9 @@ const cancelEditCourse = () => {
                 </v-menu>
               </v-col>
             </v-row>
-            <v-row
-              style="height: 8vh"
-              v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'"
-            >
-              <v-col cols="2">
+            <v-row v-if="courseStore.currentCourse!.typeCourses === 'เลคเชอร์และแลป'">
+              <v-col cols="12" sm="6">
                 <p>วันที่</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showDatePicker4"
                   :close-on-content-click="false"
@@ -426,11 +391,8 @@ const cancelEditCourse = () => {
                   ></v-date-picker>
                 </v-menu>
               </v-col>
-
-              <v-col cols="auto">
+              <v-col cols="12" sm="6">
                 <p>เวลา</p>
-              </v-col>
-              <v-col>
                 <v-menu
                   v-model="showTimePicker4"
                   :close-on-content-click="false"
@@ -454,11 +416,9 @@ const cancelEditCourse = () => {
                 </v-menu>
               </v-col>
             </v-row>
-            <v-row style="height: 8vh; margin-bottom: 2%">
-              <v-col cols="3">
+            <v-row>
+              <v-col cols="12">
                 <p>คะแนนเต็ม</p>
-              </v-col>
-              <v-col align="left" class="fields">
                 <v-text-field
                   variant="outlined"
                   v-model="courseStore.currentCourse!.fullScore"

@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-navigation-drawer width="80">
+    <v-navigation-drawer app permanent width="80">
       <v-layout style="margin-top: 10%; margin-left: 5%">
         <v-list density="compact">
           <v-list-item link to="/courseManagement">

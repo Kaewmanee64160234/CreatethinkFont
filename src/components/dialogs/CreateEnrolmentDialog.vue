@@ -48,61 +48,54 @@ const saveEnrollment = () => {
 <template>
   <v-container>
     <v-row justify="center">
-      <v-card style="width: 30vw">
-        <v-card-title style="margin-left: 3%; margin-top: 1%">
-          <h2>เข้าร่วมชั้นเรียน</h2>
-        </v-card-title>
-        <v-card variant="outlined" class="cards textarea">
+      <v-col cols="12" md="8" lg="6">
+        <v-card>
           <v-card-title>
-            <h3>รหัสห้องเรียน</h3>
-            <div class="title">
-              สอบถามรหัสห้องเรียนจากอาจารย์ผู้สอน หลังจากนั้นให้กรอกลงในช่องด้านล่าง
-            </div>
-            <v-text-field
-              clearable
-              label="รหัสห้องเรียน"
-              variant="outlined"
-              class="colorText"
-              v-model="codeCourse"
-              :rules="[
-                (v) =>
-                  /^[A-Za-z0-9]{8,}$/.test(v) ||
-                  'โปรดกรอกรหัสห้องเรียนอย่างน้อย 8 ตัวอักษร',
-              ]"
-            ></v-text-field>
+            <h2>เข้าร่วมชั้นเรียน</h2>
           </v-card-title>
+          <v-card-text>
+            <v-card class="mb-4">
+              <v-card-title>
+                <h3>รหัสห้องเรียน</h3>
+              </v-card-title>
+              <v-card-text>
+                <div class="title">
+                  สอบถามรหัสห้องเรียนจากอาจารย์ผู้สอน หลังจากนั้นให้กรอกลงในช่องด้านล่าง
+                </div>
+                <v-text-field
+                  clearable
+                  label="รหัสห้องเรียน"
+                  variant="outlined"
+                  v-model="codeCourse"
+                  :rules="[
+                    (v) =>
+                      /^[A-Za-z0-9]{8,}$/.test(v) ||
+                      'โปรดกรอกรหัสห้องเรียนอย่างน้อย 8 ตัวอักษร',
+                  ]"
+                ></v-text-field>
+              </v-card-text>
+            </v-card>
+          </v-card-text>
+          <v-card-actions class="d-flex justify-end">
+            <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
+            <v-btn @click="saveEnrollment" class="colorText">ต่อไป</v-btn>
+          </v-card-actions>
+          <v-dialog v-model="courseStore.showCreateDialog2" persistent>
+            <CreateEnrolmentDialog2 />
+          </v-dialog>
         </v-card>
-        <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog">ยกเลิก</v-btn>
-          <v-btn @click="saveEnrollment" class="colorText">ต่อไป</v-btn>
-        </v-card-actions>
-        <v-dialog v-model="courseStore.showCreateDialog2" persistent>
-          <CreateEnrolmentDialog2 />
-        </v-dialog>
-      </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
-<style>
-.actions {
-  justify-content: flex-end;
+<style scoped>
+.mb-4 {
+  margin-bottom: 1rem;
 }
-
-.cards {
-  width: 27vw;
-  margin: 2%;
-}
-
-.textarea {
-  margin-left: 5%;
-  border-color: #e0e0e0;
-}
-
 .colorText {
   color: #2a6ec5;
 }
-
 .title {
   word-wrap: break-word;
   white-space: normal;
