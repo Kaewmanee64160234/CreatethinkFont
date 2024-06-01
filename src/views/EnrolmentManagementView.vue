@@ -94,6 +94,10 @@ const showDeleteDialog = (enrollment: Enrollment) => {
             <div class="text-body" v-if="item.course?.typeCourses === 'เลคเชอร์และแลป'">
               เลิกเรียนแลป {{ formatThaiDate(item.course.timeOutLab) }}
             </div>
+            <div v-else>
+              <div class="text-body">เริมเรียนแลป ไม่มี</div>
+              <div class="text-body">เลิกเรียนแลป ไม่มี</div>
+            </div>
           </v-card-text>
         </v-card>
       </v-col>

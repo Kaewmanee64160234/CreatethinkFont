@@ -130,7 +130,7 @@ const editCourse2 = () => {
       );
       console.log("currentCourse", courseStore.currentCourse);
     }
-    courseStore.closeDialog2();
+    courseStore.showEditDialog3 = true;
   }
 };
 

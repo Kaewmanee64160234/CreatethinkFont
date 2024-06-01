@@ -21,6 +21,7 @@ export const useAssignmentStore = defineStore("assignmentStore", () => {
         timeInLec: new Date(),
         timeOutLec: new Date(),
         typeCourses: "",
+        codeCourses: "",
 
         user: {
           userId: 0,

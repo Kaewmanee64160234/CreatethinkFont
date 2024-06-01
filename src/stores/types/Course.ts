@@ -3,6 +3,7 @@ import { User } from "./User";
 export default interface Course {
     coursesId: string;
     nameCourses: string;
+    codeCourses: string;
     typeCourses: string;
     credit: number;
     session: string;

@@ -6,23 +6,23 @@ import { onMounted, ref } from "vue";
 import course from "@/services/course";
 const courseStore = useCourseStore();
 const enrollmentStore = useEnrollmentStore();
-const courseId = ref("");
+const codeCourse = ref("");
 
 onMounted(() => {
   courseStore.getCourses();
 });
 const saveEnrollment = () => {
-  if (courseId.value.length < 8) {
+  if (codeCourse.value.length < 8) {
     console.log("no data");
     return;
   }
   for (let i = 0; i < courseStore.courses.length; i++) {
-    if (courseId.value == courseStore.courses[i].coursesId) {
+    if (codeCourse.value == courseStore.courses[i].codeCourses) {
       //วน check ว่ามี courseId ที่ตรงกับที่กรอกมาหรือไม่
       console.log("enrollment", courseStore.courses[i]);
       const newEnrollment = {
         userId: 4, ///mouckup data
-        courseId: courseId.value,
+        courseId: courseStore.courses[i].coursesId,
         createdDate: undefined,
         updatedDate: undefined,
         deletedDate: undefined,
@@ -32,13 +32,13 @@ const saveEnrollment = () => {
         enrollmentStore.createEnrollment(newEnrollment);
         console.log("enrollment", newEnrollment);
         courseStore.showCreateDialog2 = true;
-        courseId.value = "";
+        codeCourse.value = "";
       } catch (error) {
         console.error("Error creating enrollment:", error);
       }
     } else {
       console.log("no courseID"); // ไม่มี courseId ที่ตรงกับที่กรอกมา
-      courseId.value = "";
+      codeCourse.value = "";
       return;
     }
   }
@@ -63,7 +63,7 @@ const saveEnrollment = () => {
               label="รหัสห้องเรียน"
               variant="outlined"
               class="colorText"
-              v-model="courseId"
+              v-model="codeCourse"
               :rules="[
                 (v) =>
                   /^[A-Za-z0-9]{8,}$/.test(v) ||
