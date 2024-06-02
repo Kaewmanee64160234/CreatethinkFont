@@ -11,7 +11,8 @@ function getUser() {
     
   }
 //create user
-function saveUser(user: User & { files: File[] }) {
+function saveUser(user:User & { files: File[] }) {
+ console.log(user);
   const formData = new FormData();
 
   // Append normal fields
@@ -22,14 +23,11 @@ function saveUser(user: User & { files: File[] }) {
   formData.append('teacherId', user.teacherId!);
   formData.append('role', user.role!);
   formData.append('status', user.status!);
-  // formData.append('profileImage', user.profileImage!);
 
-  if (user.files.length > 0) {
-    formData.append('imageFile', user.files[0], user.files[0].name);
-  }
-
-  for (const [key, value] of formData.entries()) {
-    console.log(`${key}: ${JSON.stringify(value)}`);
+  // Append files and face descriptions
+  for (let i = 0; i < 5; i++) {
+    formData.append('files', user.files[i], user.files[i].name); // Ensure there are exactly 5 files
+    formData.append(`faceDescription${i + 1}`, JSON.stringify(user.faceDescriptions![i]));
   }
 
   return http.post("/users", formData, {

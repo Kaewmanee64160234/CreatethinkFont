@@ -65,6 +65,7 @@ export const useUserStore = defineStore("userStore", () => {
     } catch (e) {
       console.error("Failed to fetch users:", e);
     }
+
   };
   function resetUser() {
     editUser.value = {
@@ -150,6 +151,8 @@ export const useUserStore = defineStore("userStore", () => {
         }
     }
 };
+
+
 
 // getUserByCourseId
 const getUserByCourseId = async (courseId: string) => {
