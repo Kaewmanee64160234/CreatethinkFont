@@ -18,7 +18,7 @@ const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160047");
+  await userStore.getCurrentUser();
   console.log(JSON.stringify(userStore.currentUser));
   await assignmentStore.getAssignmentById(route.params.assignmentId.toString());
   console.log(JSON.stringify(assignmentStore.currentAssignment));

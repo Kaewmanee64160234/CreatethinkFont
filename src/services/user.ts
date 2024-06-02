@@ -83,6 +83,11 @@ function getUserImage(id: number) {
   return http.get(`/users/profileImage/${id}`);
 }
 
+// getUserByCourseId
+function getUserByCourseId(courseId: string) {
+  return http.get(`/users/course/${courseId}`);
+}
 
 
-export default { getUser, getUserImage, saveUser, deleteUser, updateUser, getUserBystidId };
+
+export default { getUser, getUserImage, saveUser, deleteUser, updateUser, getUserBystidId,getUserByCourseId };

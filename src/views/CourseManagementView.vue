@@ -14,7 +14,8 @@ const authStore = useAuthStore();
 const router = useRouter();
 console.log("user", courseStore.currentCourse?.user?.firstName);
 onMounted(async () => {
-  await courseStore.getCourseByTeachId("64160049");
+  await userStore.getCurrentUser();
+  await courseStore.getCourseByTeachId(userStore.currentUser!.teacherId!);
 });
 
 //create function click and push to /courseDetail/:idCourse

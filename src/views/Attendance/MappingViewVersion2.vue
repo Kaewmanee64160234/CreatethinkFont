@@ -115,7 +115,7 @@ const loadImageAndProcess = (dataUrl: string, index: number) => {
 onMounted(async () => {
   const route = useRoute();
   await userStore.getUsers();
-  userStore.currentUser = userStore.users.find(user => user.studentId === "64160049");
+  await userStore.getCurrentUser();
 
   console.log("Route object:", route); // Debugging line to check the entire route object
 

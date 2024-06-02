@@ -5,6 +5,7 @@ import DeleteEnrolmentDialog from "@/components/dialogs/DeleteEnrolmentDialog.vu
 import EditCourseDialog from "@/components/dialogs/EditCourseDialog.vue";
 import { useCourseStore } from "@/stores/course.store";
 import { useEnrollmentStore } from "@/stores/enrollment.store";
+import Course from "@/stores/types/Course";
 import Enrollment from "@/stores/types/Enrollment";
 import { useUserStore } from "@/stores/user.store";
 import { onMounted, ref } from "vue";
@@ -13,9 +14,10 @@ const courseStore = useCourseStore();
 const userStore = useUserStore();
 const router = useRouter();
 const enrollmentStore = useEnrollmentStore();
+
 onMounted(async () => {
-  await enrollmentStore.getCourseByStudentId("64160144");
-  await userStore.getUsers();
+  await userStore.getCurrentUser();
+  await enrollmentStore.getCourseByStudentId(userStore.currentUser!.studentId!);
 });
 const formatThaiDate = (isoDateTime: string | undefined): string => {
   if (!isoDateTime) {
@@ -30,7 +32,10 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
 
   return `${dateString} ${timeString}`;
 };
-
+const goToCourseDetail = (idCourse: string, course: Course) => {
+  router.push(`/courseDetail/${idCourse}`);
+  courseStore.currentCourse = course;
+};
 const showDeleteDialog = (enrollment: Enrollment) => {
   courseStore.showDeleteDialog = true;
   enrollmentStore.currentEnrollment = enrollment;
@@ -39,30 +44,17 @@ const showDeleteDialog = (enrollment: Enrollment) => {
 <template>
   <v-container>
     <v-row>
-      <v-col
-        cols="12"
-        sm="6"
-        md="4"
-        v-for="(item, index) of enrollmentStore.enrollments"
-        :key="index"
-      >
-        <v-card style="margin-left: 10%; margin-top: 15%">
-          <v-img
-            height="15vh"
+      <v-col cols="12" sm="6" md="4" v-for="(item, index) of enrollmentStore.enrollments" :key="index">
+        <v-card style="margin-left: 10%; margin-top: 15%"   @click="goToCourseDetail(item.course!.coursesId!, item.course!)">
+          <v-img height="15vh"
             src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
-            cover
-          >
+            cover>
             <v-card-title style="margin-top: 5%">
               <h1 class="text-white">{{ item.course?.nameCourses }}</h1>
             </v-card-title>
             <v-menu offset-y>
               <template #activator="{ props }">
-                <v-btn
-                  icon
-                  v-bind="props"
-                  class="ma-2"
-                  style="position: absolute; right: 0; top: 0; z-index: 2"
-                >
+                <v-btn icon v-bind="props" class="ma-2" style="position: absolute; right: 0; top: 0; z-index: 2">
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
@@ -102,13 +94,8 @@ const showDeleteDialog = (enrollment: Enrollment) => {
   <!-- <v-container class="container" fluid>
         <v-row align="center" justify="end">
             <v-col> -->
-  <v-btn
-    class="bottom-list-item"
-    size="60"
-    style="border-radius: 50%"
-    variant="outlined"
-    @click="courseStore.showCreateDialog = true"
-  >
+  <v-btn class="bottom-list-item" size="60" style="border-radius: 50%" variant="outlined"
+    @click="courseStore.showCreateDialog = true">
     <v-icon icon="mdi-plus" size="40"></v-icon>
   </v-btn>
   <v-dialog v-model="courseStore.showCreateDialog" persistent>
