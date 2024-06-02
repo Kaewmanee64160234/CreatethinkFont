@@ -1,10 +1,24 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user.store';
-const userStore = useUserStore();
+import * as faceapi from 'face-api.js';
+import { onMounted } from 'vue';
 
+const userStore = useUserStore();
+onMounted(async () => {
+  await loadModels();
+});
+
+async function loadModels() {
+  await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
+  await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+  await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+}
 async function save() {
+    // loop create faceDescription
+    const faceDescriptions = await processFiles(userStore.editUser.files);
+    userStore.editUser.faceDescriptions = faceDescriptions;
     await userStore.saveUser();
-    userStore.resetUser();
+   // userStore.resetUser();
 }
 
 async function cancel() {
@@ -14,6 +28,41 @@ async function cancel() {
 const onImageError = (event: any) => {
   event.target.src = 'path_to_default_image'; // Provide the path to a default image
 };
+async function createImageElement(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result as string;
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    };
+    
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function processFiles(files: File[]): Promise<Float32Array[]> {
+  const faceDescriptions: Float32Array[] = [];
+
+  for (const file of files) {
+    const imgElement = await createImageElement(file);
+    const faceDescription = await faceapi
+      .detectSingleFace(imgElement, new faceapi.SsdMobilenetv1Options())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+    
+    if (faceDescription) {
+      faceDescriptions.push(faceDescription.descriptor);
+    }
+
+    // Clean up the created image element
+    imgElement.remove();
+  }
+
+  return faceDescriptions;
+}
 
 </script>
 <template>
@@ -59,9 +108,10 @@ const onImageError = (event: any) => {
                                         v => ['กำลังศึกษา', 'พ้นสภาพนิสิต'].includes(v) || 'โปรดเลือกสถานะภาพจากรายการที่ให้ไว้'
                                     ]"></v-combobox>
                             </v-col>
+                            {{ userStore.editUser.files }}
                             <v-col cols="12" md="6">
                                 <!-- File Input -->
-                                <v-file-input label="อัพโหลดรูปภาพ" prepend-icon="mdi-camera" filled
+                                <v-file-input label="อัพโหลดรูปภาพ" prepend-icon="mdi-camera" filled multiple
                                     v-model="userStore.editUser.files" accept="image/*" outlined></v-file-input>
                             </v-col>
 
