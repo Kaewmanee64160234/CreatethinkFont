@@ -84,18 +84,19 @@ function mapToUser(data: any): User {
     }
     //save user
     const saveUser = async () => {
-        try {
-            console.log('save user', editUser.value)
+        // try {
+            // console.log('save user', editUser.value)
             if (editUser.value.userId && editUser.value.userId !== 0) {
-                await userService.updateUser(editUser.value, editUser.value.userId);
+               const res =  await userService.updateUser(editUser.value, editUser.value.userId);
             } else {
-                await userService.saveUser(editUser.value);
+                const res = await userService.saveUser(editUser.value);
+                console.log('save user', res.data);
             }
             getUsers(); // Refresh or reload user list
             closeDialog(); 
-        } catch (e) {
-            console.log(e);
-        }
+        // } catch (e) {
+        //     console.log(e);
+        // }
     };
     //delete user by id
     const deleteUser = async (id: number) => {

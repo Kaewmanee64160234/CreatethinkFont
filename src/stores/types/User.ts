@@ -15,4 +15,5 @@ export interface User {
   createdAt?: Date;
   updatedAt?: Date;
   access_token?: string;
+  images?:Float32Array[];
 }
