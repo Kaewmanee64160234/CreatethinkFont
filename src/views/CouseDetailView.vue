@@ -181,7 +181,8 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                                 <tbody>
                                     <tr>
                                         <td><v-avatar color="primary" size="56"></v-avatar></td>
-                                        <td> อาจารย์ วรวิทย์ วีระพัน</td>
+                                        <td>{{ courseStore.currentCourse?.user?.firstName + ' ' +
+            courseStore.currentCourse?.user?.lastName }}</td>
                                     </tr>
                                 </tbody>
                             </template>
@@ -193,7 +194,7 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                                 <h3>Students</h3>
                             </v-col>
                             <v-col cols="12" md="6" style="text-align: end;">
-                                <p> 72 Members</p>
+                                <p> {{ userStore.users.length }} Members</p>
 
                             </v-col>
                         </v-row>
@@ -201,9 +202,10 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                         <v-table dense style="width: 80%; padding: 10px">
                             <template v-slot:default>
                                 <tbody>
-                                    <tr v-for="(member, index) in authStore.gallery" :key="index">
+                                    <tr v-for="(member, index) in userStore.users" :key="index">
                                         <td><v-avatar color="primary" size="56"></v-avatar></td>
-                                        <td style="text-align: start;">{{ member.name }}</td>
+                                        <td style="text-align: start;">{{ member.firstName + ' ' + member.lastName }}
+                                        </td>
                                     </tr>
                                 </tbody>
                             </template>
@@ -224,12 +226,12 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                 </v-card>
                 <v-card class="my-3" style="width: 70%;">
                     <v-card-title>Student Performance</v-card-title>
-                   
+
                 </v-card>
 
 
-            <!-- Tab Item for Assignment Attendance -->
-            
+                <!-- Tab Item for Assignment Attendance -->
+
                 <v-card class="mx-auto" outlined style="padding: 20px;">
                     <v-card-title>Assignment Attendance Details</v-card-title>
                     <v-table>
@@ -243,15 +245,15 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                         </thead>
                         <tbody>
                             <tr v-for="user in userStore.users" :key="user.userId">
-                            
+
                                 <td>{{ user.firstName + ' ' + user.lastName }}</td>
                                 <td v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
                                     <template
-                                        v-if="getAttendanceStatus(attendanceStore.attendances!,user.userId!,assignment.assignmentId!) === 'present'">
+                                        v-if="getAttendanceStatus(attendanceStore.attendances!, user.userId!, assignment.assignmentId!) === 'present'">
                                         <v-icon color="green">mdi-check-circle</v-icon> Present
                                     </template>
                                     <template
-                                        v-else-if="getAttendanceStatus(attendanceStore.attendances!,user.userId!,assignment.assignmentId!) === 'late'">
+                                        v-else-if="getAttendanceStatus(attendanceStore.attendances!, user.userId!, assignment.assignmentId!) === 'late'">
                                         <v-icon color="orange">mdi-clock-outline</v-icon> Late
                                     </template>
                                     <template v-else>
