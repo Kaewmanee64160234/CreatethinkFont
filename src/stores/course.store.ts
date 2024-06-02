@@ -76,5 +76,16 @@ export const useCourseStore = defineStore("courseStore", () => {
     }
   }
 
-  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course, updateCourse};
+  // getCourseById
+  const getCourseById = async (id: string) => {
+    try {
+      const res = await courseService.getCourseById(id);
+      currentCourse.value = res.data;
+      console.log(currentCourse.value);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course, updateCourse,getCourseById};
 });

@@ -4,12 +4,16 @@ import CreateEnrolmentDialog2 from "./CreateEnrolmentDialog2.vue";
 import { useEnrollmentStore } from "@/stores/enrollment.store";
 import { onMounted, ref } from "vue";
 import course from "@/services/course";
+import { useUserStore } from "@/stores/user.store";
 const courseStore = useCourseStore();
 const enrollmentStore = useEnrollmentStore();
 const courseId = ref("");
+const userStore = useUserStore();
 
-onMounted(() => {
+onMounted(async () => {
   courseStore.getCourses();
+  await userStore.getCurrentUser();
+
 });
 const saveEnrollment = () => {
   if (courseId.value.length < 8) {
@@ -21,7 +25,7 @@ const saveEnrollment = () => {
       //วน check ว่ามี courseId ที่ตรงกับที่กรอกมาหรือไม่
       console.log("enrollment", courseStore.courses[i]);
       const newEnrollment = {
-        userId: 4, ///mouckup data
+        userId: userStore.currentUser?.userId, ///mouckup data
         courseId: courseId.value,
         createdDate: undefined,
         updatedDate: undefined,

@@ -17,12 +17,12 @@ const courseStore = useCourseStore();
 const assignmentStore = useAssignmentStore();
 
 onMounted(async () => {
-  await userStore.getUsers();
   await userStore.getCurrentUser();
   console.log(JSON.stringify(userStore.currentUser));
   await assignmentStore.getAssignmentById(route.params.assignmentId.toString());
   console.log(JSON.stringify(assignmentStore.currentAssignment));
   await attendanceStore.getAttendanceByAssignmentId(route.params.assignmentId.toString());
+  await userStore.getUserByCourseId(courseStore.currentCourse!.coursesId!);
 });
 
 //confirm attendance
@@ -61,7 +61,7 @@ const reCheckAttendance = async (attendance: Attendance) => {
     attendance.user = userStore.currentUser;
     console.log(JSON.stringify(attendance));
     await attendanceStore.confirmAttendance(attendance);
-    router.push('/resheckMappingTeacher/' + assignmentStore.currentAssignment?.assignmentId); // Replace '/next-page-route' with your specific route
+    // router.push('/resheckMappingTeacher/' + assignmentStore.currentAssignment?.assignmentId); // Replace '/next-page-route' with your specific route
 
   } catch (error) {
     console.log(error);

@@ -4,6 +4,7 @@ import { ref } from "vue";
 import attendaceService from "@/services/attendace.service";
 import router from "@/router";
 import { useAssignmentStore } from "./assignment.store";
+import { useCourseStore } from "./course.store";
 export const useAttendanceStore = defineStore("attendanceStore", () => {
   const attendances = ref<Attendance[]>();
   const assigmentStore = useAssignmentStore();
@@ -16,6 +17,7 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     files: [],
   });
 
+  const courseStore = useCourseStore();
   // create attendance
   const createAttendance = async (attendance: Attendance, file: File) => {
     try {
@@ -138,6 +140,7 @@ export const useAttendanceStore = defineStore("attendanceStore", () => {
     try {
       const res = await attendaceService.checkAllAttendance(assignmentId);
       console.log(res.data);
+      router.push("/enrolmentManagement");
     } catch (error) {
       console.log(error);
     }

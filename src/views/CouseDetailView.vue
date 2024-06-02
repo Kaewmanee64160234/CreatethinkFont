@@ -39,6 +39,7 @@ onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
     await attendanceStore.getAttendanceByCourseId(id.value.toString());
     await userStore.getUserByCourseId(id.value.toString());
+    await courseStore.getCourseById(id.value.toString());
     posts.value = assigmentStore.assignments;
     await userStore.getUsers();
     console.log(assigmentStore.assignments);

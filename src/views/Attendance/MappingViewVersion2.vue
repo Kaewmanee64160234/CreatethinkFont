@@ -13,6 +13,7 @@ import { useAttendanceStore } from "@/stores/attendance.store";
 import { useUserStore } from "@/stores/user.store";
 import router from "@/router";
 import { User } from "@/stores/types/User";
+import { useCourseStore } from "@/stores/course.store";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
@@ -25,6 +26,7 @@ const canvasRefs = reactive<CanvasRefs>({});
 const assigmentStore = useAssignmentStore();
 const attendaceStore = useAttendanceStore();
 const userStore = useUserStore();
+const courseStore = useCourseStore();
 
 const processImage = async (image: HTMLImageElement, index: number) => {
   await nextTick();
@@ -114,7 +116,7 @@ const loadImageAndProcess = (dataUrl: string, index: number) => {
 
 onMounted(async () => {
   const route = useRoute();
-  await userStore.getUsers();
+  await userStore.getUserByCourseId(courseStore.currentCourse!.coursesId!);
   await userStore.getCurrentUser();
 
   console.log("Route object:", route); // Debugging line to check the entire route object
@@ -140,6 +142,14 @@ const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
   }
 };
 const updateIdentifications = (detections, image, index) => {
+  console.log("userStore.users:", userStore.users); // Debug what userStore.users currently holds
+
+  // Check if userStore.users is an array before proceeding
+  if (!Array.isArray(userStore.users)) {
+    console.error("userStore.users is not an array", userStore.users);
+    return;
+  }
+
   // Filter users to include only those with valid face descriptions
   const validUsers = userStore.users.filter(user =>
     user.faceDescriptions &&
@@ -250,7 +260,14 @@ const confirmAttendance = async () => {
       console.error("Detailed Error:", error instanceof Event ? "DOM Event error, check network or permissions." : error);
     }
   }
-  router.push('/mappingForStudent/' + assigmentStore.assignment?.assignmentId);
+  if(userStore.currentUser?.role === 'teacher'){
+    router.push('/reCheckMappingTeacher/' + assigmentStore.assignment?.assignmentId);
+  }else{
+    router.push('/mappingForStudent/' + assigmentStore.assignment?.assignmentId);
+
+  }
+
+
 };
 
 
