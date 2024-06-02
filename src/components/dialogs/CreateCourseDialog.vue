@@ -21,7 +21,7 @@ const saveCourse = async () => {
     codeCourses: "",
     typeCourses: typeCourse.value,
     credit: 0,
-    session: "",
+    session: "1",
     stdAmount: 0,
     timeInLab: new Date(),
     timeOutLab: new Date(),

@@ -45,6 +45,7 @@ function formatISODateTime(date: Date, time: string): string {
 //     minute: "2-digit",
 //   });
 // }
+console.log(courseStore.currentCourse?.typeCourses);
 
 const updateCourse = () => {
   if (courseStore.currentCourse) {
@@ -94,19 +95,20 @@ const cancelCourse = async () => {
     await courseStore.getCourseByTeachId("64160144");
     courseStore.closeDialog();
   }
+  courseStore.closeDialog();
 };
 </script>
 
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col cols="12" md="8" lg="6">
+      <v-col cols="12" md="6" lg="4">
         <v-card>
           <v-card-title>
             <h2>รายละเอียดห้องเรียน</h2>
           </v-card-title>
           <v-card-text>
-            <v-card class="mb-4">
+            <v-card class="mb-4" style="overflow-y: scroll">
               <v-card-title>
                 <h3>สร้างรายละเอียดวิชา</h3>
               </v-card-title>
@@ -388,7 +390,7 @@ const cancelCourse = async () => {
               </v-card-text>
             </v-card>
           </v-card-text>
-          <v-card-actions class="d-flex justify-end">
+          <v-card-actions class="actions">
             <v-btn @click="cancelCourse">ยกเลิก</v-btn>
             <v-btn @click="updateCourse" class="colorText">เสร็จสิ้น</v-btn>
           </v-card-actions>
@@ -399,6 +401,9 @@ const cancelCourse = async () => {
 </template>
 
 <style scoped>
+.actions {
+  justify-content: flex-end;
+}
 .mb-4 {
   margin-bottom: 1rem;
 }

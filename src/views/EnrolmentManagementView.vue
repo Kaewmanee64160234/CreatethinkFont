@@ -48,7 +48,7 @@ const showDeleteDialog = (enrollment: Enrollment) => {
       >
         <v-card style="margin-left: 10%; margin-top: 15%">
           <v-img
-            height="15vh"
+            height="100"
             src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
             cover
           >
@@ -139,11 +139,15 @@ const showDeleteDialog = (enrollment: Enrollment) => {
 .text-body {
   font-size: 1.25rem;
   margin-bottom: 2%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
 }
 
 .avatar {
   position: absolute;
-  top: 50%;
+  top: 30%;
   right: 0%;
   transform: translate(-50%, -50%);
 }
