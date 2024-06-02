@@ -28,9 +28,9 @@ const attendaceStore = useAttendanceStore();
 const userStore = useUserStore();
 const courseStore = useCourseStore();
 
-const processImage = async (image: HTMLImageElement, index: number) => {
+const processImage = async (image: HTMLImageElement, index: number): Promise<void> => {
   await nextTick();
-  const canvas = canvasRefs[index];
+  const canvas: HTMLCanvasElement | undefined = canvasRefs[index];
   if (!canvas || image.naturalWidth === 0 || image.naturalHeight === 0) {
     console.error("Canvas not available for processing or image size is zero.");
     return;
@@ -38,7 +38,7 @@ const processImage = async (image: HTMLImageElement, index: number) => {
 
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
-  const ctx = canvas.getContext("2d");
+  const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
   if (!ctx) {
     console.error("Unable to get canvas context.");
     return;
@@ -47,33 +47,44 @@ const processImage = async (image: HTMLImageElement, index: number) => {
   ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
 
   try {
-    const displaySize = {
-      width: image.naturalWidth,
-      height: image.naturalHeight,
-    };
+    const displaySize = { width: image.naturalWidth, height: image.naturalHeight };
     faceapi.matchDimensions(canvas, displaySize);
-    const detections = (await faceapi
-      .detectAllFaces(image, new faceapi.SsdMobilenetv1Options())
+    const detections = await faceapi.detectAllFaces(image, new faceapi.SsdMobilenetv1Options())
       .withFaceLandmarks()
-      .withFaceDescriptors()) as WithFaceLandmarks<
-        { detection: FaceDetection },
-        WithFaceDescriptor
-      >[];
+      .withFaceDescriptors() as WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[];
+
     const resizedDetections = faceapi.resizeResults(detections, displaySize);
     faceapi.draw.drawDetections(canvas, resizedDetections);
     faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-    updateIdentifications(resizedDetections, image, ctx);
+    updateIdentifications(resizedDetections, image, index);
   } catch (error) {
     console.error("Failed to detect faces:", error);
   }
 };
-function resizeAndConvertToBase64(imgUrl, maxWidth, maxHeight) {
+
+const loadImageAndProcess = (dataUrl: string, index: number): void => {
+  const img = new Image();
+  img.onload = () => {
+    processImage(img, index);
+  };
+  img.onerror = (errorEvent: Event) => {
+    console.error("Error loading image:", dataUrl, errorEvent);
+  };
+  img.src = dataUrl;
+};
+
+function resizeAndConvertToBase64(imgUrl: string, maxWidth: number, maxHeight: number): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = imgUrl;
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        reject("Could not get canvas context");
+        return;
+      }
 
       // Calculate the new dimensions of the image
       let width = img.width;
@@ -99,41 +110,26 @@ function resizeAndConvertToBase64(imgUrl, maxWidth, maxHeight) {
       const dataUrl = canvas.toDataURL("image/jpeg"); // You can change 'image/jpeg' to another format if needed
       resolve(dataUrl);
     };
-    img.onerror = reject;
+    img.onerror = (error) => {
+      reject(error);
+    };
   });
 }
-
-const loadImageAndProcess = (dataUrl: string, index: number) => {
-  const img = new Image();
-  img.onload = () => {
-    processImage(img, index);
-  };
-  img.onerror = (errorEvent) => {
-    console.error("Error loading image:", dataUrl, errorEvent);
-  };
-  img.src = dataUrl;
-};
 
 onMounted(async () => {
   const route = useRoute();
   await userStore.getUserByCourseId(courseStore.currentCourse!.coursesId!);
   await userStore.getCurrentUser();
 
-  console.log("Route object:", route); // Debugging line to check the entire route object
-
   await faceapi.nets.ssdMobilenetv1.loadFromUri("/models");
   await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
   await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
 
   const urls: string[] = route.query.imageUrls || [];
-  console.log(urls.length);
-
-  if (Array.isArray(urls) && urls.length > 0) {
-    imageUrls.value = urls;
-    imageUrls.value.forEach((url, index) => {
-      nextTick(() => loadImageAndProcess(url, index));
-    });
-  }
+  imageUrls.value = urls;
+  imageUrls.value.forEach((url, index) => {
+    nextTick(() => loadImageAndProcess(url, index));
+  });
 });
 
 const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
@@ -141,7 +137,7 @@ const setCanvasRef = (index: number) => (el: HTMLCanvasElement) => {
     canvasRefs[index] = el;
   }
 };
-const updateIdentifications = (detections, image, index) => {
+const updateIdentifications = (detections: WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[], image: HTMLImageElement, index: number): void => {
   console.log("userStore.users:", userStore.users); // Debug what userStore.users currently holds
 
   // Check if userStore.users is an array before proceeding
@@ -195,9 +191,9 @@ const updateIdentifications = (detections, image, index) => {
   });
 };
 
-function base64ToBlob(base64, mimeType) {
+function base64ToBlob(base64: string, mimeType: string): Blob {
   const byteCharacters = atob(base64.split(",")[1]);
-  const byteArrays = [];
+  const byteArrays: Uint8Array[] = [];
 
   for (let offset = 0; offset < byteCharacters.length; offset += 512) {
     const slice = byteCharacters.slice(offset, offset + 512);
