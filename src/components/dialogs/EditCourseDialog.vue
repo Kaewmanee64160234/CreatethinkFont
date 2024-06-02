@@ -26,70 +26,59 @@ const editCourse = () => {
 <template>
   <v-container>
     <v-row justify="center">
-      <v-card style="width: 30vw">
-        <v-card-title style="margin-left: 3%; margin-top: 1%">
-          <h2>แก้ไขห้องเรียน</h2>
-        </v-card-title>
-        <v-card variant="outlined" class="cards textarea">
+      <v-col cols="12" md="6" lg="4">
+        <v-card>
           <v-card-title>
-            <h3 style="margin-bottom: 2%">แก้ไขชื่อรายวิชา</h3>
-            <v-text-field
-              clearable
-              label="แก้ไขชื่อรายวิชา"
-              variant="outlined"
-              class="colorText"
-              v-model="courseStore.currentCourse!.nameCourses"
-              :rules="[(v) => !!v || 'โปรดกรอกชื่อรายวิชา']"
-            ></v-text-field>
+            <h2>แก้ไขห้องเรียน</h2>
           </v-card-title>
+          <v-card-text>
+            <v-card class="mb-4">
+              <v-card-title>
+                <h3>แก้ไขชื่อรายวิชา</h3>
+              </v-card-title>
+              <v-card-text>
+                <v-text-field
+                  clearable
+                  label="แก้ไขชื่อรายวิชา"
+                  variant="outlined"
+                  v-model="courseStore.currentCourse!.nameCourses"
+                  :rules="[(v) => !!v || 'โปรดกรอกชื่อรายวิชา']"
+                ></v-text-field>
+              </v-card-text>
+            </v-card>
+            <v-card class="mb-4">
+              <v-card-title>
+                <h3>แก้ไขประเภทรายวิชา</h3>
+              </v-card-title>
+              <v-card-text>
+                <v-select
+                  label="ประเภทรายวิชา"
+                  :items="['เลคเชอร์', 'เลคเชอร์และแลป']"
+                  v-model="courseStore.currentCourse!.typeCourses"
+                  variant="outlined"
+                  :rules="[(v) => !!v || 'โปรดเลือกประเภทรายวิชา']"
+                ></v-select>
+              </v-card-text>
+            </v-card>
+          </v-card-text>
+          <v-card-actions class="d-flex justify-end">
+            <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
+            <v-btn @click="editCourse" class="colorText">ต่อไป</v-btn>
+          </v-card-actions>
+          <v-dialog v-model="courseStore.showEditDialog2" persistent>
+            <EditCourseDialog2 />
+          </v-dialog>
         </v-card>
-        <v-card variant="outlined" class="cards textarea">
-          <v-card-title>
-            <h3>แก้ไขประเภทรายวิชา</h3>
-            <v-select
-              label="ประเภทรายวิชา"
-              :items="['เลคเชอร์', 'เลคเชอร์และแลป']"
-              v-model="courseStore.currentCourse!.typeCourses"
-              variant="solo-filled"
-              style="margin-top: 2%"
-              :rules="[(v) => !!v || 'โปรดเลือกประเภทรายวิชา']"
-            ></v-select>
-          </v-card-title>
-        </v-card>
-        <v-card-actions class="actions">
-          <v-btn @click="courseStore.closeDialog2">ยกเลิก</v-btn>
-          <v-btn @click="editCourse()" class="colorText"
-            >ต่อไป
-            <v-dialog v-model="courseStore.showEditDialog2" persistent>
-              <EditCourseDialog2 />
-            </v-dialog>
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
-<style>
-.actions {
-  justify-content: flex-end;
+<style scoped>
+.mb-4 {
+  margin-bottom: 1rem;
 }
-
-.cards {
-  width: 27vw;
-  margin: 2%;
-}
-
-.textarea {
-  margin-left: 5%;
-  border-color: #e0e0e0;
-}
-
 .colorText {
   color: #2a6ec5;
-}
-
-.font-bold {
-  font-weight: bold;
 }
 </style>

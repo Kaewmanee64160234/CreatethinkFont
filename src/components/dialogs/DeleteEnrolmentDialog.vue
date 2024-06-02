@@ -27,7 +27,9 @@ const deleteEnrollment = async (idEnrollment: number) => {
           >
           <v-btn
             class="colorText text-h5"
-            @click="deleteEnrollment(enrollmentStore.currentEnrollment!.enrollmentId)"
+            @click="
+              deleteEnrollment(enrollmentStore.currentEnrollment?.enrollmentId ?? 0)
+            "
             >ยกเลิกการลงทะเบียน
           </v-btn>
         </v-card-actions>
@@ -45,6 +47,6 @@ const deleteEnrollment = async (idEnrollment: number) => {
 }
 .cardText {
   width: auto;
-  height: 18vh;
+  height: auto;
 }
 </style>

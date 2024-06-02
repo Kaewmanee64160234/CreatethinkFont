@@ -45,7 +45,8 @@ const showDeleteDialog = (enrollment: Enrollment) => {
   <v-container>
     <v-row>
       <v-col cols="12" sm="6" md="4" v-for="(item, index) of enrollmentStore.enrollments" :key="index">
-        <v-card style="margin-left: 10%; margin-top: 15%"   @click="goToCourseDetail(item.course!.coursesId!, item.course!)">
+        <v-card style="margin-left: 10%; margin-top: 15%"
+          @click="goToCourseDetail(item.course!.coursesId!, item.course!)">
           <v-img height="15vh"
             src="https://img.freepik.com/free-vector/realist-illustration-room-interior_52683-64752.jpg?w=1060&t=st=1714843452~exp=1714844052~hmac=e767aadc96b291547ce66a82185eb5e078cac3c31f6ca29c677e54174e142dbb"
             cover>
@@ -86,6 +87,10 @@ const showDeleteDialog = (enrollment: Enrollment) => {
             <div class="text-body" v-if="item.course?.typeCourses === 'เลคเชอร์และแลป'">
               เลิกเรียนแลป {{ formatThaiDate(item.course.timeOutLab) }}
             </div>
+            <div v-else>
+              <div class="text-body">เริมเรียนแลป ไม่มี</div>
+              <div class="text-body">เลิกเรียนแลป ไม่มี</div>
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -122,11 +127,15 @@ const showDeleteDialog = (enrollment: Enrollment) => {
 .text-body {
   font-size: 1.25rem;
   margin-bottom: 2%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
 }
 
 .avatar {
   position: absolute;
-  top: 50%;
+  top: 30%;
   right: 0%;
   transform: translate(-50%, -50%);
 }

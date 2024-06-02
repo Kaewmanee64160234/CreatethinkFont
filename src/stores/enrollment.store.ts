@@ -11,7 +11,17 @@ export const useEnrollmentStore = defineStore("enrollmentStore", () => {
     try {
       const res = await enrollmentService.getCourseByStudentId(userId);
       enrollments.value = res.data;
-      console.log(enrollments.value);
+      // console.log(enrollments.value);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getStudentByCourseId = async (courseId: string) => {
+    try {
+      const res = await enrollmentService.getStudentByCourseId(courseId);
+      enrollments.value = res.data;
+      console.log("std",enrollments.value);
     } catch (error) {
       console.log(error);
     }
@@ -29,13 +39,13 @@ export const useEnrollmentStore = defineStore("enrollmentStore", () => {
     try {
       const res = await enrollmentService.createEnrollment(enrollment);
       currentEnrollment.value = res.data;
-      console.log("store enrollment",res.data);
+      // console.log("store enrollment",res.data);
     } catch (e) {
       console.error('Error creating enrollment:', e);
     }
   };
 
   return {
-    enrollments, getCourseByStudentId ,currentEnrollment , deleteEnrollment , createEnrollment
+    enrollments, getCourseByStudentId ,currentEnrollment , deleteEnrollment , createEnrollment, getStudentByCourseId
   };
 });
