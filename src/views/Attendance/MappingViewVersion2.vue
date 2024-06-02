@@ -234,21 +234,21 @@ const confirmAttendance = async () => {
       let identifiedUser = identifications.value[i].name !== "Unknown"
         ? userStore.users.find(user => user.firstName === identifications.value[i].name)
         : {
-          studentId: i+'',
+          studentId: i + '',
           firstName: "Unknown",
           lastName: "Unknown",
           faceDescriptions: []
         } as User;
-   
-  
+
+
 
       // Log the attempt to create attendance
       // console.log("Submitting:", attendanceData);
       await attendaceStore.createAttendance({
         attendanceId: 0,
         attendanceDate: new Date(),
-        attendanceStatus: "present" ,
-        attendanceConfirmStatus:  identifiedUser ? "confirmed" : "notConfirmed",
+        attendanceStatus: "present",
+        attendanceConfirmStatus: identifiedUser ? "confirmed" : "notConfirmed",
         assignment: assigmentStore.assignment,
         user: identifiedUser,
         attendanceImage: ""
@@ -260,9 +260,9 @@ const confirmAttendance = async () => {
       console.error("Detailed Error:", error instanceof Event ? "DOM Event error, check network or permissions." : error);
     }
   }
-  if(userStore.currentUser?.role === 'teacher'){
-    router.push('/reCheckMappingTeacher/' + assigmentStore.assignment?.assignmentId);
-  }else{
+  if (userStore.currentUser?.role === 'teacher') {
+    router.push('/resheckMappingTeacher/' + assigmentStore.assignment?.assignmentId);
+  } else {
     router.push('/mappingForStudent/' + assigmentStore.assignment?.assignmentId);
 
   }
