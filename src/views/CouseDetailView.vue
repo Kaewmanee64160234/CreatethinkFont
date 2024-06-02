@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useUserStore } from '@/stores/user.store';
 import { useAttendanceStore } from '@/stores/attendance.store';
 import Attendance from '@/stores/types/Attendances';
+import Room from '@/stores/types/Room';
 const route = useRoute();
 const id = ref(route.params.idCourse);
 const tabs = [
@@ -33,15 +34,17 @@ const authStore = useAuthStore();
 const imageUrl = ref(null); // Store the image URL
 const file = ref(null); // File reference for uploads
 const userStore = useUserStore();
+const url = 'http://localhost:3000';
 const attendanceStore = useAttendanceStore();
+const roomSelect = ref<string>();
 //mounted get assigment by course id
 onMounted(async () => {
     await assigmentStore.getAssignmentByCourseId(id.value.toString());
     await attendanceStore.getAttendanceByCourseId(id.value.toString());
     await userStore.getUserByCourseId(id.value.toString());
     await courseStore.getCourseById(id.value.toString());
+    await courseStore.getAllRooms();
     posts.value = assigmentStore.assignments;
-    await userStore.getUsers();
     console.log(assigmentStore.assignments);
     console.log(attendanceStore.attendances);
 
@@ -101,14 +104,17 @@ const createPost = async () => {
     if (nameAssignment.value === '') {
         return;
     }
+    //find room by roomSelect
+    const room = courseStore.rooms.find(r => r.roomNumber === roomSelect.value);
+
     const newAssignment = {
         assignmentTime: new Date(),
         nameAssignment: nameAssignment.value,
         course: { ...courseStore.currentCourse! },
         assignmentId: 0,
         attdances: [],
-        room: undefined,
-        createdDate: undefined,
+        room: room,
+        createdDate: new Date(),
         updatedDate: undefined,
         deletedDate: undefined
     };
@@ -150,19 +156,23 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                 <!-- Conditional text area -->
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
+                        <v-autocomplete v-model="roomSelect" 
+                            :items="courseStore.rooms.map(r => r.roomNumber)"
+            item-text="roomNumber" item-value="roomNumber"
+                            label="Select a room" outlined return-object></v-autocomplete>
                         <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
                         <v-file-input label="Upload Images" prepend-icon="mdi-camera" filled @change="handleFileChange"
                             accept="image/*" outlined multiple>
                         </v-file-input>
                     </v-container>
                     <v-card-actions>
-                        <!-- create button create and cancel -->
-
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="showTextArea = false">Cancel</v-btn>
                         <v-btn color="primary" @click="createPost()">Post</v-btn>
                     </v-card-actions>
                 </v-card>
+
+
 
                 <v-row>
                     <v-col cols="12" sm="12" md="12" v-for="post in posts" :key="post.assignmentId">
@@ -181,7 +191,13 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                             <template v-slot:default>
                                 <tbody>
                                     <tr>
-                                        <td><v-avatar color="primary" size="56"></v-avatar></td>
+                                        <td>
+                                            <v-avatar color="primary" size="56">
+                                                <v-img
+                                                    :src="`${url}/users/${courseStore.currentCourse?.user!.userId}/image`">
+                                                </v-img>
+                                            </v-avatar>
+                                        </td>
                                         <td>{{ courseStore.currentCourse?.user?.firstName + ' ' +
             courseStore.currentCourse?.user?.lastName }}</td>
                                     </tr>
@@ -204,7 +220,10 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                             <template v-slot:default>
                                 <tbody>
                                     <tr v-for="(member, index) in userStore.users" :key="index">
-                                        <td><v-avatar color="primary" size="56"></v-avatar></td>
+                                        <td><v-avatar color="primary" size="56">
+                                                <v-img :src="`${url}/users/${member.userId}/image`">
+                                                </v-img>
+                                            </v-avatar></td>
                                         <td style="text-align: start;">{{ member.firstName + ' ' + member.lastName }}
                                         </td>
                                     </tr>

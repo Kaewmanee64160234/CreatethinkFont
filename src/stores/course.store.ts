@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import Course from "./types/Course";
 import courseService from "@/services/course";
+import { mapToUser } from "./types/User";
+import Room from "./types/Room";
 
 export const useCourseStore = defineStore("courseStore", () => {
   const courses = ref<Course[]>([]);
@@ -15,7 +17,8 @@ export const useCourseStore = defineStore("courseStore", () => {
   const showEditDialog3 = ref(false);
   const showDeleteDialog = ref(false);
   const currentCourse = ref<Course>();
-  const editCourse =  ref<Course>();
+  const editCourse = ref<Course>();
+  const rooms = ref<Room[]>([]);
   //get
   const getCourses = async () => {
     try {
@@ -33,7 +36,7 @@ export const useCourseStore = defineStore("courseStore", () => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   const closeDialog = () => {
     showCreateDialog.value = false;
@@ -55,37 +58,70 @@ export const useCourseStore = defineStore("courseStore", () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const createCourse = async (course:Course) => {
+  const createCourse = async (course: Course) => {
     try {
       const res = await courseService.createCourse(course);
       currentCourse.value = res.data;
-      console.log("store course",res.data);
+      console.log("store course", res.data);
     } catch (e) {
-      console.error('Error creating Course:', e);
+      console.error("Error creating Course:", e);
     }
   };
 
-  const updateCourse = async (id:string,course:Course) => {
+  const updateCourse = async (id: string, course: Course) => {
     try {
-      const res = await courseService.updateCourse(id,course);
+      const res = await courseService.updateCourse(id, course);
       currentCourse.value = res.data;
     } catch (e) {
-      console.error('Error updating Course:', e);
+      console.error("Error updating Course:", e);
     }
-  }
+  };
 
   // getCourseById
   const getCourseById = async (id: string) => {
     try {
       const res = await courseService.getCourseById(id);
+
       currentCourse.value = res.data;
       console.log(currentCourse.value);
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  return { currentCourse, createCourse, courses, getCourses, showCreateDialog, showCreateDialog2, closeDialog, showCreateDialog3, showEditDialog, showEditDialog2, showEditDialog3, closeDialog2, showDeleteDialog , editCourse , deleteCourse, getCourseByTeachId, course, updateCourse,getCourseById};
+  //getAllRoom
+  const getAllRooms = async () => {
+    try {
+      const res = await courseService.getAllRooms();
+      rooms.value = res.data;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return {
+    currentCourse,
+    createCourse,
+    courses,
+    getCourses,
+    showCreateDialog,
+    showCreateDialog2,
+    closeDialog,
+    showCreateDialog3,
+    showEditDialog,
+    showEditDialog2,
+    showEditDialog3,
+    closeDialog2,
+    showDeleteDialog,
+    editCourse,
+    deleteCourse,
+    getCourseByTeachId,
+    course,
+    updateCourse,
+    getCourseById,
+    getAllRooms,
+    rooms
+  };
 });

@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 import { getCurrentInstance, ref, watch } from "vue";
 import userService from "@/services/user"; // Import the userService module
-import { User } from "./types/User";
+import { mapToUser, User } from "./types/User";
 import user from "@/services/user";
 
 export const useUserStore = defineStore("userStore", () => {
@@ -28,32 +28,7 @@ export const useUserStore = defineStore("userStore", () => {
     files: [],
   });
 
-  function mapToUser(data: any): User {
-    const faceDescriptions: Float32Array[] = [];
-
-    for (let i = 1; i <= 4; i++) {
-      const key = `faceDescription${i}`;
-      if (data[key] && Array.isArray(data[key])) {
-        faceDescriptions.push(new Float32Array(data[key]));
-      }
-    }
-
-    return {
-      userId: data.userId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      role: data.role,
-      status: data.status,
-      studentId: data.studentId,
-      teacherId: data.teacherId,
-      faceDescriptions: faceDescriptions,
-      picture: data.picture,
-      profileImage: data.profileImage,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
-  }
+  
 
   const getUsers = async () => {
     try {
@@ -184,6 +159,7 @@ const getUserByCourseId = async (courseId: string) => {
     deleteUser,
     resetUser,
     getUserBystidId,
-    getUserByCourseId
+    getUserByCourseId,
+    
   };
 });

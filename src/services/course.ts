@@ -3,8 +3,8 @@ import Course from "@/stores/types/Course";
 import http from "./axios";
 
 function getCourse() {
-    return http.get("/courses");
-  }
+  return http.get("/courses");
+}
 
 function deleteCourse(id: string) {
   return http.delete(`/courses/${id}`);
@@ -25,5 +25,18 @@ function createCourse(course: Course) {
 function getCourseById(id: string) {
   return http.get(`/courses/${id}`);
 }
-  
-export default { getCourse , deleteCourse, updateCourse , getCourseByTeachId, createCourse,getCourseById};
+
+//get all room
+function getAllRooms() {
+  return http.get("/rooms");
+}
+
+export default {
+  getCourse,
+  deleteCourse,
+  updateCourse,
+  getCourseByTeachId,
+  createCourse,
+  getCourseById,
+  getAllRooms,
+};

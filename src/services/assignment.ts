@@ -11,7 +11,8 @@ function getAssignmentById(id:string) {
 }
 // createAssignment
 function createAssignment(data:Assignment) {
-    return http.post("/assignments", data);
+    console.log("data",JSON.stringify(data));
+    return http.post("/assignments", {...data,date:new Date()});
 }
 //get Assignment by course id
 function getAssignmentByCourseId(id:string) {
