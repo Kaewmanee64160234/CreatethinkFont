@@ -156,10 +156,9 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                 <!-- Conditional text area -->
                 <v-card v-if="showTextArea" style="margin: 10px;">
                     <v-container>
-                        <v-autocomplete v-model="roomSelect" 
-                            :items="courseStore.rooms.map(r => r.roomNumber)"
-            item-text="roomNumber" item-value="roomNumber"
-                            label="Select a room" outlined return-object></v-autocomplete>
+                        <v-autocomplete v-model="roomSelect" :items="courseStore.rooms.map(r => r.roomNumber)"
+                            item-text="roomNumber" item-value="roomNumber" label="Select a room" outlined
+                            return-object></v-autocomplete>
                         <v-textarea v-model="nameAssignment" label="Enter your post" outlined></v-textarea>
                         <v-file-input label="Upload Images" prepend-icon="mdi-camera" filled @change="handleFileChange"
                             accept="image/*" outlined multiple>
@@ -183,58 +182,59 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
 
             <!-- Tab content for Members -->
             <v-tab-item v-else-if="tab === 'Members'" value="Members">
-                <div style="width: 80%;">
-                    <div>
-                        <h3>Teacher</h3>
+                <v-card class="mx-auto" color="primary" max-width="1200" outlined style="padding: 20px;">
+                    <v-card-title>
+                        <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
+                    </v-card-title>
+                </v-card>
+                <div style="width: 100%; padding: 20px;">
 
-                        <v-table dense style="width: 80%; padding: 10px">
-                            <template v-slot:default>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <v-avatar color="primary" size="56">
-                                                <v-img
-                                                    :src="`${url}/users/${courseStore.currentCourse?.user!.userId}/image`">
-                                                </v-img>
-                                            </v-avatar>
-                                        </td>
-                                        <td>{{ courseStore.currentCourse?.user?.firstName + ' ' +
-            courseStore.currentCourse?.user?.lastName }}</td>
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </v-table>
-                    </div>
-                    <div>
-                        <v-row style="width: 80%;">
-                            <v-col cols="12" md="6">
-                                <h3>Students</h3>
-                            </v-col>
-                            <v-col cols="12" md="6" style="text-align: end;">
-                                <p> {{ userStore.users.length }} Members</p>
-
+                    <!-- Teacher Section -->
+                    <div style="margin-bottom: 30px;">
+                        <v-row>
+                            <v-col>
+                                <h3>Teacher</h3>
                             </v-col>
                         </v-row>
+                        <v-row>
+                            <v-col cols="2">
+                                <v-avatar size="56">
+                                    <v-img
+                                        :src="`${url}/users/${courseStore.currentCourse?.user?.userId}/image`"></v-img>
+                                </v-avatar>
+                            </v-col>
+                            <v-col cols="10" style="display: flex; align-items: center;">
+                                <div>{{ courseStore.currentCourse?.user?.firstName + ' ' +
+            courseStore.currentCourse?.user?.lastName }}</div>
+                            </v-col>
+                        </v-row>
+                    </div>
 
-                        <v-table dense style="width: 80%; padding: 10px">
-                            <template v-slot:default>
-                                <tbody>
-                                    <tr v-for="(member, index) in userStore.users" :key="index">
-                                        <td><v-avatar color="primary" size="56">
-                                                <v-img :src="`${url}/users/${member.userId}/image`">
-                                                </v-img>
-                                            </v-avatar></td>
-                                        <td style="text-align: start;">{{ member.firstName + ' ' + member.lastName }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </v-table>
+                    <!-- Students Section -->
+                    <div>
+                        <v-row>
+                            <v-col cols="6">
+                                <h3>Students</h3>
+                            </v-col>
+                            <v-col cols="6" style="text-align: end;">
+                                <p>{{ userStore.users.length }} Members</p>
+                            </v-col>
+                        </v-row>
+                        <v-row v-for="(member, index) in userStore.users" :key="index">
+                            <v-col cols="2">
+                                <v-avatar size="56">
+                                    <v-img :src="`${url}/users/${member.userId}/image`"></v-img>
+                                </v-avatar>
+                            </v-col>
+                            <v-col cols="10" style="display: flex; align-items: center;">
+                                <div>{{ member.firstName + ' ' + member.lastName }}</div>
+                            </v-col>
+                        </v-row>
                     </div>
 
                 </div>
-
             </v-tab-item>
+
 
             <!-- Tab content for Assignments -->
             <!-- Tab Item for Users -->
@@ -244,29 +244,24 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                         <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
                     </v-card-title>
                 </v-card>
-                <v-card class="my-3" style="width: 70%;">
-                    <v-card-title>Student Performance</v-card-title>
-
-                </v-card>
-
-
                 <!-- Tab Item for Assignment Attendance -->
-
-                <v-card class="mx-auto" outlined style="padding: 20px;">
+                <v-card class="mx-auto" outlined style="padding: 20px; margin-top: 10px;">
                     <v-card-title>Assignment Attendance Details</v-card-title>
                     <v-table>
                         <thead>
                             <tr>
                                 <th class="text-left">Student Name</th>
+                                <th class="text-left">Full Score</th>
                                 <th v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
                                     {{ assignment.nameAssignment }}
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="user in userStore.users" :key="user.userId">
 
+                            <tr v-for="user in userStore.users" :key="user.userId">
                                 <td>{{ user.firstName + ' ' + user.lastName }}</td>
+                                <td>{{ courseStore.currentCourse?.fullScore }}%</td>
                                 <td v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
                                     <template
                                         v-if="getAttendanceStatus(attendanceStore.attendances!, user.userId!, assignment.assignmentId!) === 'present'">
@@ -290,4 +285,9 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
     </div>
 </template>
 
-<style></style>
+<style scoped>
+.v-col {
+    padding: 10px 0;
+    /* Provides consistent vertical spacing between rows */
+}
+</style>

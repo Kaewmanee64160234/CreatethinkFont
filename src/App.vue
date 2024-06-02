@@ -10,6 +10,10 @@ import FullLayout from "./components/Layout/FullLayout.vue";
 import MainLayout from "./components/Layout/MainLayout.vue";
 </script>
 
-<style scoped>
-/* Add your styles here */
+<style >
+/* use font kanit */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap');
+body {
+  font-family: 'Kanit', sans-serif;
+}
 </style>

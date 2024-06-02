@@ -272,40 +272,35 @@ const confirmAttendance = async () => {
 
 
 </script>
-
 <template>
   <v-container style="margin-top: 5%">
     <!-- Display Controls and Image Upload -->
     <v-row>
-      <v-col cols="12" md="6"> </v-col>
-      <v-col cols="12" md="6">
-        <v-btn @click="confirmAttendance()">Check Attendance</v-btn>
+      <v-col cols="12" md="6"></v-col>
+      <v-col cols="12" md="6" class="text-right">
+        <v-btn color="primary" @click="confirmAttendance()">Check Attendance</v-btn>
       </v-col>
     </v-row>
+
     <!-- Layout Row for Image Display and Identifications -->
     <v-row>
-      {{ userStore.currentUser?.studentId }}
+      
 
       <!-- Column for Original Images with Canvas Overlay -->
       <v-col cols="12" md="6">
         <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index"
-          style="position: relative; width: 100%; margin-bottom: 20px">
-          <img :src="imageUrl" alt="Uploaded Image" style="width: 100%; height: auto" />
-          <canvas :ref="setCanvasRef(index)" style="
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-            "></canvas>
+          class="position-relative mb-3">
+          <img :src="imageUrl" alt="Uploaded Image" class="w-100" />
+          <canvas :ref="setCanvasRef(index)" class="overlay-canvas"></canvas>
         </div>
       </v-col>
-      <!-- Column for Identification and Cropped Images Display, 3 per row -->
+
+      <!-- Column for Identification and Cropped Images Display -->
       <v-col cols="12" md="6">
         <v-row>
-          <v-col cols="12" sm="4" v-for="(name, index) in identifications" :key="'id-' + index">
+          <v-col cols="12" sm="6" v-for="(name, index) in identifications" :key="'id-' + index">
             <v-card outlined>
-              <v-card-title class="white--text">{{ name.studentId }} | {{ name.name }}</v-card-title>
+              <v-card-title>{{ name.studentId }} | {{ name.name }}</v-card-title>
               <v-img :src="croppedImagesDataUrls[index]" aspect-ratio="1.5" class="rounded-lg"></v-img>
             </v-card>
           </v-col>
@@ -316,5 +311,27 @@ const confirmAttendance = async () => {
 </template>
 
 <style scoped>
-/* Additional style to manage overlays and positioning */
+.overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.text-right {
+  text-align: right;
+}
 </style>
