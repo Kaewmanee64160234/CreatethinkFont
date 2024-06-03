@@ -12,7 +12,7 @@ import { useAttendanceStore } from "@/stores/attendance.store";
 import { useUserStore } from "@/stores/user.store";
 import { User } from "@/stores/types/User";
 import { useCourseStore } from "@/stores/course.store";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 interface CanvasRefs {
   [key: number]: HTMLCanvasElement;
@@ -34,6 +34,9 @@ const canvasRefs = reactive<CanvasRefs>({});
 const userDescriptors = new Map<string, Float32Array>();
 const userStore = useUserStore();
 const route = useRoute();
+const router = useRouter();
+const assigmentStore = useAssignmentStore();
+const attendaceStore = useAttendanceStore();
 
 async function processImage(image, index) {
   const canvas = canvasRefs[index] || document.createElement('canvas');
@@ -41,7 +44,7 @@ async function processImage(image, index) {
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
   const ctx = canvas.getContext('2d');
-  ctx.drawImage(image, 0, 0, image.width, image.height);
+  // ctx.drawImage(image, 0, 0, image.width, image.height);
 
   try {
     const detections = await faceapi.detectAllFaces(image, new faceapi.SsdMobilenetv1Options())
@@ -75,6 +78,8 @@ async function processImage(image, index) {
         });
       }
     });
+    //clear userDescriptors
+    userDescriptors.clear();
   } catch (error) {
     console.error("Failed to process face detection:", error);
   }
@@ -137,11 +142,128 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
     img.src = url;
   });
 }
+function resizeAndConvertToBase64(imgUrl: string, maxWidth: number, maxHeight: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = imgUrl;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
+      if (!ctx) {
+        reject("Could not get canvas context");
+        return;
+      }
+
+      // Calculate the new dimensions of the image
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Convert to base64
+      const dataUrl = canvas.toDataURL("image/jpeg"); // You can change 'image/jpeg' to another format if needed
+      resolve(dataUrl);
+    };
+    img.onerror = (error) => {
+      reject(error);
+    };
+  });
+}
+
+function base64ToBlob(base64: string, mimeType: string): Blob {
+  const byteCharacters = atob(base64.split(",")[1]);
+  const byteArrays: Uint8Array[] = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: mimeType });
+}
+
+const confirmAttendance = async () => {
+  console.log("Confirming attendance for", identifications.value.length, "students");
+  for (let i = 0; i < identifications.value.length; i++) {
+    try {
+      // Verify image URL before processing
+      if (!croppedImagesDataUrls.value[i]) {
+        console.error("Image URL is missing for index:", i);
+        continue; // Skip this iteration if the URL is missing
+      }
+
+      // Resize image and convert to Base64
+      const resizedImageBase64 = await resizeAndConvertToBase64(
+        croppedImagesDataUrls.value[i], 800, 600
+      );
+      const blob = base64ToBlob(resizedImageBase64, "image/jpeg");
+      const imageFile = new File([blob], `attendance_${Date.now()}.jpg`, {
+        type: "image/jpeg",
+      });
+
+      // Determine user object based on identification
+      let identifiedUser = identifications.value[i].name !== "Unknown"
+        ? userStore.users.find(user => user.firstName === identifications.value[i].name)
+        : {
+          studentId: i + '',
+          firstName: "Unknown",
+          lastName: "Unknown",
+          faceDescriptions: []
+        } as User;
+
+
+
+      // Log the attempt to create attendance
+      // console.log("Submitting:", attendanceData);
+      await attendaceStore.createAttendance({
+        attendanceId: 0,
+        attendanceDate: new Date(),
+        attendanceStatus: "present",
+        attendanceConfirmStatus: identifiedUser ? "confirmed" : "notConfirmed",
+        assignment: assigmentStore.assignment,
+        user: identifiedUser,
+        attendanceImage: ""
+      }, imageFile);
+      // console.log("Attendance recorded successfully for", identifications.value[i].name);
+
+    } catch (error) {
+      console.error("Error recording attendance for", identifications.value[i].name, ":", error);
+      console.error("Detailed Error:", error instanceof Event ? "DOM Event error, check network or permissions." : error);
+    }
+  }
+  if (userStore.currentUser?.role === 'teacher') {
+    router.push('/resheckMappingTeacher/' + assigmentStore.assignment?.assignmentId);
+  } else {
+    router.push('/mappingForStudent/' + assigmentStore.assignment?.assignmentId);
+
+  }
+
+
+};
 
 </script>
 <template>
-  <v-container>
+  <v-container style="margin-top: 10%">
     <!-- Display Controls and Image Upload -->
     <v-row>
       <v-col cols="12" md="6"></v-col>
@@ -152,20 +274,21 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
 
     <!-- Layout Row for Image Display and Identifications -->
     <v-row>
+
       <!-- Column for Original Images with Canvas Overlay -->
       <v-col cols="12" md="6">
-        <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index" class="position-relative image-container">
-          <img :src="imageUrl" alt="Uploaded Image" class="responsive-image" />
-          <canvas :ref="setCanvasRef(index)" class="overlay-canvas"></canvas>
+        <div v-for="(imageUrl, index) in imageUrls" :key="'orig-image-' + index"
+          class="position-relative mb-3">
+          <img :src="imageUrl" alt="Uploaded Image" class="w-100" />
         </div>
       </v-col>
 
       <!-- Column for Identification and Cropped Images Display -->
       <v-col cols="12" md="6">
         <v-row>
-          <v-col cols="12" sm="6" v-for="(ident, index) in identifications" :key="'id-' + index">
+          <v-col cols="12" sm="6" v-for="(name, index) in identifications" :key="'id-' + index">
             <v-card outlined>
-              <v-card-title>{{ ident.studentId }} | {{ ident.name }}</v-card-title>
+              <v-card-title>{{ name.studentId }} | {{ name.name }}</v-card-title>
               <v-img :src="croppedImagesDataUrls[index]" aspect-ratio="1.5" class="rounded-lg"></v-img>
             </v-card>
           </v-col>
@@ -177,4 +300,47 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
 
 <style scoped>
 
+.overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* For browsers that support forced-colors */
+@media (forced-colors: active) {
+    body {
+        background-color: Canvas;
+        color: CanvasText;
+    }
+}
+
+/* Fallback for older Microsoft browsers */
+@media (-ms-high-contrast: active) {
+    body {
+        background-color: white;
+        color: black;
+    }
+}
+
+
 </style>
+
+

@@ -85,6 +85,8 @@ const resizeAndConvertImageToBase64 = (imageUrl, maxWidth, maxHeight) => {
         img.onload = () => {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
+    
+
             const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
             const width = img.width * ratio;
             const height = img.height * ratio;

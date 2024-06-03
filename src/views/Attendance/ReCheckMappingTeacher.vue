@@ -78,7 +78,9 @@ const reCheckAttendance = async (attendance:Attendance) => {
       <v-col cols="12" md="4">
         <div v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
           <v-card class="mb-4">
+            
             <v-img :src="`${url}/attendances/image/${attendee.attendanceImage}`" height="200px"></v-img>
+            <v-img :src="`${url}/users/${attendee.user?.userId}/image`" height="200px"></v-img>
             <!-- <v-img :src="attendee." height="200px"></v-img> -->
          
             <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }} </v-card-title>
