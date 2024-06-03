@@ -38,6 +38,7 @@ function saveUser(user:User & { files: File[] }) {
 }
 //update user
 function updateUser(user: User & { files: File[] }, userId: number) {
+  console.log(user);
   const formData = new FormData();
 
   // Append normal fields
@@ -49,17 +50,14 @@ function updateUser(user: User & { files: File[] }, userId: number) {
   formData.append('role', user.role!);
   formData.append('status', user.status!);
 
-  // Handle file uploads; append only if files are present
-  if (user.files.length > 0) {
-    formData.append('imageFile', user.files[0], user.files[0].name);
+  // Append files and face descriptions
+  for (let i = 0; i < user.files.length; i++) {
+    if (user.files[i]) {
+      formData.append('files', user.files[i], user.files[i].name);
+      formData.append(`faceDescription${i + 1}`, JSON.stringify(user.faceDescriptions![i]));
+    }
   }
 
-  // Logging FormData contents for debugging (optional)
-  for (const [key, value] of formData.entries()) {
-    console.log(`${key}: ${JSON.stringify(value)}`);
-  }
-
-  // Make an HTTP PUT request with FormData
   return http.patch(`/users/${userId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',

@@ -6,6 +6,7 @@ import { User } from '@/stores/types/User';
 import { useUserStore } from '@/stores/user.store';
 import { onMounted, ref, defineComponent, PropType, computed } from 'vue';
 
+const url = 'http://localhost:3000';
 const userStore = useUserStore();
 const students = computed(() => userStore.users.filter(user => user.studentId));
 const teachers = computed(() => userStore.users.filter(user => user.teacherId));
@@ -109,20 +110,21 @@ const tab = ref(0);
             <tbody>
               <tr v-for="(item, index) of students" :key="index">
                 <td>{{ index + 1 }}</td>
-                <img style ="" :src= "item.profileImage" alt="User Profile">
+                <img :src="`${url}/users/${item.userId}/image`" style="width: 100px; height: 100px;">
                 <td>{{ item.studentId }}</td>
                 <td>{{ item.firstName + " " + item.lastName }}</td>
                 <td>{{ item.role }}</td>
                 <td style="color: seagreen;">{{ item.status }}</td>
-                <td class="d-flex justify-center">
-                  <v-btn small class="ma-1" color="yellow darken-2" text="Button Text" @click="showEditedDialog(item)">
-                    <v-icon left>mdi-pencil</v-icon>
-                    แก้ไขข้อมูล
-                  </v-btn>
-                  <v-btn small class="ma-1" color="red" text="Button Text" @click="deleteUser(item.userId!)">
-                    <v-icon left>mdi-delete</v-icon>
-                    ลบข้อมูล
-                  </v-btn>
+                <td style="justify-content: center;">
+                    <v-btn small class="ma-1" color="yellow darken-2" text="Button Text"
+                      @click="showEditedDialog(item)">
+                      <v-icon left>mdi-pencil</v-icon>
+                      แก้ไขข้อมูล
+                    </v-btn>
+                    <v-btn small class="ma-1" color="red" text="Button Text" @click="deleteUser(item.userId!)">
+                      <v-icon left>mdi-delete</v-icon>
+                      ลบข้อมูล
+                    </v-btn>
                 </td>
               </tr>
             </tbody>
@@ -147,12 +149,12 @@ const tab = ref(0);
             <tbody>
               <tr v-for="(item, index) of teachers" :key="index">
                 <td>{{ index + 1 }}</td>
-                <img style ="" :src= "item.profileImage" alt="User Profile">
+                <img :src="`${url}/users/${item.userId}/image`" style="width: 100px; height: 100px;">
                 <td>{{ item.teacherId }}</td>
                 <td>{{ item.firstName + " " + item.lastName }}</td>
                 <td>{{ item.role }}</td>
                 <td style="color: seagreen;">{{ item.status }}</td>
-                <td class="d-flex justify-center">
+                <td style="justify-content: center;">
                   <v-btn small class="ma-1" color="yellow darken-2" text="Button Text" @click="showEditedDialog(item)">
                     <v-icon left>mdi-pencil</v-icon>
                     แก้ไขข้อมูล
