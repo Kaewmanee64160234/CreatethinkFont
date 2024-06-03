@@ -26,7 +26,7 @@ interface Identification {
 const setCanvasRef = (index) => (el) => {
   canvasRefs[index] = el;
 };
-
+const processedDescriptors = new Set<string>();
 const imageUrls = ref<string[]>([]);
 const identifications = ref<Identification[]>([]);
 const croppedImagesDataUrls = ref<string[]>([]);
@@ -51,31 +51,11 @@ async function processImage(image, index) {
       .withFaceLandmarks()
       .withFaceDescriptors() as WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[];
 
-    detections.forEach(detection => {
-      const bestMatch = findBestUserMatch(detection.descriptor);
-      const cropCanvas = document.createElement('canvas');
-      const cropCtx = cropCanvas.getContext('2d');
-      const { x, y, width, height } = detection.detection.box;
-
-      cropCanvas.width = width;
-      cropCanvas.height = height;
-      cropCtx.drawImage(image, x, y, width, height, 0, 0, width, height);
-
-      const croppedDataURL = cropCanvas.toDataURL();
-      croppedImagesDataUrls.value.push(croppedDataURL);
-
-      if (bestMatch.user) {
-        identifications.value.push({
-          name: bestMatch.user.firstName,
-          studentId: bestMatch.user.studentId!,
-          imageUrl: croppedDataURL!
-        });
-      } else {
-        identifications.value.push({
-          name: "Unknown",
-          studentId: "N/A",
-          imageUrl: croppedDataURL!
-        });
+      detections.forEach(detection => {
+      const descriptorString = detection.descriptor.toString();
+      if (!processedDescriptors.has(descriptorString)) {
+        processedDescriptors.add(descriptorString);
+        processFace(detection, image);
       }
     });
     //clear userDescriptors
@@ -85,6 +65,25 @@ async function processImage(image, index) {
   }
 }
 
+function processFace(detection, image) {
+  const bestMatch = findBestUserMatch(detection.descriptor);
+  const cropCanvas = document.createElement('canvas');
+  const cropCtx = cropCanvas.getContext('2d');
+  const { x, y, width, height } = detection.detection.box;
+
+  cropCanvas.width = width;
+  cropCanvas.height = height;
+  cropCtx.drawImage(image, x, y, width, height, 0, 0, width, height);
+
+  const croppedDataURL = cropCanvas.toDataURL();0
+  croppedImagesDataUrls.value.push(croppedDataURL);
+
+  identifications.value.push({
+    name: bestMatch.user ? bestMatch.user.firstName : "Unknown",
+    studentId: bestMatch.user ? bestMatch.user.studentId : "N/A",
+    imageUrl: croppedDataURL
+  });
+}
 
 function loadImageAndProcess(dataUrl: string, index: number): void {
   const img = new Image();
@@ -94,7 +93,7 @@ function loadImageAndProcess(dataUrl: string, index: number): void {
 }
 
 function findBestUserMatch(descriptor: Float32Array): { user: User | null, score: number } {
-  let bestMatch = { user: null, score: Infinity };
+  let bestMatch = { user: null, score: 0.7 };
   userDescriptors.forEach((userDescriptor, studentId) => {
     const distance = faceapi.euclideanDistance(descriptor, userDescriptor);
     if (distance < bestMatch.score) {
@@ -252,7 +251,7 @@ const confirmAttendance = async () => {
     }
   }
   if (userStore.currentUser?.role === 'teacher') {
-    router.push('/resheckMappingTeacher/' + assigmentStore.assignment?.assignmentId);
+    router.push('/reCheckMappingTeacher/' + assigmentStore.assignment?.assignmentId);
   } else {
     router.push('/mappingForStudent/' + assigmentStore.assignment?.assignmentId);
 

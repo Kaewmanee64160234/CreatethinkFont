@@ -5,23 +5,32 @@ import { useRoute } from 'vue-router';
 import Attendance from '@/stores/types/Attendances';
 import { useAssignmentStore } from '@/stores/assignment.store';
 import Assignment from '@/stores/types/Assignment';
+import { useCourseStore } from '@/stores/course.store';
+import { useUserStore } from '@/stores/user.store';
 
 const attendanceStore = useAttendanceStore();
 const assignmentStore = useAssignmentStore();
+const courseStore = useCourseStore();
+const userStore = useUserStore();
 const route = useRoute();
 const url = 'http://localhost:3000'
 onMounted(async () => {
-    const id = route.params.assignmentId;
-  await attendanceStore.getAttendanceByStatusInAssignment(id+'') // Assuming this function exists and fetches the attendances
+  const id = route.params.assignmentId;
+  await attendanceStore.getAttendanceByStatusInAssignment(id + '') // Assuming this function exists and fetches the attendances
+  //get assignment by id
+  await assignmentStore.getAssignmentById(id + '');
+  await userStore.getUserByCourseId(assignmentStore.currentAssignment!.course!.coursesId.toString());
+  await courseStore.getCourseById(assignmentStore.currentAssignment!.course!.coursesId.toString());
+
 });
 
 // confirm student 
-const confirmAttendance = async (attendance:Attendance) => {
+const confirmAttendance = async (attendance: Attendance) => {
   if (confirm("Do you want to confirm this attendance?")) {
     try {
       attendance.attendanceStatus = 'present';
       attendance.attendanceConfirmStatus = 'confirmed';
-      await attendanceStore.confirmAttendanceByTeacher(attendance.attendanceId+'');
+      await attendanceStore.confirmAttendanceByTeacher(attendance.attendanceId + '');
       alert('Attendance has been confirmed.');
     } catch (error) {
       console.error("Error recording attendance:", error);
@@ -30,11 +39,11 @@ const confirmAttendance = async (attendance:Attendance) => {
   }
 };
 //reject student
-const reCheckAttendance = async (attendance:Attendance) => {
+const reCheckAttendance = async (attendance: Attendance) => {
   try {
     attendance.attendanceStatus = 'present';
     attendance.attendanceConfirmStatus = 'recheck';
-    await attendanceStore.rejectAttendanceByTeacher(attendance.attendanceId+'');
+    await attendanceStore.rejectAttendanceByTeacher(attendance.attendanceId + '');
     alert('Attendance has been recheck.');
   } catch (error) {
     console.error("Error recording attendance:", error);
@@ -44,62 +53,70 @@ const reCheckAttendance = async (attendance:Attendance) => {
 </script>
 
 <template>
-  <v-container style="margin-top: 10%;margin-left: 10%;">
-    <v-row>
-      <v-btn @click="attendanceStore.checkAllAttendance( route.params.assignmentId+'')">ยืนยันการcheckชื่อ</v-btn>
-
-      <v-col cols="12" md="8">
-       <!-- table -->
-        <v-simple-table>
-          
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-left">รหัสนักศึกษา</th>
-                <th class="text-left">ชื่อ-สกุล</th>
-                <th class="text-left">สถานะ</th>
-                <!-- <th class="text-left">ยืนยัน</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
-                <td>{{ attendee.user?.studentId }}</td>
-                <td>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }}</td>
-                <td>{{ attendee.attendanceStatus }}</td>
-                <!-- <td>
-                  <v-btn @click="confirmAttendance(attendee)" color="success">ยืนยัน</v-btn>
-                  <v-btn @click="reCheckAttendance(attendee)" color="warning">ตรวจสอบ</v-btn>
-                </td> -->
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-      </v-col>
-      <v-col cols="12" md="4">
-        <div v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
-          <v-card class="mb-4">
-            
-            <v-img :src="`${url}/attendances/image/${attendee.attendanceImage}`" height="200px"></v-img>
-            <v-img :src="`${url}/users/${attendee.user?.userId}/image`" height="200px"></v-img>
-            <!-- <v-img :src="attendee." height="200px"></v-img> -->
-         
-            <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }} </v-card-title>
-            <v-card-subtitle>{{ attendee.user?.studentId }}</v-card-subtitle>
+  <v-container fluid class="my-5">
+    <div style="margin-top: 5%; margin-left: 5%;">
+      <v-row style="padding: 10px;">
+        <v-btn color="primary" @click="attendanceStore.checkAllAttendance(route.params.assignmentId + '')">Recheck</v-btn>
+      </v-row>
+      <v-row>
+        <!-- Left column for student list (2/5 of the screen) -->
+        <v-col cols="12" md="5">
+          <v-card>
+            <v-card-title>Student List</v-card-title>
             <v-card-text>
-              <div>เข้าเรียน: {{ attendee.attendanceStatus }}</div>
-              <!-- <div>คะแนน: {{ attendee.points }}%</div> -->
+              <v-list dense>
+                <v-list-item-group>
+                  <v-list-item v-for="user in userStore.users" :key="user.userId">
+                    <v-list-item-avatar>
+                      <v-avatar size="56">
+                        <v-img :src="`${url}/users/${user?.userId}/image`"></v-img>
+                      </v-avatar>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title>{{ user.firstName + ' ' + user.lastName }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ user.studentId }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
             </v-card-text>
-            <v-card-actions>
-                <v-btn @click="confirmAttendance(attendee)" color="success">ยืนยัน</v-btn>
-                <v-spacer></v-spacer>
-                <v-btn @click="reCheckAttendance(attendee)" color="warning">ยกเลิก </v-btn>
-            </v-card-actions>
           </v-card>
-        </div>
-      </v-col>
-    </v-row>
+        </v-col>
+
+        <!-- Right column for displaying student details and images (3/5 of the screen) -->
+        <v-col cols="12" md="7">
+          <v-card>
+            <v-card-title>Details & Actions</v-card-title>
+            <v-card-text>
+              <div v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
+                <v-card class="mb-2">
+                  <v-row>
+                    <v-col>
+                      <v-img :src="`${url}/attendances/image/${attendee.attendanceImage}`" height="200px"></v-img>
+                    </v-col>
+                    <v-col>
+                      <v-img :src="`${url}/users/${attendee.user?.userId}/image`" height="200px"></v-img>
+                    </v-col>
+                  </v-row>
+                  <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }}</v-card-title>
+                  <v-card-subtitle>{{ attendee.user?.studentId }}</v-card-subtitle>
+                  <v-card-text>
+                    <div>Attendance Status: {{ attendee.attendanceStatus }}</div>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="success" @click="confirmAttendance(attendee)" >Confirm</v-btn>
+                    <v-btn color="warning" @click="reCheckAttendance(attendee)" >Recheck</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
+
 
 <style scoped>
 /* You can add additional styles here */
