@@ -56,7 +56,8 @@ const reCheckAttendance = async (attendance: Attendance) => {
   <v-container fluid class="my-5">
     <div style="margin-top: 5%; margin-left: 5%;">
       <v-row style="padding: 10px;">
-        <v-btn color="primary" @click="attendanceStore.checkAllAttendance(route.params.assignmentId + '')">Recheck All</v-btn>
+        <v-btn color="primary" @click="attendanceStore.checkAllAttendance(route.params.assignmentId + '')">Recheck
+          All</v-btn>
       </v-row>
       <v-row>
         <!-- Left column for student list (2/5 of the screen) -->
@@ -64,21 +65,25 @@ const reCheckAttendance = async (attendance: Attendance) => {
           <v-card>
             <v-card-title>Student List</v-card-title>
             <v-card-text>
-              <v-list dense>
-                <v-list-item-group>
-                  <v-list-item v-for="user in userStore.users" :key="user.userId">
-                    <v-list-item-avatar>
-                      <v-avatar size="56">
-                        <v-img :src="`${url}/users/${user?.userId}/image`"></v-img>
-                      </v-avatar>
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ user.firstName + ' ' + user.lastName }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ user.studentId }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
+              <div>
+                <v-row>
+
+
+                </v-row>
+                <v-row v-for="(member, index) in userStore.users" :key="index">
+
+                  <v-col cols="2">
+                    <v-avatar size="56">
+                      <v-img :src="`${url}/users/${member.userId}/image`"></v-img>
+                    </v-avatar>
+                  </v-col>
+                  <v-col cols="10" style="display: flex; align-items: center;">
+                    <div>{{ member.firstName + ' ' + member.lastName }}</div>
+                  </v-col>
+                  <v-divider></v-divider>
+
+                </v-row>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -99,14 +104,15 @@ const reCheckAttendance = async (attendance: Attendance) => {
                 <v-card-title>{{ attendee.user?.firstName }} {{ attendee.user?.lastName }}</v-card-title>
                 <v-card-subtitle>{{ attendee.user?.studentId }}</v-card-subtitle>
                 <v-card-text>
-                  <div >
+                  <div>
                     Attendance Status: {{ attendee.attendanceStatus }}
                   </div>
                 </v-card-text>
                 <v-card-actions>
                   <v-btn variant="flat" color="success" @click="confirmAttendance(attendee)">Confirm</v-btn>
-                 <v-spacer></v-spacer>
-                  <v-btn  variant="flat" color="warning" style="color: black;" @click="reCheckAttendance(attendee)">Recheck</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn variant="flat" color="warning" style="color: black;"
+                    @click="reCheckAttendance(attendee)">Recheck</v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>

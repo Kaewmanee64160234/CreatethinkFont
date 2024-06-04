@@ -213,7 +213,10 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
                             </v-col>
                         </v-row>
                         <v-row>
+                            <v-divider></v-divider>
+
                             <v-col cols="2">
+
                                 <v-avatar size="56">
                                     <v-img
                                         :src="`${url}/users/${courseStore.currentCourse?.user?.userId}/image`"></v-img>
@@ -223,20 +226,27 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
                                 <div>{{ courseStore.currentCourse?.user?.firstName + ' ' +
             courseStore.currentCourse?.user?.lastName }}</div>
                             </v-col>
+                        <v-divider></v-divider>
+
                         </v-row>
+
                     </div>
 
                     <!-- Students Section -->
                     <div>
                         <v-row>
+
                             <v-col cols="6">
                                 <h3>Students</h3>
                             </v-col>
+
                             <v-col cols="6" style="text-align: end;">
                                 <p>{{ userStore.users.length }} Members</p>
                             </v-col>
                         </v-row>
                         <v-row v-for="(member, index) in userStore.users" :key="index">
+                        <v-divider></v-divider>
+                           
                             <v-col cols="2">
                                 <v-avatar size="56">
                                     <v-img :src="`${url}/users/${member.userId}/image`"></v-img>
@@ -245,6 +255,7 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
                             <v-col cols="10" style="display: flex; align-items: center;">
                                 <div>{{ member.firstName + ' ' + member.lastName }}</div>
                             </v-col>
+
                         </v-row>
                     </div>
 
