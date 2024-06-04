@@ -136,6 +136,20 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
     return attendance ? attendance.attendanceStatus : 'No Record Found';
 }
 
+const calculateTotalScore = (userId: number, assignments: Assignment[]): number => {
+    return assignments.reduce((total, assignment) => {
+        const status = getAttendanceStatus(attendanceStore.attendances || [], userId, assignment.assignmentId!);
+        if (status === 'present') {
+            return total + 1;  // Full point for being present
+        } else if (status === 'late') {
+            return total + 0.5;  // Half point for being late
+        }
+        return total;  // No points for being absent
+    }, 0);
+};
+
+
+
 </script>
 <template>
     <div style="margin-top: 5%; margin-left: 5%;">
@@ -254,6 +268,7 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
                             <tr>
                                 <th class="text-left">Student Name</th>
                                 <th class="text-left">Full Score</th>
+                                <th class="text-left">Score</th>
                                 <th v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
                                     {{ assignment.nameAssignment }}
                                 </th>
@@ -263,7 +278,8 @@ function getAttendanceStatus(attendances: Attendance[], userId: number, assignme
 
                             <tr v-for="user in userStore.users" :key="user.userId">
                                 <td>{{ user.firstName + ' ' + user.lastName }}</td>
-                                <td>{{ courseStore.currentCourse?.fullScore }}%</td>
+                                <td>{{ assigmentStore.assignments.length }} </td>
+                                <td>{{ calculateTotalScore (user.userId!, assigmentStore.assignments) }}</td>
                                 <td v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
                                     <template
                                         v-if="getAttendanceStatus(attendanceStore.attendances!, user.userId!, assignment.assignmentId!) === 'present'">
