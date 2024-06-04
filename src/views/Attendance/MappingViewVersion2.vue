@@ -26,7 +26,7 @@ interface Identification {
 const setCanvasRef = (index) => (el) => {
   canvasRefs[index] = el;
 };
-const processedDescriptors = new Set<string>();
+
 const imageUrls = ref<string[]>([]);
 const identifications = ref<Identification[]>([]);
 const croppedImagesDataUrls = ref<string[]>([]);
@@ -34,9 +34,9 @@ const canvasRefs = reactive<CanvasRefs>({});
 const userDescriptors = new Map<string, Float32Array>();
 const userStore = useUserStore();
 const route = useRoute();
-const router = useRouter();
 const assigmentStore = useAssignmentStore();
 const attendaceStore = useAttendanceStore();
+const router = useRouter();
 
 async function processImage(image, index) {
   const canvas = canvasRefs[index] || document.createElement('canvas');
@@ -51,39 +51,38 @@ async function processImage(image, index) {
       .withFaceLandmarks()
       .withFaceDescriptors() as WithFaceLandmarks<{ detection: FaceDetection }, WithFaceDescriptor>[];
 
-      detections.forEach(detection => {
-      const descriptorString = detection.descriptor.toString();
-      if (!processedDescriptors.has(descriptorString)) {
-        processedDescriptors.add(descriptorString);
-        processFace(detection, image);
+    detections.forEach(detection => {
+      const bestMatch = findBestUserMatch(detection.descriptor);
+      const cropCanvas = document.createElement('canvas');
+      const cropCtx = cropCanvas.getContext('2d');
+      const { x, y, width, height } = detection.detection.box;
+
+      cropCanvas.width = width;
+      cropCanvas.height = height;
+      cropCtx.drawImage(image, x, y, width, height, 0, 0, width, height);
+
+      const croppedDataURL = cropCanvas.toDataURL();
+      croppedImagesDataUrls.value.push(croppedDataURL);
+
+      if (bestMatch.user) {
+        identifications.value.push({
+          name: bestMatch.user.firstName,
+          studentId: bestMatch.user.studentId!,
+          imageUrl: croppedDataURL!
+        });
+      } else {
+        identifications.value.push({
+          name: "Unknown",
+          studentId: "N/A",
+          imageUrl: croppedDataURL!
+        });
       }
     });
-    //clear userDescriptors
-    userDescriptors.clear();
   } catch (error) {
     console.error("Failed to process face detection:", error);
   }
 }
 
-function processFace(detection, image) {
-  const bestMatch = findBestUserMatch(detection.descriptor);
-  const cropCanvas = document.createElement('canvas');
-  const cropCtx = cropCanvas.getContext('2d');
-  const { x, y, width, height } = detection.detection.box;
-
-  cropCanvas.width = width;
-  cropCanvas.height = height;
-  cropCtx.drawImage(image, x, y, width, height, 0, 0, width, height);
-
-  const croppedDataURL = cropCanvas.toDataURL();0
-  croppedImagesDataUrls.value.push(croppedDataURL);
-
-  identifications.value.push({
-    name: bestMatch.user ? bestMatch.user.firstName : "Unknown",
-    studentId: bestMatch.user ? bestMatch.user.studentId : "N/A",
-    imageUrl: croppedDataURL
-  });
-}
 
 function loadImageAndProcess(dataUrl: string, index: number): void {
   const img = new Image();
@@ -141,6 +140,7 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
     img.src = url;
   });
 }
+
 function resizeAndConvertToBase64(imgUrl: string, maxWidth: number, maxHeight: number): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -299,47 +299,4 @@ const confirmAttendance = async () => {
 
 <style scoped>
 
-.overlay-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.mb-3 {
-  margin-bottom: 1rem;
-}
-
-.w-100 {
-  width: 100%;
-}
-
-.position-relative {
-  position: relative;
-}
-
-.text-right {
-  text-align: right;
-}
-
-/* For browsers that support forced-colors */
-@media (forced-colors: active) {
-    body {
-        background-color: Canvas;
-        color: CanvasText;
-    }
-}
-
-/* Fallback for older Microsoft browsers */
-@media (-ms-high-contrast: active) {
-    body {
-        background-color: white;
-        color: black;
-    }
-}
-
-
 </style>
-
-
