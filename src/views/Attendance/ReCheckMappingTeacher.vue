@@ -92,7 +92,9 @@ const reCheckAttendance = async (attendance: Attendance) => {
         <v-col cols="12" md="7">
           <v-row>
             <v-col cols="12" md="6" v-for="attendee in attendanceStore.attendances" :key="attendee.attendanceId">
-              <v-card class="mb-2" style="padding: 20px;">
+             <!-- card backgound color EDEDED -->
+
+              <v-card class="mb-2" style="padding: 20px;background-color: rgb(237, 237, 237);">
                 <v-row>
                   <v-col cols="6">
                     <v-img :src="`${url}/attendances/image/${attendee.attendanceImage}`" height="200px"></v-img>
