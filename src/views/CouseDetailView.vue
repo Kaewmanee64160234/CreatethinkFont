@@ -294,14 +294,14 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
                                 <td v-for="assignment in assigmentStore.assignments" :key="assignment.assignmentId">
                                     <template
                                         v-if="getAttendanceStatus(attendanceStore.attendances!, user.userId!, assignment.assignmentId!) === 'present'">
-                                        <v-icon color="green">mdi-check-circle</v-icon> Present
+                                        <v-icon color="green">mdi-check-circle</v-icon> 
                                     </template>
                                     <template
                                         v-else-if="getAttendanceStatus(attendanceStore.attendances!, user.userId!, assignment.assignmentId!) === 'late'">
-                                        <v-icon color="orange">mdi-clock-outline</v-icon> Late
+                                        <v-icon color="orange">mdi-clock-outline</v-icon> 
                                     </template>
                                     <template v-else>
-                                        <v-icon color="red">mdi-close-circle</v-icon> Absent
+                                        <v-icon color="red">mdi-close-circle</v-icon> 
                                     </template>
                                 </td>
                             </tr>
