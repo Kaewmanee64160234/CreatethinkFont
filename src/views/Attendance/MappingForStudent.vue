@@ -84,6 +84,17 @@ const goBackToCourseDetail = () => {
 </script>
 <template>
   <v-container style="margin-top: 5%">
+    <v-card
+      class="mx-auto"
+      color="primary"
+      max-width="1200"
+      outlined
+      style="padding: 20px"
+    >
+      <v-card-title>
+        <h1 class="text-h5">{{ courseStore.currentCourse?.nameCourses }}</h1>
+      </v-card-title>
+    </v-card>
     <h1>ตรวจสอบการเข้าเรียน</h1>
 
     <v-btn
@@ -111,7 +122,21 @@ const goBackToCourseDetail = () => {
         md="4"
       >
         <v-card class="pa-3" outlined color="#D9D9D9">
-          <div class="d-flex flex-row align-center">
+          <!-- Student Information -->
+          <v-row justify="center" align="center">
+            <div class="d-flex flex-column">
+              <div v-if="student.user">
+                <div class="subtitle-1 bold-text mt-2">
+                  <v-icon small>mdi-circle-small</v-icon>
+                  {{ student.user.studentId + " " + student.user.firstName }}
+                </div>
+              </div>
+              <div v-else class="text-center red--text bold-text mt-2">
+                <v-icon small>mdi-circle-small</v-icon>ระบุไม่ได้
+              </div>
+            </div>
+          </v-row>
+          <v-row>
             <!-- Student Image -->
             <v-img
               :src="`${url}/attendances/image/${student.attendanceImage}`"
@@ -122,16 +147,7 @@ const goBackToCourseDetail = () => {
                 student.user ? student.user.firstName : 'Unknown'
               }`"
             ></v-img>
-
-            <!-- Student Information -->
-            <div class="d-flex flex-column justify-space-between">
-              <div v-if="student.user" class="text-center">
-                <div class="subtitle-1">{{ student.user.studentId }}</div>
-                <div class="headline">{{ student.user.firstName }}</div>
-              </div>
-              <div v-else class="text-center red--text">Unknown</div>
-            </div>
-          </div>
+          </v-row>
 
           <!-- Re-check Button -->
           <v-row class="mt-3">
@@ -153,5 +169,8 @@ const goBackToCourseDetail = () => {
 .v-btn--active {
   background-color: #4caf50 !important;
   /* Active state color for 'เข้าเรียน' button when active */
+}
+.bold-text {
+  font-weight: bold;
 }
 </style>

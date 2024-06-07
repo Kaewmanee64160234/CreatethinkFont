@@ -332,7 +332,10 @@ const confirmAttendance = async () => {
               :key="'id-' + index"
             >
               <v-card outlined color="#EDEDED" class="rounded-lg">
-                <v-card-title>{{ name.studentId }} | {{ name.name }}</v-card-title>
+                <v-card-title>
+                  <v-icon small>mdi-circle-small</v-icon>{{ name.studentId }} |
+                  {{ name.name }}</v-card-title
+                >
                 <v-img
                   :src="croppedImagesDataUrls[index]"
                   aspect-ratio="1.5"
