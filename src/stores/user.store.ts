@@ -81,10 +81,11 @@ export const useUserStore = defineStore("userStore", () => {
   };
 
   //get user by studentId and teacherId
-  const getUserBystidId = async (studentId: string, teacherId: string) => {
+  const getUserBystidId = async (studentId: string) => {
     try {
-      const res = await userService.getUserBystidId(studentId, teacherId);
+      const res = await userService.getUserBystidId(studentId);
       currentUser.value = res.data;
+      console.log(res.data);
     } catch (e) {
       console.log(e);
     }

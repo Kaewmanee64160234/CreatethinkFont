@@ -3,13 +3,13 @@ import HomeView from '../views/HomeView.vue';
 import { ref } from 'vue';
 const user = ref<any | null>(localStorage.getItem('users'))
 const user_ = JSON.parse(user.value)
-// const ezAutorized = () => {
-//   if (user_.role.toLowerCase() === 'users') {
-//     return router.push('/pageNotFound')
-//   } else {
-//     return true;
-//   }
-// }
+const ezAutorized = () => {
+  if (user_.role.toLowerCase() === 'users') {
+    return router.push('/pageNotFound')
+  } else {
+    return true;
+  }
+}
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -43,8 +43,8 @@ const routes: Array<RouteRecordRaw> = [
       meta: {
         layout: "FullLayout",
         // requiresAuth: true,
-        // beforeEnter:[ ezAutorized]
-      }
+      },
+      // beforeEnter: [ezAutorized]
     }
   ,
   {
@@ -99,7 +99,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   meta: {
     layout: "FullLayout",
-  }
+    requiresAuth: true,
+  },
 },
 {
   //enrolmentManagementView

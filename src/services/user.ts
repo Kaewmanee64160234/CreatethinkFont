@@ -25,9 +25,9 @@ function saveUser(user:User & { files: File[] }) {
   formData.append('status', user.status!);
 
   // Append files and face descriptions
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 1; i++) {
     formData.append('files', user.files[i], user.files[i].name); // Ensure there are exactly 5 files
-    formData.append(`faceDescription${i + 1}`, JSON.stringify(user.faceDescriptions![i]));
+    // formData.append(`faceDescription${i + 1}`, JSON.stringify(user.faceDescriptions![i]));
   }
 
   return http.post("/users", formData, {
@@ -54,7 +54,7 @@ function updateUser(user: User & { files: File[] }, userId: number) {
   for (let i = 0; i < user.files.length; i++) {
     if (user.files[i]) {
       formData.append('files', user.files[i], user.files[i].name);
-      formData.append(`faceDescription${i + 1}`, JSON.stringify(user.faceDescriptions![i]));
+      // formData.append(`faceDescription${i + 1}`, JSON.stringify(user.faceDescriptions![i]));
     }
   }
 
@@ -69,9 +69,9 @@ function updateUser(user: User & { files: File[] }, userId: number) {
 function deleteUser(id: number) {
   return http.delete(`/users/${id}`);
 }
-//find user by studentId and teacherId
-function getUserBystidId(studentId: string, teacherId: string) {
-  return http.get(`/users/find/${studentId}/${teacherId}`);
+//getUserBystidId
+function getUserBystidId(studentId: string) {
+  return http.get(`/users/student/${studentId}`);
 }
 
 //get user imageProfile by id

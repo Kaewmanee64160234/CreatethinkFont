@@ -48,7 +48,7 @@ async function cancel() {
                                 v-model="userStore.editUser.role"></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                            <v-combobox label="สถานะภาพ" :items="['กำลังศึกษา', 'พ้นสภาพนิสิต']" dense solo required
+                            <v-combobox label="สถานะภาพ" :items="['กำลังศึกษา', 'พ้นสภาพนิสิต', 'สำเร็จการศึกษา']" dense solo required
                                 v-model="userStore.editUser.status"></v-combobox> 
                         </v-col>
                         <v-col cols="12" md="6">

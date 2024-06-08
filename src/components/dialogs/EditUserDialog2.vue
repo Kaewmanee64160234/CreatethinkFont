@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user.store';
 const userStore = useUserStore();
+const url = 'http://localhost:3000';
 
 async function save() {
         await userStore.saveUser();
@@ -19,11 +20,13 @@ async function cancel() {
                 <v-card-title class="pb-0">แก้ไขผู้ใช้</v-card-title>
                 <v-row>
                     <!-- Image Column -->
-                    <v-col cols="12" md="4" class="d-flex justify-center align-center">
-                        <v-avatar size="192">
-                            <img :src="userStore.currentUser?.imageProfile" alt="User Profile">
-                        </v-avatar>
-                    </v-col>
+                    <v-col cols="12" md="4">
+                    <v-row>
+                        <v-col cols="6" v-for="(item, index) in userStore.editUser.images" :key="index">
+                            <v-img :src="`${url}/users/image/filename/${item}`" alt="User Profile" class="mb-2" width="70%" height="auto"/>
+                        </v-col>
+                    </v-row>
+                </v-col>
 
                     <!-- Text Fields Column -->
                     <v-col cols="12" md="8">
@@ -49,7 +52,7 @@ async function cancel() {
                                     :rules="[(v) => !!v || 'โปรดกรอกตำแหน่ง']"></v-text-field>
                             </v-col>
                             <v-col cols="12">
-                                <v-combobox label="สถานะภาพ" :items="['กำลังศึกษา', 'พ้นสภาพนิสิต']" dense solo required
+                                <v-combobox label="สถานะภาพ" :items="['กำลังศึกษา', 'พ้นสภาพนิสิต', 'สำเร็จการศึกษา']" dense solo required
                                     v-model="userStore.editUser.status"
                                     :rules="[(v) => !!v || 'โปรดเลือกสถานะภาพ']"></v-combobox> 
                             </v-col>
