@@ -9,7 +9,7 @@ export interface User {
   teacherId?: string;
   studentId?: string;
   profileImage?: string;
-  faceDescriptions?: Float32Array[];
+  // faceDescriptions?: Float32Array[];
   createdAt?: Date;
   updatedAt?: Date;
   access_token?: string;
@@ -17,19 +17,19 @@ export interface User {
 }
 
 export function mapToUser(data: any): User {
-  const faceDescriptions: Float32Array[] = [];
+  // const faceDescriptions: Float32Array[] = [];
   const images: string[] = [];
 
   // Populate faceDescriptions from data
-  for (let i = 1; i <= 5; i++) {
-    const faceDescriptionKey = `faceDescription${i}`;
-    if (data[faceDescriptionKey] && Array.isArray(data[faceDescriptionKey])) {
-      faceDescriptions.push(new Float32Array(data[faceDescriptionKey]));
-    }
-  }
+  // for (let i = 1; i <= 5; i++) {
+  //   const faceDescriptionKey = `faceDescription${i}`;
+  //   if (data[faceDescriptionKey] && Array.isArray(data[faceDescriptionKey])) {
+  //     faceDescriptions.push(new Float32Array(data[faceDescriptionKey]));
+  //   }
+  // }
 
   // Populate images from data
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 1; i++) {
     const imageKey = `image${i}`;
     if (data[imageKey] && data[imageKey] !== "no-image.jpg") {
       images.push(data[imageKey]);
@@ -45,7 +45,7 @@ export function mapToUser(data: any): User {
     status: data.status,
     studentId: data.studentId,
     teacherId: data.teacherId,
-    faceDescriptions: faceDescriptions,
+    // faceDescriptions: faceDescriptions,
     picture: data.picture,
     profileImage: data.profileImage,
     createdAt: data.createdAt ? new Date(data.createdAt) : undefined,

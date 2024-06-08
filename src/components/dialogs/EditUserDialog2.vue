@@ -6,6 +6,7 @@ const url = 'http://localhost:3000';
 async function save() {
         await userStore.saveUser();
         userStore.resetUser();
+        window.location.reload(); 
 }
 
 async function cancel() {
@@ -20,21 +21,17 @@ async function cancel() {
                 <v-card-title class="pb-0">แก้ไขผู้ใช้</v-card-title>
                 <v-row>
                     <!-- Image Column -->
-                    <v-col cols="12" md="4">
-                    <v-row>
-                        <v-col cols="6" v-for="(item, index) in userStore.editUser.images" :key="index">
-                            <v-img :src="`${url}/users/image/filename/${item}`" alt="User Profile" class="mb-2" width="70%" height="auto"/>
-                        </v-col>
-                    </v-row>
-                </v-col>
-
+                    <v-col cols="12" md="4" class="d-flex justify-center align-center">
+                        <v-img :src="`${url}/users/image/filename/${userStore.editUser.images}`" alt="User Profile"
+                            class="mb-2" max-width="100%" max-height="auto" />
+                    </v-col>
                     <!-- Text Fields Column -->
                     <v-col cols="12" md="8">
                         <v-row align="center">
                             <v-col cols="12">
                                 <v-text-field label="รหัสอาจารย์" dense solo required
                                     v-model="userStore.editUser.teacherId"
-                                    :rules="[(v) => !!v || 'โปรดกรอกอาจารย์', (v) => /^[0-9]*$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข' ]"></v-text-field>
+                                    :rules="[(v) => !!v || 'โปรดกรอกอาจารย์', (v) => /^[0-9]{8}$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข 8 หลัก']"></v-text-field>
                             </v-col>
                             <v-col cols="12">
                                 <v-text-field label="ชื่อ" dense solo required
@@ -58,8 +55,8 @@ async function cancel() {
                             </v-col>
                             <v-col cols="12" md="6">
                                 <!-- File Input -->
-                                <!-- <v-file-input label="อัพโหลดรูปภาพ" prepend-icon="mdi-camera" filled
-                                    @change="handleFileChange" accept="image/*" outlined></v-file-input> -->
+                                <v-file-input label="อัพโหลดรูปภาพ" prepend-icon="mdi-camera" filled multiple
+                                    v-model="userStore.editUser.files" accept="image/*" outlined></v-file-input>
                             </v-col>
 
                         </v-row>

@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('authStore', () => {
     lastName: '',
     email: '',
     profileImage: '',
-    faceDescriptions: [],
+    // faceDescriptions: [],
   });
   const accessToken = ref('');
   const setCurrentUser = (user: User) => {

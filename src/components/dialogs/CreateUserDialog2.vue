@@ -15,10 +15,10 @@ async function loadModels() {
 }
 async function save() {
     // loop create faceDescription
-    const faceDescriptions = await processFiles(userStore.editUser.files);
-    userStore.editUser.faceDescriptions = faceDescriptions;
+    // const faceDescriptions = await processFiles(userStore.editUser.files);
+    // userStore.editUser.faceDescriptions = faceDescriptions;
     await userStore.saveUser();
-   // userStore.resetUser();
+   userStore.resetUser();
 }
 
 async function cancel() {
@@ -83,7 +83,7 @@ async function processFiles(files: File[]): Promise<Float32Array[]> {
                             <v-col cols="12">
                                 <v-text-field label="รหัสอาจารย์" dense solo required
                                     v-model="userStore.editUser.teacherId"
-                                    :rules="[(v) => !!v || 'โปรดกรอกรหัสอาจารย์', (v) => /^[0-9]*$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข']"></v-text-field>
+                                    :rules="[(v) => !!v || 'โปรดกรอกรหัสอาจารย์', (v) => /^[0-9]{8}$/.test(v) || 'โปรดกรอกข้อมูลเฉพาะตัวเลข 8 หลัก']"></v-text-field>
                             </v-col>
                             <v-col cols="12">
                                 <v-text-field label="ชื่อ" dense solo required v-model="userStore.editUser.firstName"
