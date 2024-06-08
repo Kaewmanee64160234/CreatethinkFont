@@ -11,11 +11,9 @@ const courseId = ref("");
 const userStore = useUserStore();
 const codeCourse = ref("");
 
-
 onMounted(async () => {
   courseStore.getCourses();
   await userStore.getCurrentUser();
-
 });
 const saveEnrollment = () => {
   if (codeCourse.value.length < 8) {
@@ -27,8 +25,8 @@ const saveEnrollment = () => {
       //วน check ว่ามี courseId ที่ตรงกับที่กรอกมาหรือไม่
       console.log("enrollment", courseStore.courses[i]);
       const newEnrollment = {
-        userId: userStore.currentUser?.userId, ///mouckup data
-        courseId: courseId.value,
+        userId: userStore.currentUser?.userId ?? 0,
+        courseId: courseStore.courses[i].coursesId,
         createdDate: undefined,
         updatedDate: undefined,
         deletedDate: undefined,
@@ -75,7 +73,7 @@ const saveEnrollment = () => {
                   v-model="codeCourse"
                   :rules="[
                     (v) =>
-                      /^[A-Za-z0-9]{8,}$/.test(v) ||
+                      /^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/.test(v) ||
                       'โปรดกรอกรหัสห้องเรียนอย่างน้อย 8 ตัวอักษร',
                   ]"
                 ></v-text-field>

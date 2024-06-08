@@ -128,8 +128,8 @@ const routes: Array<RouteRecordRaw> = [
 //resheckMappingTeacher
 {
   // mappingForStudent
-  path: '/resheckMappingTeacher/:assignmentId',
-  name: 'resheckMappingTeacher',
+  path: '/reCheckMappingTeacher/:assignmentId',
+  name: 'reCheckMappingTeacher',
   components: {
     default: () => import('../views/Attendance/ReCheckMappingTeacher.vue'),
     header: () => import('../components/headers/MainHeader.vue'),

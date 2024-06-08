@@ -134,6 +134,7 @@ export const useUserStore = defineStore("userStore", () => {
 const getUserByCourseId = async (courseId: string) => {
     try {
         const res = await userService.getUserByCourseId(courseId);
+        console.log("res", res.data);
         users.value = res.data.map((user: any) => mapToUser(user));
     } catch (e) {
         console.log(e);
