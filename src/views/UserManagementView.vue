@@ -72,8 +72,12 @@ const tab = ref(0);
       <v-spacer></v-spacer>
       <v-row align="center" justify="end">
         <v-col cols="auto">
-          <v-text-field label="ค้นหารหัส" height="20px" hide-details="auto" density="compact" variant="solo"
-            v-model="userStore.keyword" append-inner-icon="mdi-magnify" @click:append-inner="userStore.getUserBystidId"
+          <v-text-field v-model="userStore.searchQuery" 
+              label="ค้าหารหัสนิสิต" 
+              append-inner-icon="mdi-magnify"
+              hide-details 
+              dense 
+              variant="solo"
             class="search-bar"></v-text-field>
         </v-col>
         <v-col cols="auto">

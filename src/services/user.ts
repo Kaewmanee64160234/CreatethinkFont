@@ -69,9 +69,11 @@ function updateUser(user: User & { files: File[] }, userId: number) {
 function deleteUser(id: number) {
   return http.delete(`/users/${id}`);
 }
-//getUserBystidId
-function getUserBystidId(studentId: string) {
-  return http.get(`/users/student/${studentId}`);
+
+function searchUsers(search: string) {
+  return http.get('/users/search', {
+    params: { search },
+  });
 }
 
 //get user imageProfile by id
@@ -86,4 +88,4 @@ function getUserByCourseId(courseId: string) {
 
 
 
-export default { getUser, getUserImage, saveUser, deleteUser, updateUser, getUserBystidId,getUserByCourseId };
+export default { getUser, getUserImage, saveUser, deleteUser, updateUser, searchUsers ,getUserByCourseId };
