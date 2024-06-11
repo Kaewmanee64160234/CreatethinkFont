@@ -300,7 +300,7 @@ const confirmAttendance = async () => {
     </v-card>
     <!-- Display Controls and Image Upload -->
     <v-row class="mt-5">
-      <v-col cols="12" md="6"><v-icon size="40">mdi-camera</v-icon></v-col>
+      <v-col cols="12" md="6"></v-col>
       <v-col cols="12" md="6" class="text-right">
         <v-btn color="#CFEBFB" @click="confirmAttendance()"
           ><v-icon size="30">mdi-clipboard-check-outline</v-icon>ตรวจสอบการเช็คชื่อ</v-btn

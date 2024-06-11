@@ -76,7 +76,7 @@ const showDeleteDialog = (enrollment: Enrollment) => {
               </template>
               <v-list>
                 <v-list-item @click="showDeleteDialog(item)">
-                  <v-list-item-title>Unenroll</v-list-item-title>
+                  <v-list-item-title>ออกจากรายวิชา</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -103,8 +103,8 @@ const showDeleteDialog = (enrollment: Enrollment) => {
               เลิกเรียนแลป {{ formatThaiDate(item.course.timeOutLab?.toString()) }}
             </div>
             <div v-else>
-              <div class="text-body">เริมเรียนแลป ไม่มี</div>
-              <div class="text-body">เลิกเรียนแลป ไม่มี</div>
+              <div class="text-body">เริมเรียนแลป -</div>
+              <div class="text-body">เลิกเรียนแลป -</div>
             </div>
           </v-card-text>
         </v-card>
