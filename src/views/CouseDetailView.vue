@@ -190,12 +190,14 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
               item-text="roomNumber"
               item-value="roomNumber"
               label="Select a room"
+              variant="outlined"
               outlined
               return-object
             ></v-autocomplete>
             <v-textarea
               v-model="nameAssignment"
               label="Enter your post"
+              variant="outlined"
               outlined
             ></v-textarea>
             <v-file-input
@@ -204,15 +206,15 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
               filled
               @change="handleFileChange"
               accept="image/*"
-              outlined
+              variant="outlined"
               multiple
             >
             </v-file-input>
           </v-container>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="error" @click="showTextArea = false">Cancel</v-btn>
-            <v-btn color="primary" @click="createPost()">Post</v-btn>
+            <v-btn color="error" @click="showTextArea = false">ยกเลิก</v-btn>
+            <v-btn color="primary" @click="createPost()">โพสต์</v-btn>
           </v-card-actions>
         </v-card>
 
@@ -287,8 +289,11 @@ const calculateTotalScore = (userId: number, assignments: Assignment[]): number 
                 </v-avatar>
               </v-col>
               <v-col cols="10" style="display: flex; align-items: center">
-                <div>{{ member.firstName + " " + member.lastName }}</div>
+                <div>
+                  {{ member.studentId + " " + member.firstName + " " + member.lastName }}
+                </div>
               </v-col>
+              <v-divider></v-divider>
             </v-row>
           </div>
         </div>

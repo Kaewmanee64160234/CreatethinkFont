@@ -118,6 +118,15 @@ const reCheckAttendance = async (attendance: Attendance) => {
 
         <!-- Right column for displaying student details and images (3/5 of the screen) -->
         <v-col cols="12" md="7">
+          เช็คชื่อ
+          <v-row>
+            <v-col cols="2" style="text-align: center">มา</v-col>
+            <v-divider vertical></v-divider>
+            <v-col cols="2" class="vertical-divider" style="text-align: center"
+              >รอดำเนินการ</v-col
+            >
+            <v-divider vertical></v-divider>
+          </v-row>
           <v-row>
             <v-col
               cols="12"
