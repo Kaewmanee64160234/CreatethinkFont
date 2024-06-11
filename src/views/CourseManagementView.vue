@@ -4,7 +4,7 @@ import DeleteCourseDialog from "@/components/dialogs/DeleteCourseDialog.vue";
 import EditCourseDialog from "@/components/dialogs/EditCourseDialog.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useCourseStore } from "@/stores/course.store";
-import Course from "@/stores/types/Course";
+import type Course from "@/stores/types/Course";
 import { useUserStore } from "@/stores/user.store";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -84,10 +84,10 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
               </template>
               <v-list>
                 <v-list-item @click="showEditDialog(item)">
-                  <v-list-item-title>Edit</v-list-item-title>
+                  <v-list-item-title>แก้ไข</v-list-item-title>
                 </v-list-item>
                 <v-list-item @click="showDeleteDialog(item)">
-                  <v-list-item-title>Delete</v-list-item-title>
+                  <v-list-item-title>ลบ</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -102,19 +102,21 @@ const formatThaiDate = (isoDateTime: string | undefined): string => {
             <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
           </v-avatar>
           <v-card-text>
-            <div class="text-body">กลุ่มเรียนที่ {{ item.session }}</div>
+            <div class="text-body">
+              กลุ่มเรียนที่ {{ item.session }} รหัสห้อง {{ item.codeCourses }}
+            </div>
             <div class="text-body">อาจารย์ {{ item.user?.firstName }}</div>
             <div class="text-body">
-              เริมเรียนเลคเชอร์ {{ formatThaiDate(item.timeInLec) }}
+              เริมเรียนเลคเชอร์ {{ formatThaiDate(item.timeInLec?.toString()) }}
             </div>
             <div class="text-body">
-              เลิกเรียนเลคเชอร์ {{ formatThaiDate(item.timeOutLec) }}
+              เลิกเรียนเลคเชอร์ {{ formatThaiDate(item.timeOutLec?.toString()) }}
             </div>
             <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
-              เริมเรียนแลป {{ formatThaiDate(item.timeInLab) }}
+              เริมเรียนแลป {{ formatThaiDate(item.timeInLab?.toString()) }}
             </div>
             <div class="text-body" v-if="item.typeCourses === 'เลคเชอร์และแลป'">
-              เลิกเรียนแลป {{ formatThaiDate(item.timeOutLab) }}
+              เลิกเรียนแลป {{ formatThaiDate(item.timeOutLab?.toString()) }}
             </div>
             <div v-else>
               <div class="text-body">เริมเรียนแลป ไม่มี</div>
